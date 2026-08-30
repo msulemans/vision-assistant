@@ -1,0 +1,20 @@
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local captures can contain private screen content.
+captures/
+runs/
+models/
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Local configuration and credentials.
+.env
+.env.*
+!.env.example
