@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-31 (Australia/Sydney)
 
-Status: Milestone 002 complete — Milestone 003 is the sole next gate.
+Status: Milestone 003 in progress — deterministic/file gate passes; successful user-selected capture pending.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -200,11 +200,75 @@ a self-contained browser UI are produced from synthetic fixtures only. No model,
 package, capture pixel, server, or privacy permission was acquired. Milestone
 003 is the sole next gate.
 
-## Next gate — Milestone 003
+## Milestone 003 — explicit screenshot ingest and capture
 
-Explicit screenshot ingest and capture: file ingest first, then a user-triggered
-single screenshot behind one `CapturePort`, plus normalization and ephemeral
-lifecycle. Generated fixture and user-approved capture must use the same
-pipeline; dimensions/hashes/timings must be correct; cancel must work; raw
-pixels are ignored and deleted by default; permission denial is a normal,
-recoverable state.
+Status: in progress; implementation and deterministic/file gate pass, one
+successful user-selected live capture remains.
+
+### Question
+
+Can a generated fixture, an explicitly selected PNG file, and a user-selected
+macOS region/window traverse one bounded normalization and ephemeral-artifact
+path with correct dimensions, hashes, timing, cancellation, permission errors,
+and default deletion?
+
+### Build
+
+- `normalize_png` validates the PNG signature, chunk lengths/CRCs, declared
+  dimensions, colour/bit-depth combination, bounded decompressed size, row
+  filters, and final `IEND`; it rejects oversized, animated, interlaced,
+  truncated, unknown-critical, and non-PNG input.
+- Normalization rebuilds a single bounded PNG while stripping text, EXIF, time,
+  and other unapproved ancillary metadata. Safe colour/scale chunks are kept.
+- `EphemeralArtifactStore` uses private `0700` directories, `0600` files,
+  atomic writes, bounded trace identifiers, and symlink-escape rejection.
+- `FileCapturePort` uses a no-follow file descriptor, requires a regular file,
+  and never copies the selected filesystem path into its public summary.
+- `MacInteractiveCapturePort` invokes fixed argv
+  `/usr/sbin/screencapture -i -x -t png <private-temp-path>` with no shell,
+  a minimal environment, and a 180-second selection budget.
+- File and interactive capture use the same `PngIngestor`. The raw macOS temp
+  file is deleted by its temporary directory; the normalized artifact is
+  deleted after validation unless `--retain` is explicit.
+- Stable recoverable outcomes distinguish `permission_denied`,
+  `cancelled_by_user`, `selection_timed_out`, `invalid_image`, and
+  `capture_unavailable`.
+- The existing turn spine now passes only the private internal artifact path to
+  the model port; traces continue to receive an opaque artifact identifier.
+
+### Commands
+
+```bash
+PYTHONPATH=src python3.11 -m unittest discover -s tests -v
+PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --verify
+PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive
+```
+
+### Evidence observed on 2026-08-31
+
+- Full regression suite: 19 tests pass (15 capture/lifecycle tests plus the 4
+  unchanged Milestone 002 spine tests).
+- Generated-fixture gate: dimensions match, SHA-256 matches the private
+  normalized artifact, mode is `0600`, artifact exists during the turn, and is
+  deleted on release — `pass: true`.
+- The original Milestone 002 `--verify` still passes all four byte-identical,
+  round-tripping scenarios.
+- A first live selector attempt reached the 180-second budget without producing
+  a capture. It revealed that the adapter initially mapped timeout to
+  `cancelled_by_user`; the implementation now has a separate
+  `selection_timed_out` outcome and a regression test. No screenshot was
+  retained from that attempt.
+
+### Current gate result
+
+Partial. The implementation, generated-fixture/file path, privacy lifecycle,
+and error paths pass. Do not mark Milestone 003 complete and do not advance to
+the frozen corpus until one harmless user-selected region/window succeeds and
+its dimensions/timing/default deletion are recorded.
+
+## Next action — finish the Milestone 003 live gate
+
+Run the documented `--interactive` command from a normal Terminal, select one
+harmless region/window, and return the two JSON lines. The first should say
+`status: captured`; the second should say `status: released`. No image content
+or path is printed or retained by default.

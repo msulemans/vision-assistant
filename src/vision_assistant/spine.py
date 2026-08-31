@@ -18,7 +18,7 @@ from .events import (
     TIMED_OUT,
     Event,
 )
-from .ports import CaptureSource
+from .ports import CaptureFailure, CaptureSource
 from .trace import JsonlTraceSink
 
 POLICY_MS = 5.0
@@ -97,9 +97,12 @@ class ReadOnlyTurn:
         self._emit("turn.timed_out", TIMED_OUT, final_state=TIMED_OUT, reason=reason)
         return TIMED_OUT
 
-    def _finish_failed(self, reason: str) -> str:
+    def _finish_failed(self, reason: str, *, code: str | None = None) -> str:
         self._transition(FAILED)
-        self._emit("turn.failed", FAILED, final_state=FAILED, reason=reason)
+        payload = {"final_state": FAILED, "reason": reason}
+        if code is not None:
+            payload["code"] = code
+        self._emit("turn.failed", FAILED, **payload)
         return FAILED
 
     def run(
@@ -135,6 +138,8 @@ class ReadOnlyTurn:
         self._emit("capture.requested", CAPTURING, source_kind=source.kind, source_label=source.label)
         try:
             frame = self._capture.capture(trace_id=self.trace_id, source=source)
+        except CaptureFailure as exc:
+            return self._finish_failed(f"capture: {exc}", code=exc.code)
         except Exception as exc:  # noqa: BLE001 - capture failure is an expected outcome
             return self._finish_failed(f"capture: {exc}")
         self._clock.advance(frame.duration_ms)
@@ -157,7 +162,7 @@ class ReadOnlyTurn:
         self._transition(ANALYSING)
         self._emit("model.started", ANALYSING, image_ref=frame.fixture_id, question=question)
         try:
-            output = self._model.generate(image_ref=frame.fixture_id, question=question)
+            output = self._model.generate(image_ref=frame.model_ref, question=question)
         except Exception as exc:  # noqa: BLE001 - model failure is an expected outcome
             return self._finish_failed(f"model: {exc}")
         self._clock.advance(output.stats.first_token_ms)

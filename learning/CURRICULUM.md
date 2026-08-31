@@ -26,7 +26,27 @@ was produced.
 | 013–014 | supervised input, verification, recovery, stop controls | complete a disposable task with zero unintended actions |
 | 015–017 | profiles, packaging, supply chain, privacy audit, teaching | reproduce and explain a clean offline install |
 
-## Current lesson — Milestone 001
+## Current lesson — Milestone 003
+
+### A file path is not an image contract
+
+Before a model sees an image, trusted code must prove that the container is the
+format it claims to be, dimensions are bounded, checksums are valid, decoded
+size cannot explode, and hidden metadata is removed. Milestone 003 accepts only
+PNG so those guarantees remain understandable and dependency-free.
+
+### Ephemeral means a tested lifecycle
+
+"We do not save screenshots" is not a policy until a test proves the private
+artifact exists only while needed and is deleted afterward. Retention is a
+separate explicit option, never an accidental side effect.
+
+### Cancel, deny, and timeout are different
+
+Escape means the user cancelled. Missing Screen Recording permission means the
+platform denied capture. Waiting past the selection budget means timeout. The
+first live attempt exposed that timeout and cancel were incorrectly merged;
+the failure was preserved and the outcomes are now distinct.
 
 ### Pixels are not understanding
 
@@ -62,10 +82,9 @@ the user own the last two.
 - What evidence would justify moving from a 4B model to a 9B model?
 - What should happen when the screenshot does not show the cause?
 
-## Milestone 001 explain-back
+## Milestone 003 explain-back
 
-In simple words: the first build is a safe pipe. It accepts only a screen the
-user chose, keeps the image temporary, asks a local model a bounded question,
-and shows which parts of the answer came from the screen versus an educated
-guess. We will measure this before allowing the system to touch the mouse.
-
+In simple words: an image is copied into a private temporary room, checked for
+size and damage, cleaned of hidden notes, measured, and then removed. The same
+room is used whether the image came from a file or the Mac selector. We still
+need one deliberate live selection before calling this lesson complete.

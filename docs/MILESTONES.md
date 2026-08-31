@@ -40,6 +40,9 @@ Gate: generated fixture and user-approved capture use the same pipeline;
 dimensions/hashes/timings are correct; cancel works; raw pixels are ignored and
 deleted by default. Permission denial is a normal, recoverable state.
 
+**In progress:** the shared PNG ingest/normalization/lifecycle implementation
+and deterministic gate pass; one successful user-selected live capture remains.
+
 ### 004 — Frozen screen-understanding corpus
 
 Learn: task design, leakage, annotation, OCR versus reasoning, abstention, and

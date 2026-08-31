@@ -95,7 +95,10 @@ using synthetic fixtures only. Byte-identical, round-tripping
 success/failure/cancel/timeout traces were verified (see
 `VISION_STATE.md`).
 
-Milestone 003 is next: explicit screenshot ingest and capture.
+Milestone 003 is in progress: dependency-free PNG ingest, bounded validation,
+metadata stripping, private artifacts, default deletion, and the macOS
+region/window selector are implemented and deterministically verified. One
+successful user-selected live capture remains before the milestone can close.
 
 ## Run the Milestone 002 lab
 
@@ -109,3 +112,17 @@ PYTHONPATH=src python -m unittest discover -s tests -v     # regression suite
 
 Generated traces live in `runs/` and the synthetic fixture in
 `runs/fixtures/`; both are Git-ignored.
+
+## Run the Milestone 003 capture gate
+
+```bash
+PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --verify
+PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --file /path/to/selected.png
+PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive
+```
+
+`--interactive` opens the macOS selector only after you run the command. Select
+one harmless region/window or press Escape. The normalized artifact is deleted
+after validation unless you explicitly add `--retain`. Milestone 003 accepts
+PNG only; JPEG/HEIC conversion and resizing are deliberately not hidden inside
+this dependency-free gate.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Protocol, runtime_checkable
 
 
@@ -22,6 +23,24 @@ class CapturedFrame:
     height: int
     duration_ms: float
     fixture_id: str
+    image_path: Path | None = None
+    mime_type: str = "image/png"
+    byte_size: int = 0
+    content_sha256: str = ""
+    ephemeral: bool = True
+
+    @property
+    def model_ref(self) -> str:
+        """Internal model reference. It must never be copied into a trace."""
+        return str(self.image_path) if self.image_path is not None else self.fixture_id
+
+
+class CaptureFailure(RuntimeError):
+    """Expected, user-recoverable capture outcome with a stable code."""
+
+    def __init__(self, message: str, *, code: str) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 @dataclass(frozen=True)

@@ -104,6 +104,13 @@ UI-success events from appearing.
 - If evidence retention is enabled for a benchmark, use purpose-made fixtures
   or user-reviewed redacted captures with a manifest and deletion path.
 
+Milestone 003's dependency-free input contract is deliberately PNG-only. It
+validates CRCs, dimensions, decompressed size, and row filters; rejects
+animation/interlacing and unsafe bounds; strips unapproved ancillary metadata;
+and stores the normalized artifact privately (`0700` directory, `0600` file).
+JPEG/HEIC conversion and pixel resizing are not silently delegated to a global
+package or platform tool.
+
 ## Runtime strategy
 
 The public model contract is runtime-neutral. `llama.cpp` is the portable
@@ -119,4 +126,3 @@ It should show capture scope, image preview, question, streamed status, answer,
 evidence/inference labels, latency waterfall, stop control, and whether the run
 is deterministic or real. Native capture can later use ScreenCaptureKit without
 replacing the event or model contracts.
-
