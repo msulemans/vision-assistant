@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local Vision Assistant — Milestone 002 lab</title>
+  <style>
+    :root {
+      --bg: #17181d;
+      --panel: #1f2129;
+      --panel-2: #262933;
+      --text: #e6e8ee;
+      --muted: #9aa0b0;
+      --accent: #4b8bf5;
+      --ok: #3fb27f;
+      --warn: #d9a441;
+      --err: #d9665f;
+      --line: #2f333f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 24px; border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    h1 { font-size: 18px; margin: 0; font-weight: 650; }
+    .badge {
+      font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--panel-2); color: var(--muted);
+    }
+    .badge.deterministic { color: var(--ok); border-color: var(--ok); }
+    .badge.real { color: var(--accent); border-color: var(--accent); }
+    .controls {
+      margin-left: auto; display: flex; align-items: center; gap: 12px;
+    }
+    select {
+      background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+      border-radius: 8px; padding: 7px 10px; font-size: 14px;
+    }
+    main {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+      padding: 22px 24px; max-width: 1280px; margin: 0 auto;
+    }
+    .card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; }
+    .row { display: flex; gap: 24px; }
+    .col { flex: 1; min-width: 0; }
+    .stack { display: flex; flex-direction: column; gap: 18px; }
+    .scope-item { margin: 4px 0; }
+    .scope-item b { color: var(--text); font-weight: 600; }
+    .scope-item span { color: var(--muted); }
+    img.preview {
+      width: 100%; border-radius: 8px; border: 1px solid var(--line);
+      background: #000; image-rendering: pixelated; display: block;
+    }
+    .meta { font-size: 13px; color: var(--muted); }
+    .question { font-size: 16px; color: var(--text); }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 8px; font-weight: 600;
+      padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+    .status-chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+    .status-chip.done .dot { background: var(--ok); }
+    .status-chip.cancelled .dot { background: var(--warn); }
+    .status-chip.timed_out .dot { background: var(--warn); }
+    .status-chip.failed .dot { background: var(--err); }
+    .answer h3 { margin: 14px 0 6px; font-size: 14px; }
+    .answer ul { margin: 0; padding-left: 18px; }
+    .answer li { margin: 3px 0; }
+    .tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .04em; border-radius: 4px; padding: 1px 6px; margin-right: 6px; vertical-align: 1px;
+    }
+    .tag.visible { background: rgba(63,178,127,.16); color: var(--ok); }
+    .tag.inferred { background: rgba(217,164,65,.16); color: var(--warn); }
+    .tag.unknown { background: rgba(154,160,176,.16); color: var(--muted); }
+    .waterfall { margin-top: 8px; }
+    .bar-row { display: grid; grid-template-columns: 120px 1fr 90px; align-items: center; gap: 10px; margin: 7px 0; }
+    .bar-row .label { color: var(--muted); font-size: 13px; }
+    .bar-row .time { color: var(--text); font-size: 13px; text-align: right; }
+    .bar { height: 10px; border-radius: 5px; background: var(--panel-2); overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+    .events {
+      font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+      max-height: 300px; overflow: auto; padding: 10px; background: #14161c;
+      border: 1px solid var(--line); border-radius: 8px; white-space: pre; color: var(--muted);
+    }
+    .events .ev { white-space: pre-wrap; }
+    .stop {
+      margin-top: 10px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+      border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; width: 100%;
+    }
+    .stop:disabled { opacity: .5; cursor: not-allowed; }
+    .footnote { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Local Vision Assistant</h1>
+    <span id="kind-badge" class="badge">deterministic</span>
+    <div class="controls">
+      <label for="scenario" class="meta">Run</label>
+      <select id="scenario"></select>
+    </div>
+  </header>
+  <main>
+    <div class="stack">
+      <section class="card">
+        <h2>Capture scope</h2>
+        <div id="scope"></div>
+        <div class="meta" id="scope-meta"></div>
+      </section>
+      <section class="card">
+        <h2>Preview (synthetic fixture)</h2>
+        <img id="preview" class="preview" alt="synthetic fixture preview" />
+      </section>
+      <section class="card">
+        <h2>Status</h2>
+        <div id="status"></div>
+        <button id="stop" class="stop">Stop (fake)</button>
+        <div class="footnote">The stop control is a UI affordance only. No real execution or capture happens in this deterministic slice.</div>
+      </section>
+      <section class="card">
+        <h2>Timings (milliseconds)</h2>
+        <div id="timings" class="waterfall"></div>
+      </section>
+    </div>
+    <div class="stack">
+      <section class="card">
+        <h2>Question</h2>
+        <div id="question" class="question"></div>
+      </section>
+      <section class="card answer">
+        <h2>Answer</h2>
+        <div id="answer"></div>
+      </section>
+      <section class="card">
+        <h2>Event trace</h2>
+        <div id="events" class="events"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const TRACE_SET = /*__TRACE_SET__*/;
+    const FIXTURES = /*__FIXTURES__*/;
+
+    const STATUS_CLASS = {
+      done: "done", cancelled: "cancelled", timed_out: "timed_out", failed: "failed"
+    };
+
+    function el(id) { return document.getElementById(id); }
+
+    function find(events, type) { return events.find(e => e.type === type); }
+
+    function fmtMs(v) {
+      if (v == null) return "—";
+      return v.toFixed(0) + " ms";
+    }
+
+    function render(scenarioKey) {
+      const data = TRACE_SET[scenarioKey];
+      if (!data) return;
+      const events = data.events;
+
+      const started = find(events, "turn.started");
+      const captured = find(events, "capture.frame_ready");
+      const firstToken = find(events, "model.first_token");
+      const answer = find(events, "answer.ready");
+      const terminal = events.filter(e => ["turn.completed", "turn.cancelled", "turn.timed_out", "turn.failed"].includes(e.type)).pop();
+
+      const kind = started?.payload?.kind || data.kind;
+      el("kind-badge").textContent = kind;
+      el("kind-badge").className = "badge " + (kind === "real" ? "real" : "deterministic");
+
+      // Scope
+      const source = started?.payload?.source || {};
+      const scopeEl = el("scope");
+      scopeEl.innerHTML = "";
+      const items = [
+        ["Source", source.kind || "—"],
+        ["Label", source.label || "—"]
+      ];
+      items.forEach(([k, v]) => {
+        const d = document.createElement("div");
+        d.className = "scope-item";
+        d.innerHTML = "<b>" + k + ":</b> <span></span>";
+        d.querySelector("span").textContent = String(v);
+        scopeEl.appendChild(d);
+      });
+      const scopeMeta = [];
+      if (captured) {
+        scopeMeta.push(captured.payload.width + "×" + captured.payload.height);
+        scopeMeta.push("fixture " + captured.payload.fixture_id);
+        scopeMeta.push("capture " + fmtMs(captured.payload.duration_ms));
+      }
+      el("scope-meta").textContent = scopeMeta.join(" · ");
+
+      // Preview
+      const fixtureId = captured?.payload?.fixture_id;
+      el("preview").src = FIXTURES[fixtureId] || "";
+
+      // Question
+      el("question").textContent = started?.payload?.question || "—";
+
+      // Status
+      const statusEl = el("status");
+      statusEl.innerHTML = "";
+      const statusChip = document.createElement("span");
+      statusChip.className = "status-chip " + (STATUS_CLASS[terminal?.payload?.final_state] || "");
+      statusChip.innerHTML = '<span class="dot"></span><span></span>';
+      statusChip.querySelector("span:last-child").textContent = (terminal?.payload?.final_state || "—").toUpperCase();
+      statusEl.appendChild(statusChip);
+      const stopBtn = el("stop");
+      stopBtn.disabled = (terminal?.payload?.final_state || "") !== "done";
+      stopBtn.textContent = terminal?.payload?.final_state === "cancelled"
+        ? "Cancelled" : terminal?.payload?.final_state === "timed_out"
+        ? "Timed out" : terminal?.payload?.final_state === "failed"
+        ? "Failed" : "Stop (fake)";
+
+      // Answer
+      const answerEl = el("answer");
+      answerEl.innerHTML = "";
+      const sections = [
+        ["Visible", answer?.payload?.visible, "visible"],
+        ["Inferred", answer?.payload?.inferred, "inferred"],
+        ["Unknown", answer?.payload?.unknown, "unknown"]
+      ];
+      sections.forEach(([title, itemsArr, cls]) => {
+        if (!itemsArr || itemsArr.length === 0) return;
+        const h = document.createElement("h3");
+        h.textContent = title;
+        answerEl.appendChild(h);
+        const ul = document.createElement("ul");
+        itemsArr.forEach(txt => {
+          const li = document.createElement("li");
+          const tag = document.createElement("span");
+          tag.className = "tag " + cls;
+          tag.textContent = cls;
+          li.appendChild(tag);
+          li.appendChild(document.createTextNode(txt));
+          ul.appendChild(li);
+        });
+        answerEl.appendChild(ul);
+      });
+
+      // Timings waterfall
+      const timingsEl = el("timings");
+      timingsEl.innerHTML = "";
+      const captureMs = captured?.payload?.duration_ms || 0;
+      const firstMs = firstToken?.payload?.first_token_ms || 0;
+      const completeMs = answer?.payload?.answer_complete_ms || 0;
+      const totalMs = answer?.payload?.total_ms || 0;
+      const rows = [
+        ["Capture", captureMs, captureMs],
+        ["To first token", firstMs, firstMs],
+        ["To answer", completeMs, completeMs],
+        ["Turn total", totalMs, totalMs, true]
+      ];
+      const max = Math.max(1, ...rows.map(r => r[1]));
+      rows.forEach(([label, value, width, strong]) => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = '<span class="label"></span><div class="bar"><span></span></div><span class="time"></span>';
+        row.querySelector(".label").textContent = label;
+        row.querySelector(".bar > span").style.width = Math.round((width / max) * 100) + "%";
+        row.querySelector(".time").textContent = fmtMs(value);
+        if (strong) row.style.fontWeight = "600";
+        timingsEl.appendChild(row);
+      });
+
+      // Events
+      const eventsEl = el("events");
+      eventsEl.textContent = events.map(e => {
+        const p = JSON.stringify(e.payload);
+        return "@" + (e.ts_ms ?? 0).toFixed(0).padStart(8) + "  [" + e.state + "] " + e.type + "  " + p;
+      }).join("\n");
+      eventsEl.scrollTop = eventsEl.scrollHeight;
+    }
+
+    function init() {
+      const sel = el("scenario");
+      Object.keys(TRACE_SET).forEach(key => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = key;
+        sel.appendChild(opt);
+      });
+      sel.addEventListener("change", () => render(sel.value));
+      sel.value = Object.keys(TRACE_SET)[0] || "";
+      el("stop").addEventListener("click", () => {
+        alert("This is a deterministic fake vertical slice. There is no real execution to stop.");
+      });
+      if (sel.value) render(sel.value);
+    }
+
+    init();
+  </script>
+</body>
+</html>

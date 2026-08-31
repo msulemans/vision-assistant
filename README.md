@@ -89,5 +89,23 @@ architecture boundary, metrics, research baseline, host inventory, privacy
 rules, and end-to-end roadmap are recorded. No model, dependency, screenshot,
 or permission was acquired. The repository is initialized on `main`.
 
-Milestone 002 is next: a deterministic event spine, fake capture/model ports,
-and a small browser UI using synthetic fixtures only.
+Milestone 002 is complete: a deterministic event spine, fake clock,
+fake capture/model adapters, a JSONL trace, and a dependency-free browser UI
+using synthetic fixtures only. Byte-identical, round-tripping
+success/failure/cancel/timeout traces were verified (see
+`VISION_STATE.md`).
+
+Milestone 003 is next: explicit screenshot ingest and capture.
+
+## Run the Milestone 002 lab
+
+The lab is stdlib-only, so no package is installed.
+
+```bash
+PYTHONPATH=src python -m vision_assistant.cli --verify   # write traces + UI, verify
+open ui/index.html                                        # dependency-free static UI
+PYTHONPATH=src python -m unittest discover -s tests -v     # regression suite
+```
+
+Generated traces live in `runs/` and the synthetic fixture in
+`runs/fixtures/`; both are Git-ignored.

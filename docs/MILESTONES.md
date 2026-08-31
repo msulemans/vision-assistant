@@ -26,7 +26,7 @@ JSONL trace, and a dependency-free browser UI.
 
 Gate: success/failure/cancel/timeout traces are exact and round-trip; the UI
 shows scope, preview, question, status, answer, evidence labels, and timings;
-no real pixels, model, server dependency, or permission.
+no real pixels, model, server dependency, or permission. **Complete.**
 
 ### 003 — Explicit screenshot ingest and capture
 
