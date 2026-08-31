@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The interactive field manual for building a private, local Vision Assistant one verified milestone at a time.">
+  <title>Vision Lab — The Evidence Before the Answer</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the field manual</a>
+
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Vision Lab field manual home">
+      <span class="brand-mark" aria-hidden="true"><i></i></span>
+      <span><strong>Vision Lab</strong><small>Local field manual · M2 Max</small></span>
+    </a>
+    <nav aria-label="Field manual sections">
+      <a href="#anatomy">Anatomy</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#capture">Capture lab</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#practice">Practice</a>
+    </nav>
+    <button class="notes-toggle" id="notesToggle" type="button" aria-pressed="false">Deeper notes</button>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" data-track="top">
+      <div class="hero-copy">
+        <p class="kicker"><span>Field note 003</span> Capture before inference</p>
+        <h1>The answer begins<br>with <em>what the screen proves.</em></h1>
+        <p class="hero-lede">We are building a private Vision Assistant from the pixels outward. First make capture explicit and temporary. Then measure a local model. Mouse and keyboard control come only after observation is trustworthy.</p>
+        <div class="hero-actions">
+          <a class="primary-action" href="#anatomy">Trace one visual turn</a>
+          <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
+        </div>
+        <dl class="project-strip" aria-label="Verified project status">
+          <div><dt>Current gate</dt><dd>M003 · live capture pending</dd></div>
+          <div><dt>Tests</dt><dd>25 passing · 19 product + 6 learning</dd></div>
+          <div><dt>Model</dt><dd>None acquired</dd></div>
+          <div><dt>Action access</dt><dd>None</dd></div>
+        </dl>
+      </div>
+
+      <aside class="lens-console" aria-label="Interactive evidence lens">
+        <div class="console-bar">
+          <span>SPECIMEN · SYNTHETIC-DIALOG-001</span>
+          <strong><i></i> SAFE FIXTURE</strong>
+        </div>
+        <div class="screen-specimen" id="screenSpecimen">
+          <div class="mock-window" aria-hidden="true">
+            <div class="mock-title"><span></span><span></span><span></span><b>Connect to Database</b></div>
+            <div class="mock-body">
+              <small>HOST</small><div class="mock-input">localhost:5432</div>
+              <small>PASSWORD</small><div class="mock-input warning">••••••••</div>
+              <p>Password is required</p>
+              <div class="mock-buttons"><i>Cancel</i><b>Connect</b></div>
+            </div>
+          </div>
+          <div class="scan-grid" aria-hidden="true"></div>
+          <div class="focus-box" aria-hidden="true"><span></span></div>
+          <div class="evidence-overlay" id="evidenceOverlay" aria-live="polite"></div>
+        </div>
+        <div class="layer-controls" role="group" aria-label="Choose evidence layer">
+          <button class="active" type="button" data-layer="pixels">Pixels</button>
+          <button type="button" data-layer="metadata">Metadata</button>
+          <button type="button" data-layer="reasoning">Reasoning</button>
+          <button type="button" data-layer="unknown">Unknown</button>
+        </div>
+        <p class="console-caption" id="layerCaption">Pixels show the dialog, fields, warning colour, and labels. They do not prove why the database rejected a connection.</p>
+      </aside>
+    </section>
+
+    <section class="truth-band" aria-label="Current truth boundary">
+      <p><strong>Real now</strong> event spine · PNG validation · private artifacts · default deletion</p>
+      <p><strong>Still simulated</strong> model answer · screenshot reasoning · continuous UI</p>
+      <p><strong>Intentionally absent</strong> mouse · keyboard · shell · autonomous actions</p>
+    </section>
+
+    <section class="chapter" id="anatomy" data-track="anatomy">
+      <header class="chapter-head">
+        <p class="chapter-number">01 / Anatomy</p>
+        <div><h2>Follow custody of the pixels</h2><p>A screenshot crosses six boundaries. Click a stage to see who owns it, what becomes possible, and what is still forbidden.</p></div>
+      </header>
+
+      <div class="pipeline" role="list" aria-label="Vision Assistant pipeline">
+        <button type="button" class="pipeline-stage active" data-stage="select" role="listitem"><span>01</span><b>Select</b><small>User scope</small></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="pipeline-stage" data-stage="validate" role="listitem"><span>02</span><b>Validate</b><small>Trusted code</small></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="pipeline-stage" data-stage="store" role="listitem"><span>03</span><b>Hold</b><small>Private artifact</small></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="pipeline-stage" data-stage="model" role="listitem"><span>04</span><b>Observe</b><small>Local VLM</small></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="pipeline-stage" data-stage="policy" role="listitem"><span>05</span><b>Label</b><small>Answer policy</small></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="pipeline-stage" data-stage="release" role="listitem"><span>06</span><b>Release</b><small>Delete by default</small></button>
+      </div>
+
+      <article class="stage-reader" id="stageReader" aria-live="polite">
+        <div><p class="micro-label">CURRENT STAGE</p><h3 id="stageTitle">The user chooses the boundary</h3></div>
+        <p id="stageBody">A region or window is safer than a whole display. No background window or hidden app should enter the turn by accident.</p>
+        <dl><div><dt>Owner</dt><dd id="stageOwner">User gesture</dd></div><div><dt>Data state</dt><dd id="stageData">Not captured</dd></div><div><dt>Gate</dt><dd id="stageGate">Scope must be explicit</dd></div></dl>
+      </article>
+
+      <p class="deep-note">The public contracts stay runtime-neutral: <code>CapturePort</code>, <code>VisionModelPort</code>, <code>AnswerPolicy</code>, and <code>TraceSink</code>. A future engine can change without moving the privacy or execution boundary.</p>
+    </section>
+
+    <section class="chapter" id="evidence" data-track="evidence">
+      <header class="chapter-head">
+        <p class="chapter-number">02 / Evidence</p>
+        <div><h2>The trace is our flight recorder</h2><p>Milestone 002 proved the control flow before real pixels or a real model. Play each scenario and inspect the terminal event.</p></div>
+      </header>
+
+      <div class="trace-lab">
+        <div class="scenario-tabs" role="tablist" aria-label="Trace scenarios">
+          <button role="tab" aria-selected="true" data-scenario="success">Success · 11</button>
+          <button role="tab" aria-selected="false" data-scenario="failure">Failure · 3</button>
+          <button role="tab" aria-selected="false" data-scenario="cancel">Cancel · 3</button>
+          <button role="tab" aria-selected="false" data-scenario="timeout">Timeout · 5</button>
+        </div>
+        <div class="trace-screen">
+          <div class="trace-head"><span id="traceName">m002-success.jsonl</span><button type="button" id="playTrace">Replay trace</button></div>
+          <ol id="traceEvents" aria-live="polite"></ol>
+        </div>
+        <aside class="trace-verdict">
+          <p class="micro-label">OBSERVED GATE</p>
+          <strong id="traceTerminal">turn.completed</strong>
+          <p id="traceLesson">Eleven ordered events end in one final completed state.</p>
+          <dl><div><dt>Deterministic</dt><dd>Yes</dd></div><div><dt>Round-trip</dt><dd>Yes</dd></div><div><dt>Raw pixels in trace</dt><dd>None</dd></div></dl>
+        </aside>
+      </div>
+    </section>
+
+    <section class="chapter" id="capture" data-track="capture">
+      <header class="chapter-head">
+        <p class="chapter-number">03 / Capture lab</p>
+        <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture and selected file already pass one bounded PNG path. A successful user-selected Mac capture is the remaining gate.</p></div>
+      </header>
+
+      <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
+        <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
+        <div class="custody-step done"><span>2</span><b>Prove</b><small>CRC + dimensions</small></div>
+        <div class="custody-step done"><span>3</span><b>Clean</b><small>Strip hidden metadata</small></div>
+        <div class="custody-step done"><span>4</span><b>Lock</b><small>0700 / 0600</small></div>
+        <div class="custody-step done"><span>5</span><b>Measure</b><small>Hash + timing</small></div>
+        <div class="custody-step done"><span>6</span><b>Release</b><small>Delete by default</small></div>
+      </div>
+
+      <div class="capture-grid">
+        <article class="gate-card current">
+          <p class="micro-label">CURRENT GATE</p>
+          <h3>One harmless live selection</h3>
+          <p>Run this from a normal Terminal. Select a small region; the artifact is validated and deleted without entering a model.</p>
+          <div class="command-box"><code id="captureCommand">PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive</code><button type="button" id="copyCommand">Copy</button></div>
+          <p class="command-status" id="copyStatus" aria-live="polite">Expected: <code>captured</code>, then <code>released</code>.</p>
+        </article>
+        <article class="gate-card">
+          <p class="micro-label">DETERMINISTIC RESULT</p>
+          <h3>Generated fixture: pass</h3>
+          <ul class="check-list"><li>Dimensions match</li><li>SHA-256 matches</li><li>Artifact mode is 0600</li><li>Deleted after release</li></ul>
+        </article>
+        <article class="gate-card failure-card">
+          <p class="micro-label">PRESERVED FAILURE</p>
+          <h3>Timeout was called “cancel”</h3>
+          <p>The first live attempt waited 180 seconds. The adapter merged selector timeout with Escape. It now emits <code>selection_timed_out</code>; a regression test protects the distinction.</p>
+        </article>
+      </div>
+
+      <details class="technical-drawer"><summary>What PNG-only means in this milestone</summary><p>Trusted code validates chunk lengths and CRCs, declared dimensions, colour and bit depth, bounded decompression, row filters, and final IEND. It rejects animation, interlacing, unknown critical chunks, oversized input, symlinks, and non-PNG data. JPEG/HEIC conversion and pixel resizing are not silently delegated to a global package.</p></details>
+    </section>
+
+    <section class="chapter" id="roadmap" data-track="roadmap">
+      <header class="chapter-head">
+        <p class="chapter-number">04 / Roadmap</p>
+        <div><h2>Seventeen gates, one active step</h2><p>The plan is long because computer use is consequential. Filter the roadmap, then select a milestone for its build and proof.</p></div>
+      </header>
+      <div class="phase-filter" role="group" aria-label="Filter roadmap by phase">
+        <button type="button" class="active" data-phase="all">All</button>
+        <button type="button" data-phase="1">See reliably</button>
+        <button type="button" data-phase="2">Understand UI</button>
+        <button type="button" data-phase="3">Propose → act</button>
+        <button type="button" data-phase="4">Finish product</button>
+      </div>
+      <div class="milestone-map" id="milestoneMap"></div>
+      <article class="milestone-reader" id="milestoneReader" aria-live="polite">
+        <span id="milestoneStatus">IN PROGRESS</span><p id="milestonePhase">PHASE 1 · SEE ONE IMAGE RELIABLY</p>
+        <h3 id="milestoneTitle">003 · Explicit screenshot ingest and capture</h3>
+        <p id="milestoneBuild">Build file ingest, user-triggered selection, bounded PNG normalization, and an ephemeral artifact lifecycle.</p>
+        <p><strong>Gate:</strong> <span id="milestoneGate">One user-selected region must pass the same path and be deleted by default.</span></p>
+      </article>
+    </section>
+
+    <section class="chapter" id="practice" data-track="practice">
+      <header class="chapter-head">
+        <p class="chapter-number">05 / Practice</p>
+        <div><h2>Explain it before advancing</h2><p>Knowing the command is not the same as knowing the system. Search the glossary, flip the cards, then test the trust boundary.</p></div>
+      </header>
+
+      <div class="practice-grid">
+        <article class="practice-tool glossary-tool">
+          <h3>Field glossary</h3>
+          <label for="glossarySearch">Filter concepts</label>
+          <input id="glossarySearch" type="search" placeholder="Try: ephemeral, CRC, inference">
+          <dl id="glossary">
+            <div><dt>Artifact</dt><dd>A private normalized image used inside one turn.</dd></div>
+            <div><dt>CRC</dt><dd>A PNG chunk checksum that detects damaged bytes.</dd></div>
+            <div><dt>Ephemeral</dt><dd>Exists only while needed, with deletion tested.</dd></div>
+            <div><dt>Inference</dt><dd>A plausible conclusion not directly visible in pixels.</dd></div>
+            <div><dt>Model projector</dt><dd>The component that converts image features for the language model.</dd></div>
+            <div><dt>Grounding</dt><dd>Connecting an answer or target to evidence actually present on screen.</dd></div>
+            <div><dt>Accessibility tree</dt><dd>Trusted UI roles, names, states, and element identities exposed by macOS.</dd></div>
+            <div><dt>Stale observation</dt><dd>A screenshot that no longer matches the screen where an action would occur.</dd></div>
+          </dl>
+        </article>
+
+        <article class="practice-tool flash-tool">
+          <h3>Teach-back cards</h3>
+          <button class="flashcard" id="flashcard" type="button" aria-label="Flip learning card">
+            <span class="flash-front" id="flashFront"></span><span class="flash-back" id="flashBack"></span>
+          </button>
+          <div class="card-controls"><span id="cardCount">1 / 5</span><button type="button" id="nextCard">Next card</button></div>
+        </article>
+
+        <form class="practice-tool quiz-tool" id="quiz">
+          <h3>Boundary check</h3>
+          <fieldset><legend>Who decides capture scope?</legend><label><input type="radio" name="q1" value="model"> The model</label><label><input type="radio" name="q1" value="user"> The user</label></fieldset>
+          <fieldset><legend>Does “local model” guarantee screenshot privacy?</legend><label><input type="radio" name="q2" value="yes"> Yes</label><label><input type="radio" name="q2" value="no"> No—retention and traces matter too</label></fieldset>
+          <fieldset><legend>When can mouse control begin?</legend><label><input type="radio" name="q3" value="now"> After capture works</label><label><input type="radio" name="q3" value="m013"> After typed policy, simulation, and grounding gates</label></fieldset>
+          <button class="primary-action" type="submit">Check my model</button>
+          <output id="quizResult" aria-live="polite"></output>
+        </form>
+      </div>
+    </section>
+
+    <section class="closing-note" data-track="closing">
+      <p class="chapter-number">Field rule</p>
+      <blockquote>Do not make the model bigger to hide a measurement problem.</blockquote>
+      <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
+      <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
+    </section>
+  </main>
+
+  <footer><span>Vision Lab · local-first learning project</span><span>No analytics · no network · browser progress stays local</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>

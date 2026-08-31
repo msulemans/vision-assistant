@@ -235,6 +235,14 @@ and default deletion?
   `capture_unavailable`.
 - The existing turn spine now passes only the private internal artifact path to
   the model port; traces continue to receive an opaque artifact identifier.
+- `learning/index.html`, `styles.css`, and `app.js` now provide the missing
+  interactive field manual: evidence lens, pipeline custody explorer, M002
+  scenario traces, M003 capture lesson, all 17 roadmap gates, preserved
+  failures, glossary, flashcards, quiz, and exact commands. It is static,
+  dependency-free, local-only, responsive, keyboard-focused, and honours
+  reduced motion.
+- `scripts/serve_learning_lab.py` serves only `learning/` on
+  `http://127.0.0.1:4173/`; direct `file://` opening also works.
 
 ### Commands
 
@@ -246,8 +254,18 @@ PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive
 
 ### Evidence observed on 2026-08-31
 
-- Full regression suite: 19 tests pass (15 capture/lifecycle tests plus the 4
-  unchanged Milestone 002 spine tests).
+- Full regression suite: 25 tests pass — 15 capture/lifecycle, 6 learning-site
+  contract, and the 4 unchanged Milestone 002 spine tests.
+- The learning-site contract verifies local assets, unique/required interactive
+  IDs, honest current evidence, all 17 roadmap entries,
+  accessibility/reduced-motion, and canonical project links.
+- `node --check learning/app.js`, Python compilation, Ruff, and
+  `git diff --check` pass. The local server returned HTTP `200 OK` for `/` and
+  the site was opened at `http://127.0.0.1:4173/` for user review.
+- Automated screenshot-based visual QA was not claimed: the in-app browser was
+  unavailable in this session. Source, interaction-contract, responsive CSS,
+  keyboard/reduced-motion, and live HTTP checks passed; visual feedback from the
+  opened page remains welcome.
 - Generated-fixture gate: dimensions match, SHA-256 matches the private
   normalized artifact, mode is `0600`, artifact exists during the turn, and is
   deleted on release — `pass: true`.
@@ -265,6 +283,12 @@ Partial. The implementation, generated-fixture/file path, privacy lifecycle,
 and error paths pass. Do not mark Milestone 003 complete and do not advance to
 the frozen corpus until one harmless user-selected region/window succeeds and
 its dimensions/timing/default deletion are recorded.
+
+Learning-surface correction: the initial project foundation created only the
+written `learning/CURRICULUM.md`, unlike the sibling labs' interactive field
+manuals. That omission was reported by the user and is now repaired. Future
+milestone gates must synchronize code, tests, `VISION_STATE.md`, README,
+curriculum, and the interactive learning site together.
 
 ## Next action — finish the Milestone 003 live gate
 

@@ -4,6 +4,12 @@ The goal is not merely to run a vision model. You should be able to explain the
 pipeline, predict a failure, measure it, and teach someone else how the evidence
 was produced.
 
+Use this written path together with the dependency-free interactive field
+manual at `learning/index.html` (or run
+`python3.11 scripts/serve_learning_lab.py`). The site is updated from the same
+canonical evidence and must never present a planned or simulated capability as
+real.
+
 ## The loop
 
 1. **Question** — state one falsifiable milestone question.

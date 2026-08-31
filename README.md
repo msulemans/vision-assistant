@@ -76,7 +76,17 @@ more useful capture instead of inventing a cause.
    [docs/METRICS.md](docs/METRICS.md).
 4. Use [learning/CURRICULUM.md](learning/CURRICULUM.md) to learn the system in
    the same order it is built.
-5. Run the read-only inventory:
+5. Open the interactive field manual:
+
+   ```bash
+   python3.11 scripts/serve_learning_lab.py
+   # open http://127.0.0.1:4173/
+   ```
+
+   It also opens directly from `learning/index.html` without a server. The site
+   teaches the same verified milestones, evidence, failures, and boundaries as
+   the canonical state; it is not a separate marketing page.
+6. Run the read-only inventory:
 
    ```bash
    ./scripts/check_environment.sh
@@ -112,6 +122,19 @@ PYTHONPATH=src python -m unittest discover -s tests -v     # regression suite
 
 Generated traces live in `runs/` and the synthetic fixture in
 `runs/fixtures/`; both are Git-ignored.
+
+## Learning website
+
+The local field manual is a first-class project surface:
+
+```bash
+python3.11 scripts/serve_learning_lab.py
+```
+
+It currently covers the M001 contract, the interactive M002 event spine, the
+M003 PNG custody path and pending live gate, all 17 roadmap milestones, the
+preserved selector-timeout failure, glossary, flashcards, quiz, and teach-back
+prompts. Update it with code, tests, state, and docs at every milestone.
 
 ## Run the Milestone 003 capture gate
 
