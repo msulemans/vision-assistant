@@ -61,7 +61,7 @@ class LearningSiteContractTest(unittest.TestCase):
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
             "M005 · bake-off pending",
-            "34 passing · 28 product + 6 learning",
+            "38 passing · 32 product + 6 learning",
             "None acquired",
             "Intentionally absent",
             "selection_timed_out",

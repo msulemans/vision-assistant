@@ -2,7 +2,8 @@
 
 Last updated: 2026-08-31 (Australia/Sydney)
 
-Status: Milestone 004 complete — Milestone 005 is the next gate.
+Status: Milestone 005 in progress — bake-off contract and deterministic
+harness frozen; a real local model/runtime bake-off is pending.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -326,11 +327,60 @@ Passed. The deterministic synthetic corpus and all frozen contracts
 budget, resource ceilings, and promotion rule) are locked before any model is
 downloaded. Milestone 005 is the sole next gate.
 
-## Next gate — Milestone 005
+## Milestone 005 — local VLM and runtime bake-off
 
-Local VLM and runtime bake-off: compare an Apache-2.0 4B unified VLM hypothesis
-(initially Qwen3.5-4B), one second 4B-class architecture, portable `llama.cpp`
-versus Apple `mlx-vlm`, and only then a ≤9B quality control if needed. Ollama
-may be a convenience control. Promote the smallest configuration meeting the
-frozen held-out and resource gates; pin all revisions, hashes, quantization,
-prompts, and image settings, and preserve losing results.
+Status: in progress; frozen contract and deterministic harness pass, real model
+acquisition and evaluation pending.
+
+### Question
+
+Can the frozen held-out corpus and resource ceilings be used to compare real
+local candidates, pin exact revisions/hashes/quantization, and promote the
+smallest passing configuration — without weakening privacy, cancellation, or
+trace cleanliness?
+
+### Build
+
+- `bakeoff.py`: the frozen M005 contract `FROZEN_BAKEOFF` (candidate rule,
+  runtime matrix, image settings, trial counts, measurement method, thresholds,
+  ceilings, promotion rule), a `Candidate` type, and a deterministic
+  `run_candidate`/`promote` harness.
+- `bakeoff_cli.py --plan` prints the frozen contract and the intended candidate
+  registry (Qwen3.5-4B, a second 4B-class architecture, an optional ≤9B quality
+  control) with revisions/hashes marked `"to-pin"`.
+- `--verify` proves the harness and promotion rule with fake candidates:
+  gold-mini is promoted, gold-large passes but is larger, bad-tiny fails.
+- A real model adapter is not yet wired; the harness is ready for a runtime
+  adapter that drives `VisionModelPort`.
+
+### Commands
+
+```bash
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --plan
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --verify
+```
+
+### Gate evidence
+
+Observed on 2026-09-06:
+
+- Frozen contract: candidate rule, runtime matrix (llama.cpp, mlx-vlm, ollama),
+  thresholds, resource ceilings, and promotion rule are locked.
+- Harness (fake candidates, 24 held-out cases): `gold-mini` → pass and promoted,
+  `gold-large` → pass but larger, `bad-tiny` → fail (recall 0.12, forbidden 24).
+- Full suite: 38 tests pass (4 new bake-off tests).
+
+### Current gate result
+
+Partial. The frozen bake-off contract and deterministic harness pass. Do not
+mark Milestone 005 complete until at least one real, pinned local candidate is
+run on the frozen held-out corpus with measured quality, latency, memory, swap,
+and cancellation, and the promotion rule is applied. Pin every revision, hash,
+quantization, prompt, and image setting, and preserve losing results.
+
+## Next action — run a real bake-off candidate
+
+Freeze the candidate/runtime revisions (mark the `"to-pin"` rows), then run the
+selected runtime against the 24 held-out cases, score with `scorer.py`, and
+record quality, first-token/complete p95, cold readiness, RSS, swap, and
+acquisition. Promote the smallest passing configuration.

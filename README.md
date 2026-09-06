@@ -113,7 +113,11 @@ validated and deleted by default.
 Milestone 004 is complete: a 48-case frozen screen-understanding corpus
 (24 dev + 24 held-out across 8 categories), a deterministic answer scorer, and a
 frozen prompt/image/resource contract — locked before any model download.
-Milestone 005 (local VLM and runtime bake-off) is next.
+
+Milestone 005 is in progress: the frozen bake-off contract (candidate rule,
+runtime matrix, thresholds, resource ceilings, promotion rule) and the
+deterministic evaluation harness are verified. A real, pinned local model bake-off
+on the frozen held-out corpus is still pending.
 
 ## Run the Milestone 002 lab
 
@@ -167,3 +171,15 @@ dimensions), and the frozen config under `runs/m004-corpus/` (Git-ignored); the
 committed generator is the deterministic source of truth. `--verify` confirms
 byte-stable regeneration, that all 48 gold answers pass the scorer, and that all
 48 confident-wrong answers fail.
+
+## Run the Milestone 005 bake-off harness
+
+```bash
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --plan
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --verify
+```
+
+`--plan` prints the frozen bake-off contract and the candidate registry
+(candidate revisions/hashes are `"to-pin"` until each artifact is acquired).
+`--verify` runs the deterministic harness with fake candidates to prove the
+harness and promotion rule before any real model is downloaded.
