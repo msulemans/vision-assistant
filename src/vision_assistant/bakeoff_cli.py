@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import tempfile
 from pathlib import Path
 
@@ -35,6 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--verify", action="store_true", help="run the deterministic harness self-check with fake candidates")
     parser.add_argument("--real", action="store_true", help="run a real pinned candidate over the held-out corpus")
     parser.add_argument("--pin-dir", type=Path, help="directory containing pin.json and the GGUF/mmproj files")
+    parser.add_argument("--limit", type=int, help="only run the first N held-out cases (smoke test)")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -106,8 +108,15 @@ def main(argv: list[str] | None = None) -> int:
         with tempfile.TemporaryDirectory(prefix="vision-assistant-m005-") as tmp:
             out_dir = Path(tmp)
             held_cases = [c for c in build_corpus(out_dir) if c.split == "heldout"]
+            if args.limit:
+                held_cases = held_cases[: args.limit]
+            total = len(held_cases)
+
+            def _progress(index: int, case_id: str, category: str) -> None:
+                print(f"  [{index + 1}/{total}] {case_id} ({category}) ...", file=sys.stderr, flush=True)
+
             adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
-            result = run_candidate(candidate, adapter.predict, held_cases)
+            result = run_candidate(candidate, adapter.predict, held_cases, progress=_progress)
             print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0
 

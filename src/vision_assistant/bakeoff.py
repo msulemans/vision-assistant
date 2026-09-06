@@ -106,17 +106,26 @@ def _p95(values: list[float]) -> float:
     return ordered[math.ceil(0.95 * len(ordered)) - 1]
 
 
-def run_candidate(candidate: Candidate, answer_fn: AnswerFn, held_cases: list[CorpusCase]) -> dict:
+def run_candidate(
+    candidate: Candidate,
+    answer_fn: AnswerFn,
+    held_cases: list[CorpusCase],
+    progress: Callable[[int, str, str], None] | None = None,
+) -> dict:
     """Run one candidate across every held-out case and grade it.
 
     *answer_fn* produces either a `LabelledAnswer` or a
     `(LabelledAnswer, timings)` tuple; the harness reads measured timings when
     provided and otherwise falls back to the candidate's frozen baselines.
+    *progress* (if given) is called with (index, case_id, category) before each
+    case so a live run can show it advancing.
     """
     per_case: list[dict] = []
     first_list: list[float] = []
     complete_list: list[float] = []
-    for case in held_cases:
+    for index, case in enumerate(held_cases):
+        if progress is not None:
+            progress(index, case.case_id, case.category)
         result = answer_fn(case)
         answer, timings = (result if isinstance(result, tuple) and len(result) == 2 else (result, None))
         per_case.append(score(case, answer))
