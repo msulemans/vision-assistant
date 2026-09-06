@@ -404,11 +404,18 @@ Observed on 2026-09-06:
   candidate fails the frozen held-out gate and is preserved as a losing result.
 - Dev-split rerun after the fixture/prompt/streaming fixes (2026-09-06): the
   streaming `llama-server` adapter reads the image and streams, giving
-  first-token p95 890 ms (passes the 5 s ceiling); required-fact recall 1.00;
-  forbidden 0. Remaining gaps: complete-answer p95 23774 ms (>20 s, verbose
-  reasoning model), UI-string match 0.75 (<0.90, the model paraphrases instead
-  of transcribing exactly), and abstention on insufficient-evidence cases still
-  fails (0/3, the model invents causes). About 11/24 pass the frozen gate.
+  first-token p95 853 ms (passes the 5 s ceiling); required-fact recall 0.92.
+- Corrected dev-split rerun (2026-09-06, commit `53f7771`): the adapter no
+  longer scores `reasoning_content` as part of the answer. The model's
+  chain-of-thought had been leaking into the scored answer and inflating
+  over-claims and duplicates. With only `content` scored and a 1024-token
+  budget: required-fact recall 0.9167, unsupported-claim rate 0.0833,
+  forbidden 0, UI-string match 0.5833, abstention 0.875 (all three
+  insufficient-evidence dev cases still fail to abstain), first-token p95
+  853 ms, complete-answer p95 20961 ms, 11/24 dev cases pass. So the corrected
+  failure profile is genuine model behaviour (paraphrasing UI strings, no
+  abstention on no-evidence screens, slight verbosity just over the 20 s
+  ceiling) rather than a reporting bug.
 
 ### Current gate result
 
