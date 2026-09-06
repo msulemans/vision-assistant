@@ -185,6 +185,19 @@ def run_candidate(
         "resource_ok": resource_ok,
         "resource_timing_ok": resource,
         "pass_thresholds": pass_thresholds,
+        "per_case": [
+            {
+                "case_id": row["case_id"],
+                "category": row["category"],
+                "pass": row["pass"],
+                "required_fact_recall": row["required_fact_recall"],
+                "unsupported_claim_rate": row["unsupported_claim_rate"],
+                "forbidden_claims": row["forbidden_claim_count"],
+                "ui_string_match": row["ui_string_match"],
+                "abstain_correct": row["abstain_correct"],
+            }
+            for row in per_case
+        ],
     }
 
 

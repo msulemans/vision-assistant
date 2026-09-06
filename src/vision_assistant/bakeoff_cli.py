@@ -38,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pin-dir", type=Path, help="directory containing pin.json and the GGUF/mmproj files")
     parser.add_argument("--limit", type=int, help="only run the first N held-out cases (smoke test)")
     parser.add_argument("--inspect", type=int, help="dump the raw model output for the first N held-out cases")
+    parser.add_argument("--detail", action="store_true", help="print per-case results")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -143,6 +144,16 @@ def main(argv: list[str] | None = None) -> int:
 
             adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
             result = run_candidate(candidate, adapter.predict, held_cases, progress=_progress)
+            if args.detail:
+                print("PER CASE:")
+                for row in result["per_case"]:
+                    flag = "PASS" if row["pass"] else "fail"
+                    print(
+                        f"  {row['case_id']:<28} {row['category']:<22} {flag:<5} "
+                        f"recall={row['required_fact_recall']:.2f} unsup={row['unsupported_claim_rate']:.2f} "
+                        f"ui={row['ui_string_match']:.2f} abstain={row['abstain_correct']}"
+                    )
+                print("")
             print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0
 
