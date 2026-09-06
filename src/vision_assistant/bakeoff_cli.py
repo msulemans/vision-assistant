@@ -41,6 +41,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--detail", action="store_true", help="print per-case results")
     parser.add_argument("--server", action="store_true", help="use the persistent llama-server adapter (streaming)")
     parser.add_argument("--split", choices=["dev", "heldout"], default="heldout", help="which corpus split to run")
+    parser.add_argument("--probe-server", action="store_true", help="send one image request and print the raw server response")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -106,6 +107,32 @@ def main(argv: list[str] | None = None) -> int:
                 print(timings.get("raw", "")[:1800])
                 print("PARSED:")
                 print(answer)
+        return 0
+
+    if args.probe_server:
+        from .acquire import MODELS_DIR
+        from .corpus import build_corpus
+        from .runtime_llamaserver import LlamaServerAdapter
+
+        pin_dir = args.pin_dir or MODELS_DIR
+        pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+        model = next(f for f in pin["files"] if f["role"] == "model")
+        mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+        adapter = LlamaServerAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
+        adapter.start()
+        try:
+            with tempfile.TemporaryDirectory(prefix="vision-assistant-m005-") as tmp:
+                case = [c for c in build_corpus(Path(tmp)) if c.split == "dev" and c.category == "dashboard"][0]
+                answer, timings = adapter.predict(case)
+                print("CASE:", case.case_id, case.category)
+                print("RAW RESPONSE:")
+                print(timings.get("raw", "")[:3000])
+                print("RAW TEXT:")
+                print(timings.get("raw", ""))
+                print("PARSED:", answer)
+                print("TIMINGS:", {k: timings[k] for k in ("first_token_ms", "complete_ms")})
+        finally:
+            adapter.stop()
         return 0
 
     if args.real:

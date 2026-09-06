@@ -175,9 +175,18 @@ class LlamaServerAdapter:
             "stream": True,
         }
         started = self._monotonic_ns()
+        raw_collected: list[str] = []
+
+        def _tee(iterable: Iterable[str]) -> Iterable[str]:
+            for line in iterable:
+                raw_collected.append(line)
+                yield line
+
         lines = self._transport(f"{self.base_url}{COMPLETIONS}", payload, self.timeout_s)
-        text, first_ms, complete_ms = _consume_sse(lines, started)
-        # The transport may stream lines lazily in the caller's generator; if it
-        # returned a pre-built iterable the timing snapshot above is best-effort.
+        text, first_ms, complete_ms = _consume_sse(_tee(lines), started)
         answer = parse_answer(text)
-        return answer, {"first_token_ms": first_ms, "complete_ms": complete_ms, "raw": text}
+        return answer, {
+            "first_token_ms": first_ms,
+            "complete_ms": complete_ms,
+            "raw": "".join(raw_collected),
+        }
