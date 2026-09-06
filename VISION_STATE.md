@@ -401,9 +401,41 @@ In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
 held-out cases: 11/24 pass. It does NOT meet the frozen gate (required-fact
 recall 0.79, unsupported-claim rate 0.26, UI-string match 0.83, held-out
 abstention 0.875, first-token p95 7520 ms). The candidate is preserved as a
-losing result. Compare a second 4B-class architecture, and a
-streaming/persistent `llama-server` path for latency, before considering a
-≤9B quality control or revisiting the thresholds with a written rationale.
+losing result.
+
+### Per-category diagnosis (2026-09-06)
+
+Passes by category: settings 3/3, terminal 2/3, dialog 2/3, form 2/3,
+small_text 1/3, dark_mode 1/3, dashboard 0/3, insufficient_evidence 0/3.
+
+The 4B reads clean, prominent UI text well. The failures are dominated by three
+fixable causes rather than model size:
+
+1. Readability — dashboard 0/3, small_text-05, terminal-06 (recall/ui 0): the
+   synthetic text is too small for the 4B. This is a fixture-resolution issue,
+   not evidence of needing a larger model.
+2. Over-claiming — dialog-04, form-04, dark_mode-04/06, small_text-06: recall
+   and UI match are 1.0 but the model adds unsupported inferred statements.
+3. No abstention — insufficient_evidence 0/3: the model invents causes instead
+   of answering [unknown].
+
+First-token p95 7481 ms also exceeds the 5 s ceiling; the non-streaming
+`llama-mtmd-cli` cannot meet it, so a streaming/persistent `llama-server`
+adapter is needed regardless of quality.
+
+### Recommended next action
+
+Fix the two likely-correction levers before acquiring another architecture,
+and diagnose on the development split first (then re-evaluate the frozen
+held-out winner):
+
+1. Render small_text and dashboard fixtures at a larger, higher-contrast font
+   scale so a 4B can read them (re-freeze the corpus with rationale).
+2. Tighten the frozen prompt to suppress unsupported inference and to force
+   abstention on insufficient-evidence cases.
+3. Switch the adapter to a streaming/persistent `llama-server` to meet the
+   first-token ceiling.
+4. Re-run the development split; only then re-run the frozen held-out winner.
 
 ## Next action — run a real bake-off candidate
 
