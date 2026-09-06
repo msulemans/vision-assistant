@@ -37,6 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--real", action="store_true", help="run a real pinned candidate over the held-out corpus")
     parser.add_argument("--pin-dir", type=Path, help="directory containing pin.json and the GGUF/mmproj files")
     parser.add_argument("--limit", type=int, help="only run the first N held-out cases (smoke test)")
+    parser.add_argument("--inspect", type=int, help="dump the raw model output for the first N held-out cases")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -78,6 +79,31 @@ def main(argv: list[str] | None = None) -> int:
         print(f"promoted={winner}")
         print("PASS" if ok else "FAIL")
         return 0 if ok else 1
+
+    if args.inspect:
+        from .acquire import MODELS_DIR
+        from .corpus import build_corpus
+        from .runtime_llamacpp import LlamaCppAdapter
+
+        pin_dir = args.pin_dir or MODELS_DIR
+        pin_path = pin_dir / "pin.json"
+        if not pin_path.exists():
+            print(f"no pin at {pin_path}; run `python -m vision_assistant.acquire download` first")
+            return 1
+        pin = json.loads(pin_path.read_text(encoding="utf-8"))
+        model = next((f for f in pin["files"] if f["role"] == "model"), None)
+        mmproj = next((f for f in pin["files"] if f["role"] == "mmproj"), None)
+        adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
+        with tempfile.TemporaryDirectory(prefix="vision-assistant-m005-") as tmp:
+            held = [c for c in build_corpus(Path(tmp)) if c.split == "heldout"]
+            for case in held[: args.inspect]:
+                answer, timings = adapter.predict(case)
+                print(f"=== {case.case_id} ({case.category}) ===")
+                print("RAW:")
+                print(timings.get("raw", "")[:1800])
+                print("PARSED:")
+                print(answer)
+        return 0
 
     if args.real:
         from .acquire import MODELS_DIR

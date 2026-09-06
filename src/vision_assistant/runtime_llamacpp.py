@@ -97,4 +97,4 @@ class LlamaCppAdapter:
         if result.returncode != 0:
             raise RuntimeError(f"llama-mtmd-cli failed ({result.returncode}): {stderr[:200] or result.stdout[:200]}")
         answer = parse_answer(result.stdout or "")
-        return answer, {"first_token_ms": elapsed_ms, "complete_ms": elapsed_ms}
+        return answer, {"first_token_ms": elapsed_ms, "complete_ms": elapsed_ms, "raw": result.stdout or ""}
