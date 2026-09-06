@@ -65,13 +65,18 @@ def _consume_sse(lines: Iterable[str], started_ns: int) -> tuple[str, float, flo
         now_ns = time.monotonic_ns()
         try:
             data = json.loads(payload)
-            delta = (data.get("choices") or [{}])[0].get("delta", {}).get("content") or ""
+            choice = (data.get("choices") or [{}])[0]
+            delta_obj = choice.get("delta", {})
+            # Qwen3.5 streams its chain-of-thought in `reasoning_content` and the
+            # labelled answer (if any) in `content`. Read both so we capture the
+            # answer even when the model reasons inline.
+            piece = delta_obj.get("content") or delta_obj.get("reasoning_content") or ""
         except (json.JSONDecodeError, IndexError, AttributeError):
             continue
-        if delta:
+        if piece:
             if first_ms is None:
                 first_ms = (now_ns - started_ns) / 1_000_000
-            full += delta
+            full += piece
             last_ms = (now_ns - started_ns) / 1_000_000
     if first_ms is None:
         first_ms = last_ms if last_ms is not None else 0.0
@@ -91,7 +96,7 @@ class LlamaServerAdapter:
         host: str = "127.0.0.1",
         port: int = 8080,
         executable: str = "llama-server",
-        max_tokens: int = 256,
+        max_tokens: int = 1024,
         seed: int = 42,
         timeout_s: float = 120.0,
         transport: Callable[[str, dict, float], Iterable[str]] = _http_request,
