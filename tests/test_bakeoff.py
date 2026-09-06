@@ -104,6 +104,24 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertGreaterEqual(first_ms, 0.0)
         self.assertGreaterEqual(complete_ms, first_ms)
 
+    def test_sse_consume_excludes_reasoning_from_answer(self) -> None:
+        import time
+
+        from vision_assistant.runtime_llamaserver import _consume_sse
+
+        lines = [
+            "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\" - Visible: CPU 78%\\n\"}}]}",
+            "data: {\"choices\":[{\"delta\":{\"content\":\"[visible] CPU usage of 78%\"}}]}",
+            "data: [DONE]",
+        ]
+        text, first_ms, complete_ms = _consume_sse(lines, time.monotonic_ns())
+        # The chain-of-thought must not leak into the scored answer...
+        self.assertNotIn(" - Visible: CPU 78%", text)
+        self.assertIn("CPU usage of 78%", text)
+        # ...but it still counts toward the first-token (responsiveness) latency.
+        self.assertGreaterEqual(first_ms, 0.0)
+        self.assertGreaterEqual(complete_ms, first_ms)
+
     def test_server_adapter_parses_streamed_answer(self) -> None:
         import tempfile
         from pathlib import Path

@@ -67,15 +67,18 @@ def _consume_sse(lines: Iterable[str], started_ns: int) -> tuple[str, float, flo
             data = json.loads(payload)
             choice = (data.get("choices") or [{}])[0]
             delta_obj = choice.get("delta", {})
-            # Qwen3.5 streams its chain-of-thought in `reasoning_content` and the
-            # labelled answer (if any) in `content`. Read both so we capture the
-            # answer even when the model reasons inline.
-            piece = delta_obj.get("content") or delta_obj.get("reasoning_content") or ""
+            # `content` is the labelled answer. `reasoning_content` is the model's
+            # chain-of-thought and must NOT be scored as the answer (it duplicates
+            # and over-claims). We still count the first *any* token for the
+            # responsiveness/first-token latency, but build answer text from
+            # `content` only.
+            any_piece = delta_obj.get("content") or delta_obj.get("reasoning_content") or ""
+            piece = delta_obj.get("content") or ""
         except (json.JSONDecodeError, IndexError, AttributeError):
             continue
+        if any_piece and first_ms is None:
+            first_ms = (now_ns - started_ns) / 1_000_000
         if piece:
-            if first_ms is None:
-                first_ms = (now_ns - started_ns) / 1_000_000
             full += piece
             last_ms = (now_ns - started_ns) / 1_000_000
     if first_ms is None:
