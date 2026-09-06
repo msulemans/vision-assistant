@@ -377,6 +377,11 @@ Observed on 2026-09-06:
 - Harness (fake candidates, 24 held-out cases): `gold-mini` → pass and promoted,
   `gold-large` → pass but larger, `bad-tiny` → fail (recall 0.12, forbidden 24).
 - Full suite: 40 tests pass (6 new bake-off/acquisition tests).
+- The Qwen3.5-4B candidate was downloaded and pinned (SHA-256 verified) at
+  `models/qwen3.5-4b/pin.json`.
+- A smoke inference in the restricted sandbox runner failed because it exposes
+  no Metal GPU (`ggml_metal_init: failed to create command queue`); the real
+  bake-off must run from the user's normal Terminal, where Metal is available.
 
 ### Current gate result
 
