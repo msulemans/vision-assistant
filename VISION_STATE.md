@@ -390,14 +390,20 @@ Observed on 2026-09-06:
   and `allowed_evidence` now includes the full visible text. This is a
   corpus/scorer correctness fix, not held-out tuning; the two inspected model
   answers now score unsupported 0.0.
+- Full 24-case run on 2026-09-06 (Qwen3.5-4B Q4_K_M, llama.cpp): required-fact
+  recall 0.79, unsupported-claim rate 0.26, forbidden 0, UI-string match 0.83,
+  held-out abstention 0.875, first-token p95 7520 ms, passes 11/24. The
+  candidate fails the frozen held-out gate and is preserved as a losing result.
 
 ### Current gate result
 
-Partial. The frozen bake-off contract and deterministic harness pass. Do not
-mark Milestone 005 complete until at least one real, pinned local candidate is
-run on the frozen held-out corpus with measured quality, latency, memory, swap,
-and cancellation, and the promotion rule is applied. Pin every revision, hash,
-quantization, prompt, and image setting, and preserve losing results.
+In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
+held-out cases: 11/24 pass. It does NOT meet the frozen gate (required-fact
+recall 0.79, unsupported-claim rate 0.26, UI-string match 0.83, held-out
+abstention 0.875, first-token p95 7520 ms). The candidate is preserved as a
+losing result. Compare a second 4B-class architecture, and a
+streaming/persistent `llama-server` path for latency, before considering a
+≤9B quality control or revisiting the thresholds with a written rationale.
 
 ## Next action — run a real bake-off candidate
 
