@@ -68,6 +68,27 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertEqual(_p95(data), 19.0)
         self.assertEqual(_p95([]), 0.0)
 
+    def test_parse_answer_buckets_labels(self) -> None:
+        from vision_assistant.runtime_llamacpp import parse_answer
+
+        text = (
+            "[visible] A dialog titled CONNECT TO DATABASE is visible.\n"
+            "[inferred] A password may be needed.\n"
+            "[unknown] The cause is not visible."
+        )
+        answer = parse_answer(text)
+        self.assertEqual(answer.visible, ("A dialog titled CONNECT TO DATABASE is visible.",))
+        self.assertEqual(answer.inferred, ("A password may be needed.",))
+        self.assertEqual(answer.unknown, ("The cause is not visible.",))
+
+    def test_acquire_candidate_is_pinned(self) -> None:
+        from vision_assistant.acquire import CANDIDATE
+
+        self.assertEqual(CANDIDATE["candidate"], "qwen3.5-4b")
+        self.assertEqual(CANDIDATE["licence"], "Apache-2.0")
+        self.assertEqual(len(CANDIDATE["files"]), 2)
+        self.assertTrue(all(f["sha256"] == "to-pin" for f in CANDIDATE["files"]))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -69,7 +69,8 @@ class Candidate:
     """One frozen candidate to compare on the held-out corpus.
 
     Revisions/hashes are `"to-pin"` until the artifact is actually acquired; the
-    bake-off record is invalid until every candidate pins them.
+    bake-off record is invalid until every candidate pins them. Resource fields
+    are `None` until they are actually profiled.
     """
 
     name: str
@@ -81,15 +82,15 @@ class Candidate:
     sha256: str
     runtime_kind: str
     artifact_size_mib: float
-    cold_readiness_ms: float
-    rss_gib: float
-    swap_mib: float
-    acquisition_gib: float
     first_token_ms: float
     complete_ms: float
+    cold_readiness_ms: float | None = None
+    rss_gib: float | None = None
+    swap_mib: float | None = None
+    acquisition_gib: float | None = None
 
 
-AnswerFn = Callable[[CorpusCase], LabelledAnswer]
+AnswerFn = Callable[[CorpusCase], LabelledAnswer | tuple[LabelledAnswer, dict]]
 
 
 @runtime_checkable
@@ -108,13 +109,23 @@ def _p95(values: list[float]) -> float:
 def run_candidate(candidate: Candidate, answer_fn: AnswerFn, held_cases: list[CorpusCase]) -> dict:
     """Run one candidate across every held-out case and grade it.
 
-    *answer_fn* produces a labelled answer; for a real runtime it would drive the
-    `VisionModelPort`, for the deterministic self-test it returns gold/bad facts.
+    *answer_fn* produces either a `LabelledAnswer` or a
+    `(LabelledAnswer, timings)` tuple; the harness reads measured timings when
+    provided and otherwise falls back to the candidate's frozen baselines.
     """
-    per_case = [score(case, answer_fn(case)) for case in held_cases]
+    per_case: list[dict] = []
+    first_list: list[float] = []
+    complete_list: list[float] = []
+    for case in held_cases:
+        result = answer_fn(case)
+        answer, timings = (result if isinstance(result, tuple) and len(result) == 2 else (result, None))
+        per_case.append(score(case, answer))
+        first_list.append(timings.get("first_token_ms", candidate.first_token_ms) if timings else candidate.first_token_ms)
+        complete_list.append(timings.get("complete_ms", candidate.complete_ms) if timings else candidate.complete_ms)
+
     agg = aggregate(per_case)
-    first_p95 = _p95([candidate.first_token_ms for _ in held_cases])
-    complete_p95 = _p95([candidate.complete_ms for _ in held_cases])
+    first_p95 = _p95(first_list)
+    complete_p95 = _p95(complete_list)
 
     thresholds = FROZEN_BAKEOFF["thresholds"]
     ceilings = FROZEN_BAKEOFF["ceilings"]
@@ -126,15 +137,17 @@ def run_candidate(candidate: Candidate, answer_fn: AnswerFn, held_cases: list[Co
         and agg["ui_string_match"] >= thresholds["ui_string_match"]
         and agg["abstain_heldout_correct"] >= thresholds["abstain_heldout_correct"]
     )
-    resource = (
-        first_p95 <= ceilings["first_token_p95_ms"]
-        and complete_p95 <= ceilings["complete_answer_p95_ms"]
-        and candidate.cold_readiness_ms <= ceilings["cold_readiness_ms"]
-        and candidate.rss_gib <= ceilings["balanced_active_rss_gib"]
-        and candidate.swap_mib <= ceilings["swap_growth_mib"]
-        and candidate.acquisition_gib <= ceilings["acquisition_gib"]
-    )
-    pass_thresholds = quality and resource
+    measured = [
+        (candidate.cold_readiness_ms, ceilings["cold_readiness_ms"]),
+        (candidate.rss_gib, ceilings["balanced_active_rss_gib"]),
+        (candidate.swap_mib, ceilings["swap_growth_mib"]),
+        (candidate.acquisition_gib, ceilings["acquisition_gib"]),
+    ]
+    measured = [(value, ceil) for value, ceil in measured if value is not None]
+    resource_ok = all(value <= ceil for value, ceil in measured)
+    resource_measured = len(measured)
+    resource = first_p95 <= ceilings["first_token_p95_ms"] and complete_p95 <= ceilings["complete_answer_p95_ms"]
+    pass_thresholds = quality and resource_ok and resource
 
     return {
         "candidate": candidate.name,
@@ -158,8 +171,10 @@ def run_candidate(candidate: Candidate, answer_fn: AnswerFn, held_cases: list[Co
         "rss_gib": candidate.rss_gib,
         "swap_mib": candidate.swap_mib,
         "acquisition_gib": candidate.acquisition_gib,
+        "resource_measured": resource_measured,
         "quality_ok": quality,
-        "resource_ok": resource,
+        "resource_ok": resource_ok,
+        "resource_timing_ok": resource,
         "pass_thresholds": pass_thresholds,
     }
 

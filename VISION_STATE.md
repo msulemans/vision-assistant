@@ -350,14 +350,22 @@ trace cleanliness?
   control) with revisions/hashes marked `"to-pin"`.
 - `--verify` proves the harness and promotion rule with fake candidates:
   gold-mini is promoted, gold-large passes but is larger, bad-tiny fails.
-- A real model adapter is not yet wired; the harness is ready for a runtime
-  adapter that drives `VisionModelPort`.
+- `acquire.py` pins and downloads the llama.cpp candidate: `unsloth/`
+  `Qwen3.5-4B-GGUF` → `Qwen3.5-4B-Q4_K_M.gguf` (2.74 GB) + `mmproj-F16.gguf`
+  (672 MB), records SHA-256, and writes `models/qwen3.5-4b/pin.json`.
+- `runtime_llamacpp.py` implements the `VisionModelPort`-style adapter via
+  `llama-mtmd-cli` (fixed argv, no shell, bounded generation) and parses the
+  model's labelled answer. `bakeoff_cli.py --real` runs it over the held-out
+  corpus.
 
 ### Commands
 
 ```bash
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --plan
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --verify
+PYTHONPATH=src python -m vision_assistant.acquire plan
+download|check
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qwen3.5-4b
 ```
 
 ### Gate evidence
@@ -368,7 +376,7 @@ Observed on 2026-09-06:
   thresholds, resource ceilings, and promotion rule are locked.
 - Harness (fake candidates, 24 held-out cases): `gold-mini` → pass and promoted,
   `gold-large` → pass but larger, `bad-tiny` → fail (recall 0.12, forbidden 24).
-- Full suite: 38 tests pass (4 new bake-off tests).
+- Full suite: 40 tests pass (6 new bake-off/acquisition tests).
 
 ### Current gate result
 

@@ -183,3 +183,12 @@ PYTHONPATH=src python -m vision_assistant.bakeoff_cli --verify
 (candidate revisions/hashes are `"to-pin"` until each artifact is acquired).
 `--verify` runs the deterministic harness with fake candidates to prove the
 harness and promotion rule before any real model is downloaded.
+
+Acquire and run a real candidate:
+
+```bash
+PYTHONPATH=src python -m vision_assistant.acquire plan
+PYTHONPATH=src python -m vision_assistant.acquire download   # downloads the pinned GGUF + mmproj
+PYTHONPATH=src python -m vision_assistant.acquire check      # verify sizes + SHA-256
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qwen3.5-4b
+```
