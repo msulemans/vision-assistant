@@ -51,7 +51,7 @@ dashboard, small-text, dark-mode, and insufficient-evidence cases.
 
 Gate: manifests/hashes, required facts, forbidden claims, uncertainty labels,
 scorer, prompt, image budget, resource ceilings, and promotion rule are locked
-before a model download.
+before a model download. **Complete.**
 
 ### 005 — Local VLM and runtime bake-off
 

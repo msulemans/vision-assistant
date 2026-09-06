@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-31 (Australia/Sydney)
 
-Status: Milestone 003 complete — Milestone 004 is the next gate.
+Status: Milestone 004 complete — Milestone 005 is the next gate.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -268,11 +268,69 @@ Passed. The generated fixture and file path, the privacy lifecycle, the error
 paths, and two successive user-selected Mac region captures all pass and are
 deleted by default. Milestone 004 is the sole next gate.
 
-## Next gate — Milestone 004
+## Milestone 004 — frozen screen-understanding corpus
 
-Freeze a small screen-understanding corpus before any model is downloaded:
-synthetic and user-reviewed/redacted terminal, dialog, form, settings,
-dashboard, small-text, dark-mode, and insufficient-evidence cases. Lock the
-manifests/hashes, required facts, forbidden claims, uncertainty labels, scorer,
-prompt, image budget, resource ceilings, and promotion rule. The starter
-acceptance contract is drafted in `docs/METRICS.md`.
+Status: complete.
+
+### Question
+
+Can a small, deterministic, synthetic screen-understanding corpus (with correct
+facts, forbidden claims, uncertainty labels, a scorer, a prompt, an image
+budget, resource ceilings, and a promotion rule) be frozen before any model or
+runtime is downloaded?
+
+### Build
+
+- `corpus.py`: a stdlib PNG generator with an embedded 5x7 bitmap font so the
+  synthetic fixtures carry real, readable strings.
+- 48 cases (24 dev + 24 held-out) across 8 categories — terminal, dialog, form,
+  settings, dashboard, small_text, dark_mode, insufficient_evidence — 3 per
+  category per split.
+- Each case locks: question, allowed_evidence, required_facts, forbidden_claims,
+  uncertainty/abstention rule, and task-critical `ui_strings`.
+- `scorer.py`: deterministic grading of a labelled answer
+  (`visible`/`inferred`/`unknown`), measuring required-fact recall,
+  unsupported-claim rate, forbidden claims, UI-string exact match, and correct
+  abstention.
+- `corpus_cli.py --freeze` writes the corpus manifest (image SHA-256/dimensions),
+  the fixtures, and a frozen config (prompt, answer schema, token/deadline
+  budget, thresholds, resource ceilings, promotion rule). `--verify` checks
+  determinism and runs a gold/bad self-test.
+- Hand-authored gold answers (all pass) and confident-wrong answers (all fail)
+  validate the scorer. The corpus is synthetic with hand-authored atomic facts;
+  user-reviewed/redacted real captures can be added in a later evidence
+  milestone without re-freezing this deterministic set.
+
+### Commands
+
+```bash
+PYTHONPATH=src python -m vision_assistant.corpus_cli --freeze
+PYTHONPATH=src python -m vision_assistant.corpus_cli --verify
+```
+
+### Gate evidence
+
+Observed on 2026-09-06:
+
+- 48 cases: 24 dev + 24 held-out; 8 categories × 6.
+- Manifest and fixtures are byte-stable across regeneration (deterministic).
+- Gold answers: 48/48 pass. Confident-wrong answers: 48/48 fail.
+- Aggregate on gold: required-fact recall 1.00, unsupported-claim rate 0.00,
+  forbidden claims 0, UI-string match 1.00, held-out abstention correct 1.00.
+- Full suite: 34 tests pass (7 new corpus tests).
+
+### Gate result
+
+Passed. The deterministic synthetic corpus and all frozen contracts
+(manifest/hashes, facts, forbidden claims, uncertainty, scorer, prompt, image
+budget, resource ceilings, and promotion rule) are locked before any model is
+downloaded. Milestone 005 is the sole next gate.
+
+## Next gate — Milestone 005
+
+Local VLM and runtime bake-off: compare an Apache-2.0 4B unified VLM hypothesis
+(initially Qwen3.5-4B), one second 4B-class architecture, portable `llama.cpp`
+versus Apple `mlx-vlm`, and only then a ≤9B quality control if needed. Ollama
+may be a convenience control. Promote the smallest configuration meeting the
+frozen held-out and resource gates; pin all revisions, hashes, quantization,
+prompts, and image settings, and preserve losing results.

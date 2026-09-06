@@ -108,8 +108,12 @@ success/failure/cancel/timeout traces were verified (see
 Milestone 003 is complete: dependency-free PNG ingest, bounded validation,
 metadata stripping, private artifacts, default deletion, and the macOS
 region/window selector all pass. Two user-selected live captures were
-validated and deleted by default. Milestone 004 (frozen screen-understanding
-corpus) is next.
+validated and deleted by default.
+
+Milestone 004 is complete: a 48-case frozen screen-understanding corpus
+(24 dev + 24 held-out across 8 categories), a deterministic answer scorer, and a
+frozen prompt/image/resource contract — locked before any model download.
+Milestone 005 (local VLM and runtime bake-off) is next.
 
 ## Run the Milestone 002 lab
 
@@ -150,3 +154,16 @@ one harmless region/window or press Escape. The normalized artifact is deleted
 after validation unless you explicitly add `--retain`. Milestone 003 accepts
 PNG only; JPEG/HEIC conversion and resizing are deliberately not hidden inside
 this dependency-free gate.
+
+## Run the Milestone 004 corpus gate
+
+```bash
+PYTHONPATH=src python -m vision_assistant.corpus_cli --freeze
+PYTHONPATH=src python -m vision_assistant.corpus_cli --verify
+```
+
+`--freeze` writes the 48 fixtures, the corpus manifest (image SHA-256 and
+dimensions), and the frozen config under `runs/m004-corpus/` (Git-ignored); the
+committed generator is the deterministic source of truth. `--verify` confirms
+byte-stable regeneration, that all 48 gold answers pass the scorer, and that all
+48 confident-wrong answers fail.

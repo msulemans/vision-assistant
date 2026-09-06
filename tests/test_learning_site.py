@@ -60,8 +60,8 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M004 · corpus freeze pending",
-            "27 passing · 21 product + 6 learning",
+            "M005 · bake-off pending",
+            "34 passing · 28 product + 6 learning",
             "None acquired",
             "Intentionally absent",
             "selection_timed_out",
@@ -73,8 +73,8 @@ class LearningSiteContractTest(unittest.TestCase):
     def test_all_seventeen_milestones_are_registered_once(self) -> None:
         ids = [int(value) for value in re.findall(r"\{ id: (\d+), phase:", self.js)]
         self.assertEqual(ids, list(range(1, 18)))
-        self.assertIn('status: "done", title: "Explicit screenshot ingest and capture"', self.js)
-        self.assertIn('status: "current", title: "Frozen screen-understanding corpus"', self.js)
+        self.assertIn('status: "done", title: "Frozen screen-understanding corpus"', self.js)
+        self.assertIn('status: "current", title: "Local VLM and runtime bake-off"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)
