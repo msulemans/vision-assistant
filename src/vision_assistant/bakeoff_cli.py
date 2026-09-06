@@ -40,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--inspect", type=int, help="dump the raw model output for the first N held-out cases")
     parser.add_argument("--detail", action="store_true", help="print per-case results")
     parser.add_argument("--server", action="store_true", help="use the persistent llama-server adapter (streaming)")
+    parser.add_argument("--split", choices=["dev", "heldout"], default="heldout", help="which corpus split to run")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -135,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
 
         with tempfile.TemporaryDirectory(prefix="vision-assistant-m005-") as tmp:
             out_dir = Path(tmp)
-            held_cases = [c for c in build_corpus(out_dir) if c.split == "heldout"]
+            held_cases = [c for c in build_corpus(out_dir) if c.split == args.split]
             if args.limit:
                 held_cases = held_cases[: args.limit]
             total = len(held_cases)
