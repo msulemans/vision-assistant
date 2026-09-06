@@ -402,6 +402,13 @@ Observed on 2026-09-06:
   recall 0.79, unsupported-claim rate 0.26, forbidden 0, UI-string match 0.83,
   held-out abstention 0.875, first-token p95 7520 ms, passes 11/24. The
   candidate fails the frozen held-out gate and is preserved as a losing result.
+- Dev-split rerun after the fixture/prompt/streaming fixes (2026-09-06): the
+  streaming `llama-server` adapter reads the image and streams, giving
+  first-token p95 890 ms (passes the 5 s ceiling); required-fact recall 1.00;
+  forbidden 0. Remaining gaps: complete-answer p95 23774 ms (>20 s, verbose
+  reasoning model), UI-string match 0.75 (<0.90, the model paraphrases instead
+  of transcribing exactly), and abstention on insufficient-evidence cases still
+  fails (0/3, the model invents causes). About 11/24 pass the frozen gate.
 
 ### Current gate result
 
