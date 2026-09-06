@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Callable, Protocol, runtime_checkable
+from typing import Callable, Protocol, Tuple, Union, runtime_checkable
 
 from .corpus import CorpusCase
 from .ports import LabelledAnswer
@@ -90,7 +90,7 @@ class Candidate:
     acquisition_gib: float | None = None
 
 
-AnswerFn = Callable[[CorpusCase], LabelledAnswer | tuple[LabelledAnswer, dict]]
+AnswerFn = Callable[[CorpusCase], Union[LabelledAnswer, Tuple[LabelledAnswer, dict]]]
 
 
 @runtime_checkable
