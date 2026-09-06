@@ -191,4 +191,5 @@ PYTHONPATH=src python -m vision_assistant.acquire plan
 PYTHONPATH=src python -m vision_assistant.acquire download   # downloads the pinned GGUF + mmproj
 PYTHONPATH=src python -m vision_assistant.acquire check      # verify sizes + SHA-256
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qwen3.5-4b
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --server --pin-dir models/qwen3.5-4b   # persistent, streaming
 ```

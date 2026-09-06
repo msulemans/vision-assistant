@@ -357,6 +357,13 @@ trace cleanliness?
   `llama-mtmd-cli` (fixed argv, no shell, bounded generation) and parses the
   model's labelled answer. `bakeoff_cli.py --real` runs it over the held-out
   corpus.
+- `corpus.py` fixture readability fix: small_text is now wrapped at a 2× scale
+  and the dashboard metric card is larger/prominent so a 4B can read them.
+- `corpus_cli.py` prompt tightened to suppress unsupported inference and to force
+  `[unknown]` abstention on insufficient-evidence cases.
+- `runtime_llamaserver.py` adds a persistent, streaming `LlamaServerAdapter`
+  (model resident, SSE) so a real first-token latency can be measured;
+  `bakeoff_cli.py --server` uses it.
 
 ### Commands
 
@@ -366,6 +373,7 @@ PYTHONPATH=src python -m vision_assistant.bakeoff_cli --verify
 PYTHONPATH=src python -m vision_assistant.acquire plan
 download|check
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qwen3.5-4b
+PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --server --pin-dir models/qwen3.5-4b
 ```
 
 ### Gate evidence

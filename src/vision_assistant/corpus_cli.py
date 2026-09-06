@@ -23,9 +23,15 @@ FROZEN = {
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (
         "You are reading one user-selected screenshot. Answer the question with "
-        "statements labelled [visible], [inferred], or [unknown]. State only what "
-        "the screenshot shows; if the cause is not visible, say so and do not "
-        "invent one."
+        "at most a few statements, each labelled [visible], [inferred], or "
+        "[unknown].\n"
+        "[visible]: only what the screenshot plainly shows.\n"
+        "[inferred]: only a cause that is strongly supported by the visible "
+        "evidence; if you are not sure, do not use [inferred].\n"
+        "[unknown]: what the screenshot does not establish.\n"
+        "If the screenshot does not show a cause or the needed answer, output "
+        "ONLY one [unknown] statement saying so. Never invent a [visible] or "
+        "[inferred] claim that is not supported."
     ),
     "answer_schema": {"visible": "list[str]", "inferred": "list[str]", "unknown": "list[str]"},
     "decoding": {"max_tokens": 256, "deadline_s": 30},

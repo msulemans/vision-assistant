@@ -89,6 +89,38 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertEqual(len(CANDIDATE["files"]), 2)
         self.assertTrue(all(f["sha256"] == "to-pin" for f in CANDIDATE["files"]))
 
+    def test_sse_consume_measures_and_joins_tokens(self) -> None:
+        import time
+
+        from vision_assistant.runtime_llamaserver import _consume_sse
+
+        lines = [
+            'data: {"choices":[{"delta":{"content":"[visible] CONNECT "}}]}',
+            'data: {"choices":[{"delta":{"content":"TO DATABASE."}}]}',
+            "data: [DONE]",
+        ]
+        text, first_ms, complete_ms = _consume_sse(lines, time.monotonic_ns())
+        self.assertIn("CONNECT TO DATABASE.", text)
+        self.assertGreaterEqual(first_ms, 0.0)
+        self.assertGreaterEqual(complete_ms, first_ms)
+
+    def test_server_adapter_parses_streamed_answer(self) -> None:
+        import tempfile
+        from pathlib import Path
+
+        from vision_assistant.corpus import build_corpus
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        with tempfile.TemporaryDirectory() as tmp:
+            case = [c for c in build_corpus(Path(tmp)) if c.split == "heldout"][0]
+            lines = ['data: {"choices":[{"delta":{"content":"[visible] CONNECT TO DATABASE is visible."}}]}', "data: [DONE]"]
+            adapter = LlamaServerAdapter(
+                Path("models/x"), Path("models/y"), transport=lambda url, payload, timeout: lines
+            )
+            answer, timings = adapter.predict(case)
+            self.assertTrue(answer.visible)
+            self.assertIn("CONNECT TO DATABASE", answer.visible[0])
+
 
 if __name__ == "__main__":
     unittest.main()

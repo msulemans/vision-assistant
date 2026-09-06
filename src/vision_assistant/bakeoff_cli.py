@@ -39,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, help="only run the first N held-out cases (smoke test)")
     parser.add_argument("--inspect", type=int, help="dump the raw model output for the first N held-out cases")
     parser.add_argument("--detail", action="store_true", help="print per-case results")
+    parser.add_argument("--server", action="store_true", help="use the persistent llama-server adapter (streaming)")
     args = parser.parse_args(argv)
 
     if args.plan:
@@ -142,8 +143,21 @@ def main(argv: list[str] | None = None) -> int:
             def _progress(index: int, case_id: str, category: str) -> None:
                 print(f"  [{index + 1}/{total}] {case_id} ({category}) ...", file=sys.stderr, flush=True)
 
-            adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
-            result = run_candidate(candidate, adapter.predict, held_cases, progress=_progress)
+            if args.server:
+                from .runtime_llamaserver import LlamaServerAdapter
+
+                adapter = LlamaServerAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
+                adapter.start()
+            else:
+                from .runtime_llamacpp import LlamaCppAdapter
+
+                adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
+
+            try:
+                result = run_candidate(candidate, adapter.predict, held_cases, progress=_progress)
+            finally:
+                if args.server:
+                    adapter.stop()
             if args.detail:
                 print("PER CASE:")
                 for row in result["per_case"]:

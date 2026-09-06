@@ -171,23 +171,45 @@ def _paint_settings(rgb: bytearray, w: int, h: int, title: str, rows: list[str],
         y += 46
 
 
+def _wrap(text: str, width_chars: int) -> list[str]:
+    """Word-wrap *text* to about *width_chars* characters per line."""
+    lines: list[str] = []
+    current = ""
+    for word in text.split(" "):
+        if not current:
+            current = word
+        elif len(current) + 1 + len(word) <= width_chars:
+            current += " " + word
+        else:
+            lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines
+
+
 def _paint_dashboard(rgb: bytearray, w: int, h: int, stat: str, status_value: str, theme: dict) -> None:
     _fill_rect(rgb, w, 0, 0, w, h, theme["page"])
-    rasterize_text(rgb, w, 20, 18, "STATUS DASHBOARD", 2, theme["text"])
-    for i in range(4):
-        _fill_rect(rgb, w, 20 + i * 120, 60, 120 + i * 120, 140, theme["panel"])
-    _fill_rect(rgb, w, 20, 60, 120, 140, theme["primary"])
-    rasterize_text(rgb, w, 24, 90, stat, 2, theme["title"])
-    _fill_rect(rgb, w, 20, 170, w - 20, 210, theme["ok"])
-    rasterize_text(rgb, w, 30, 184, status_value, 2, theme["on_ok"])
+    rasterize_text(rgb, w, 20, 16, "STATUS DASHBOARD", 2, theme["text"])
+    # Prominent primary metric card.
+    _fill_rect(rgb, w, 24, 56, w - 24, 150, theme["primary"])
+    rasterize_text(rgb, w, 36, 92, stat, 3, theme["title"])
+    # Decorative secondary cards.
+    for i in range(3):
+        x0 = 40 + i * 140
+        _fill_rect(rgb, w, x0, 170, x0 + 120, 214, theme["panel"])
+    # Status bar.
+    _fill_rect(rgb, w, 24, 232, w - 24, 270, theme["ok"])
+    rasterize_text(rgb, w, 40, 246, status_value, 2, theme["on_ok"])
 
 
 def _paint_small_text(rgb: bytearray, w: int, h: int, lines: list[str], theme: dict) -> None:
     _fill_rect(rgb, w, 0, 0, w, h, theme["page"])
     y = 16
     for line in lines:
-        rasterize_text(rgb, w, 12, y, line, 1, theme["text"])
-        y += 12
+        for wrapped in _wrap(line, 38):
+            rasterize_text(rgb, w, 12, y, wrapped, 2, theme["text"])
+            y += 18
 
 
 def _paint_insufficient(rgb: bytearray, w: int, h: int, title: str, note: str, theme: dict) -> None:
