@@ -47,6 +47,12 @@ PNG so those guarantees remain understandable and dependency-free.
 artifact exists only while needed and is deleted afterward. Retention is a
 separate explicit option, never an accidental side effect.
 
+The CLI must release its artifact even when writing the capture summary fails
+(for example, a closed output pipe). A `finally` block preserves that cleanup
+path, while `--retain` remains explicit. A valid PNG chunk checksum also does
+not prove the compressed pixels are valid: decompression errors must become
+the same recoverable `invalid_image` result as other image validation failures.
+
 ### Cancel, deny, and timeout are different
 
 Escape means the user cancelled. Missing Screen Recording permission means the
@@ -94,3 +100,27 @@ In simple words: an image is copied into a private temporary room, checked for
 size and damage, cleaned of hidden notes, measured, and then removed. The same
 room is used whether the image came from a file or the Mac selector. We still
 need one deliberate live selection before calling this lesson complete.
+
+## How the revised plan reaches a useful product
+
+M006 is the first usable single-image assistant; M009 completes the read-only
+workflow. Desktop actions are optional. Packaging does not depend on teaching
+the computer to click. The learning site and evaluation evidence grow at every
+milestone; M016 consolidates them rather than postponing them.
+
+M004 separates development cases (used to improve a prompt) from held-out cases
+(used to judge the frozen result). Repeatedly tuning against the held-out set
+turns it into development data. Hand-authored correct, wrong, and abstaining
+answers first prove the scorer works. The numerical targets in `METRICS.md`
+are starting proposals to freeze before model output, not measured results.
+
+M005 tests a small number of complete model/runtime configurations in sequence.
+A difficult tiny-text case may expose an image-resolution problem rather than
+a need for a larger model. Diagnose on development cases, then version and rerun
+any changed evaluation. A fake clock cannot measure real latency, and a model's
+“visible” label cannot prove its claim true. Real inference needs real timing,
+private metrics, cancellation, and cleanup on every terminal path.
+
+Teach back: Why are three successful demos insufficient to estimate p95?
+What evidence would distinguish a decoder failure from insufficient image detail?
+Why should the read-only product be valuable even if actions are never added?

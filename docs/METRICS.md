@@ -63,7 +63,7 @@ Before acquiring a model or runtime, register:
 - image resolution/token policy
 - candidate revisions, quantization, licence, and artifact sizes
 - cold/warm trial counts
-- quality, latency, memory, CPU, energy, and swap ceilings
+- quality, latency, memory, and swap ceilings; CPU/energy measurement methods
 - promotion order and tie-break rule
 
 The smallest passing candidate wins. Public benchmarks nominate candidates but
@@ -78,3 +78,62 @@ do not promote them.
 - **Release:** reproduced from a clean install with permissions, packaging,
   privacy, and licence checks.
 
+
+## Starter acceptance contract for M004 to freeze
+
+These are proposed engineering targets, not observed performance. M004 may
+revise them with a written rationale before any candidate output is inspected.
+After freezing, changes require a new evaluation version and comparable reruns.
+
+| Measure | Initial gate |
+|---|---|
+| Corpus | 48 cases: 24 development, 24 held-out; 3 per category per split |
+| Required-fact recall | At least 90% overall and 80% per category with required facts |
+| Unsupported factual claims | At most 5% of factual claims; report numerator and denominator |
+| Explicit forbidden claims | Zero across the held-out set |
+| Missing-evidence cases | Correct abstention on all 3 held-out cases |
+| Task-critical UI strings | At least 90% exact match on the annotated string subset |
+| Warm first visible answer token | p95 at most 5 seconds from submit, including image processing |
+| Warm complete answer | p95 at most 20 seconds from submit |
+| Cold model readiness | At most 60 seconds in each of 3 process-cold trials |
+| Cancellation | Idle within 2 seconds in each of 10 trials spanning processing/generation |
+| Memory | Balanced peak process-tree RSS under 8 GiB; optional Quality under 14 GiB |
+| Swap growth | At most 256 MiB over the trial block on an otherwise idle host |
+| Acquisition budget | At most 25 GiB additional artifacts/cache with at least 30 GiB free afterward |
+
+Use human-reviewed atomic facts and explicit scoring denominators. Abstaining
+on an answerable case loses required-fact recall; an empty answer cannot pass
+by avoiding unsupported claims. Inference labels are not proof of grounding:
+score whether the inference is justified. Record disagreements and adjudication
+against the rubric. This small corpus is a local gate, not a general accuracy claim.
+
+Use development data to choose the configuration and prompt. Freeze the winner
+before held-out evaluation. A held-out failure blocks promotion; tuning after
+inspection requires a fresh held-out set, not repeated attempts on the same set.
+
+For latency, run one excluded warm-up followed by 48 warm trials on a fixed,
+category-balanced schedule (two per held-out case). Report sample count, raw
+timings, p50, nearest-rank p95, maximum, timeout count, and failure count.
+A timeout fails the gate and is not discarded from reporting. Repeat three cold
+trials with a restarted runtime; call these process-cold, not machine-cold unless
+the machine/cache state was actually reset. Three consecutive capstone successes
+establish function, not tail latency. Score each held-out case once for quality;
+report repeat variability separately rather than inflating the quality sample.
+
+Separate human selection time, acquisition, normalization, storage, image
+encoding, prompt processing, generation, and UI delivery. Current M003
+`capture_ms` excludes normalization/storage. Use a real monotonic clock for
+live measurements. Define process-tree RSS sampling and shared-memory caveats;
+do not equate parameter count or model-file size with active memory.
+
+CPU and energy are reported diagnostics for the first local gate rather than
+hard blockers. Register the measurement method; record unavailable counters
+explicitly. They may become numerical gates in a later version after a
+reproducible baseline exists. Record thermal/power conditions and host load.
+
+The default answer budget is 256 generated tokens with a 30-second turn
+deadline. Freeze the model-specific image processor, input size, and effective
+token/patch budget in M004; identical pixel dimensions do not guarantee equal
+image-token counts across architectures. Compare complete configurations and
+report processor differences. If a runtime does not stream, its first visible
+answer latency equals complete-answer latency.

@@ -37,8 +37,8 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M003 · live capture pending</dd></div>
-          <div><dt>Tests</dt><dd>25 passing · 19 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M004 · corpus freeze pending</dd></div>
+          <div><dt>Tests</dt><dd>27 passing · 21 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>None acquired</dd></div>
           <div><dt>Action access</dt><dd>None</dd></div>
         </dl>
@@ -137,8 +137,13 @@
     <section class="chapter" id="capture" data-track="capture">
       <header class="chapter-head">
         <p class="chapter-number">03 / Capture lab</p>
-        <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture and selected file already pass one bounded PNG path. A successful user-selected Mac capture is the remaining gate.</p></div>
+        <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
+
+      <p><strong>Plan checkpoint:</strong> M006 delivers preview, ask, stop, and reset.
+        M004 freezes development and held-out evaluation; M005 proves real timing,
+        private traces, and cleanup before inference. After M009, desktop actions
+        are optional and read-only packaging can proceed. These are planned gates.</p>
 
       <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
         <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
@@ -150,12 +155,12 @@
       </div>
 
       <div class="capture-grid">
-        <article class="gate-card current">
-          <p class="micro-label">CURRENT GATE</p>
-          <h3>One harmless live selection</h3>
-          <p>Run this from a normal Terminal. Select a small region; the artifact is validated and deleted without entering a model.</p>
+        <article class="gate-card">
+          <p class="micro-label">LIVE CAPTURE</p>
+          <h3>User-selected capture: passed twice</h3>
+          <p>Two user-selected regions passed on 2026-09-06 (601×452 @ 5094 ms and 650×464 @ 5918 ms) and were released without retention.</p>
           <div class="command-box"><code id="captureCommand">PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive</code><button type="button" id="copyCommand">Copy</button></div>
-          <p class="command-status" id="copyStatus" aria-live="polite">Expected: <code>captured</code>, then <code>released</code>.</p>
+          <p class="command-status" id="copyStatus" aria-live="polite">Observed: <code>captured</code>, then <code>released</code>, twice. No pixels or path were printed.</p>
         </article>
         <article class="gate-card">
           <p class="micro-label">DETERMINISTIC RESULT</p>

@@ -162,7 +162,7 @@ class ReadOnlyTurn:
         self._transition(ANALYSING)
         self._emit("model.started", ANALYSING, image_ref=frame.fixture_id, question=question)
         try:
-            output = self._model.generate(image_ref=frame.model_ref, question=question)
+            output = self._model.generate(image_ref=frame.fixture_id, question=question)
         except Exception as exc:  # noqa: BLE001 - model failure is an expected outcome
             return self._finish_failed(f"model: {exc}")
         self._clock.advance(output.stats.first_token_ms)

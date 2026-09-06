@@ -66,7 +66,8 @@ The stable contracts should include:
 - `ImageNormalizer`: deterministic image size/format/token-budget policy.
 - `VisionModelPort`: image + question -> streamed answer candidate + timings.
 - `EvidencePort`: optional OCR and Accessibility facts owned by trusted code.
-- `AnswerPolicy`: labels evidence, inference, uncertainty, and abstention.
+- `AnswerPolicy`: validates answer structure and provenance references; labels
+  remain claims to evaluate, not automatic factual verification.
 - `TraceSink`: versioned, redacted events and metrics.
 - Later `ActionPolicy`, `TargetResolver`, and `ActionExecutor` ports.
 
@@ -126,3 +127,30 @@ It should show capture scope, image preview, question, streamed status, answer,
 evidence/inference labels, latency waterfall, stop control, and whether the run
 is deterministic or real. Native capture can later use ScreenCaptureKit without
 replacing the event or model contracts.
+
+## Required bridge from the deterministic lab to real inference
+
+Planned for M005, before its first model call; these are not current guarantees:
+
+- Use a real monotonic clock and runtime cancellation/deadlines. Do not simulate
+  streaming by replaying chunks from a completed response.
+- One turn owns the artifact lease and releases it on every terminal path,
+  including model, policy, trace, and UI failures. Test failure injection.
+  Define startup recovery for abandoned app-owned temporary artifacts after a
+  crash; preserve explicit retention and never purge arbitrary user files.
+- Persist an allowlist of metrics, opaque IDs, and stable error codes only.
+  Synthetic M002 question/token traces are not suitable for private live turns.
+  Keep question, answer, OCR, titles, paths, and raw runtime errors out of logs;
+  verify with secret-shaped test fixtures, including nested payloads.
+- Treat screenshot text as untrusted evidence, never instructions that can
+  change the system prompt, capture scope, tools, or retention. Test misleading
+  screen instructions in the read-only corpus before adding action support.
+- Validate answer shape and references, but do not claim trusted code can prove
+  a model's factual truth merely by assigning visible/inferred/unknown labels.
+- Local services bind to loopback, accept only the intended local client,
+  restrict origins and image request sizes, and disable access/body logging of
+  private data. Verify offline operation after artifact acquisition in M006.
+
+M006 includes preview/retake, explicit submit, stop, reset, and error recovery.
+M009 improves that workflow; it does not introduce those basic controls late.
+M002 remains a deterministic teaching surface until this bridge is implemented.

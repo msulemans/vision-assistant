@@ -162,10 +162,13 @@ def normalize_png(data: bytes, policy: ImagePolicy | None = None) -> NormalizedP
     row_size = _decompressed_row_size(width, bit_depth, colour_type)
     expected_size = height * (row_size + 1)
     inflater = zlib.decompressobj()
-    raw = inflater.decompress(b"".join(idat_parts), expected_size + 1)
-    if len(raw) > expected_size or inflater.unconsumed_tail:
-        raise ImageValidationError("PNG pixel stream exceeds its declared dimensions")
-    raw += inflater.flush()
+    try:
+        raw = inflater.decompress(b"".join(idat_parts), expected_size + 1)
+        if len(raw) > expected_size or inflater.unconsumed_tail:
+            raise ImageValidationError("PNG pixel stream exceeds its declared dimensions")
+        raw += inflater.flush()
+    except zlib.error as exc:
+        raise ImageValidationError("PNG pixel stream is not valid compressed data") from exc
     if len(raw) != expected_size or not inflater.eof or inflater.unused_data:
         raise ImageValidationError("PNG pixel stream has an invalid decompressed size")
     for row in range(height):

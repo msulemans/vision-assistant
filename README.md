@@ -79,7 +79,7 @@ more useful capture instead of inventing a cause.
 5. Open the interactive field manual:
 
    ```bash
-   python3.11 scripts/serve_learning_lab.py
+   python scripts/serve_learning_lab.py
    # open http://127.0.0.1:4173/
    ```
 
@@ -105,10 +105,11 @@ using synthetic fixtures only. Byte-identical, round-tripping
 success/failure/cancel/timeout traces were verified (see
 `VISION_STATE.md`).
 
-Milestone 003 is in progress: dependency-free PNG ingest, bounded validation,
+Milestone 003 is complete: dependency-free PNG ingest, bounded validation,
 metadata stripping, private artifacts, default deletion, and the macOS
-region/window selector are implemented and deterministically verified. One
-successful user-selected live capture remains before the milestone can close.
+region/window selector all pass. Two user-selected live captures were
+validated and deleted by default. Milestone 004 (frozen screen-understanding
+corpus) is next.
 
 ## Run the Milestone 002 lab
 
@@ -128,7 +129,7 @@ Generated traces live in `runs/` and the synthetic fixture in
 The local field manual is a first-class project surface:
 
 ```bash
-python3.11 scripts/serve_learning_lab.py
+python scripts/serve_learning_lab.py
 ```
 
 It currently covers the M001 contract, the interactive M002 event spine, the
@@ -139,9 +140,9 @@ prompts. Update it with code, tests, state, and docs at every milestone.
 ## Run the Milestone 003 capture gate
 
 ```bash
-PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --verify
-PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --file /path/to/selected.png
-PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive
+PYTHONPATH=src python -m vision_assistant.capture_cli --verify
+PYTHONPATH=src python -m vision_assistant.capture_cli --file /path/to/selected.png
+PYTHONPATH=src python -m vision_assistant.capture_cli --interactive
 ```
 
 `--interactive` opens the macOS selector only after you run the command. Select

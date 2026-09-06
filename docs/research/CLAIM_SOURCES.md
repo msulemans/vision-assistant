@@ -16,3 +16,14 @@ frozen project evidence.
 | R-009 | Core Graphics exposes low-level event posting, motivating a separate action boundary | https://developer.apple.com/documentation/coregraphics/cgevent |
 | R-010 | A current computer-use reference separates read-only/action tools, requires macOS permissions, and prefers element targets | https://github.com/QwenLM/qwen-code/blob/main/docs/users/features/computer-use.md |
 
+
+## Planning refresh — 2026-09-06
+
+The official Qwen3.5-4B model card was rechecked and continues to identify an
+image-text model under Apache-2.0. This supports retaining it as a candidate,
+not a local compatibility or performance claim. Exact quantized artifacts,
+processor/projector requirements, and runtime revisions must be checked again
+at M004/M005. The revised roadmap compares configurations sequentially rather
+than requiring a full cross-product of every model and runtime.
+
+Source: https://huggingface.co/Qwen/Qwen3.5-4B

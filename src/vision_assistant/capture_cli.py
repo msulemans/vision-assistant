@@ -122,8 +122,10 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"status": "not_captured", "code": exc.code, "message": str(exc)}, sort_keys=True))
         return 2
 
-    print(json.dumps({"status": "captured", **_public_summary(frame, include_path=args.retain)}, sort_keys=True))
-    store.release(frame)
+    try:
+        print(json.dumps({"status": "captured", **_public_summary(frame, include_path=args.retain)}, sort_keys=True))
+    finally:
+        store.release(frame)
     if not args.retain:
         print(json.dumps({"status": "released", "artifact_id": frame.fixture_id}, sort_keys=True))
     return 0

@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-31 (Australia/Sydney)
 
-Status: Milestone 003 in progress — deterministic/file gate passes; successful user-selected capture pending.
+Status: Milestone 003 complete — Milestone 004 is the next gate.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -202,8 +202,7 @@ package, capture pixel, server, or privacy permission was acquired. Milestone
 
 ## Milestone 003 — explicit screenshot ingest and capture
 
-Status: in progress; implementation and deterministic/file gate pass, one
-successful user-selected live capture remains.
+Status: complete.
 
 ### Question
 
@@ -217,82 +216,63 @@ and default deletion?
 - `normalize_png` validates the PNG signature, chunk lengths/CRCs, declared
   dimensions, colour/bit-depth combination, bounded decompressed size, row
   filters, and final `IEND`; it rejects oversized, animated, interlaced,
-  truncated, unknown-critical, and non-PNG input.
-- Normalization rebuilds a single bounded PNG while stripping text, EXIF, time,
-  and other unapproved ancillary metadata. Safe colour/scale chunks are kept.
+  truncated, unknown-critical, and non-PNG input, and strips unapproved
+  ancillary metadata.
 - `EphemeralArtifactStore` uses private `0700` directories, `0600` files,
   atomic writes, bounded trace identifiers, and symlink-escape rejection.
 - `FileCapturePort` uses a no-follow file descriptor, requires a regular file,
   and never copies the selected filesystem path into its public summary.
 - `MacInteractiveCapturePort` invokes fixed argv
-  `/usr/sbin/screencapture -i -x -t png <private-temp-path>` with no shell,
-  a minimal environment, and a 180-second selection budget.
-- File and interactive capture use the same `PngIngestor`. The raw macOS temp
-  file is deleted by its temporary directory; the normalized artifact is
-  deleted after validation unless `--retain` is explicit.
+  `/usr/sbin/screencapture -i -x -t png <private-temp-path>` with no shell, a
+  minimal environment, and a 180-second selection budget.
+- File and interactive capture share one `PngIngestor`. The raw macOS temp file
+  is deleted by its temporary directory; the normalized artifact is deleted
+  after validation unless `--retain` is explicit.
 - Stable recoverable outcomes distinguish `permission_denied`,
   `cancelled_by_user`, `selection_timed_out`, `invalid_image`, and
-  `capture_unavailable`.
-- The existing turn spine now passes only the private internal artifact path to
-  the model port; traces continue to receive an opaque artifact identifier.
-- `learning/index.html`, `styles.css`, and `app.js` now provide the missing
-  interactive field manual: evidence lens, pipeline custody explorer, M002
-  scenario traces, M003 capture lesson, all 17 roadmap gates, preserved
-  failures, glossary, flashcards, quiz, and exact commands. It is static,
-  dependency-free, local-only, responsive, keyboard-focused, and honours
-  reduced motion.
-- `scripts/serve_learning_lab.py` serves only `learning/` on
-  `http://127.0.0.1:4173/`; direct `file://` opening also works.
+  `capture_unavailable`; the typed `code` is carried onto the `turn.failed`
+  trace event.
+- The turn spine passes only a private internal artifact reference to the model
+  port; traces continue to receive an opaque artifact identifier.
+- The interactive field manual (`learning/`) teaches the verified milestones,
+  evidence, failures, and boundaries, and `scripts/serve_learning_lab.py`
+  serves it locally.
 
 ### Commands
 
 ```bash
-PYTHONPATH=src python3.11 -m unittest discover -s tests -v
-PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --verify
-PYTHONPATH=src python3.11 -m vision_assistant.capture_cli --interactive
+PYTHONPATH=src python -m vision_assistant.capture_cli --verify
+PYTHONPATH=src python -m vision_assistant.capture_cli --file /path/to/selected.png
+PYTHONPATH=src python -m vision_assistant.capture_cli --interactive
 ```
 
-### Evidence observed on 2026-08-31
+### Evidence observed on 2026-09-06
 
-- Full regression suite: 25 tests pass — 15 capture/lifecycle, 6 learning-site
+- Full regression suite: 27 tests pass — 17 capture/lifecycle, 6 learning-site
   contract, and the 4 unchanged Milestone 002 spine tests.
-- The learning-site contract verifies local assets, unique/required interactive
-  IDs, honest current evidence, all 17 roadmap entries,
-  accessibility/reduced-motion, and canonical project links.
-- `node --check learning/app.js`, Python compilation, Ruff, and
-  `git diff --check` pass. The local server returned HTTP `200 OK` for `/` and
-  the site was opened at `http://127.0.0.1:4173/` for user review.
-- Automated screenshot-based visual QA was not claimed: the in-app browser was
-  unavailable in this session. Source, interaction-contract, responsive CSS,
-  keyboard/reduced-motion, and live HTTP checks passed; visual feedback from the
-  opened page remains welcome.
 - Generated-fixture gate: dimensions match, SHA-256 matches the private
   normalized artifact, mode is `0600`, artifact exists during the turn, and is
   deleted on release — `pass: true`.
+- Two successful user-selected Mac captures, each `status: captured` then
+  `status: released`:
+  - 601×452, 78875 bytes, 5094.502 ms capture, ephemeral.
+  - 650×464, 86541 bytes, 5918.366 ms capture, ephemeral.
+- Both traversed the same `PngIngestor`/artifact path and were deleted by
+  default; no image content or path was printed or retained.
 - The original Milestone 002 `--verify` still passes all four byte-identical,
   round-tripping scenarios.
-- A first live selector attempt reached the 180-second budget without producing
-  a capture. It revealed that the adapter initially mapped timeout to
-  `cancelled_by_user`; the implementation now has a separate
-  `selection_timed_out` outcome and a regression test. No screenshot was
-  retained from that attempt.
 
-### Current gate result
+### Gate result
 
-Partial. The implementation, generated-fixture/file path, privacy lifecycle,
-and error paths pass. Do not mark Milestone 003 complete and do not advance to
-the frozen corpus until one harmless user-selected region/window succeeds and
-its dimensions/timing/default deletion are recorded.
+Passed. The generated fixture and file path, the privacy lifecycle, the error
+paths, and two successive user-selected Mac region captures all pass and are
+deleted by default. Milestone 004 is the sole next gate.
 
-Learning-surface correction: the initial project foundation created only the
-written `learning/CURRICULUM.md`, unlike the sibling labs' interactive field
-manuals. That omission was reported by the user and is now repaired. Future
-milestone gates must synchronize code, tests, `VISION_STATE.md`, README,
-curriculum, and the interactive learning site together.
+## Next gate — Milestone 004
 
-## Next action — finish the Milestone 003 live gate
-
-Run the documented `--interactive` command from a normal Terminal, select one
-harmless region/window, and return the two JSON lines. The first should say
-`status: captured`; the second should say `status: released`. No image content
-or path is printed or retained by default.
+Freeze a small screen-understanding corpus before any model is downloaded:
+synthetic and user-reviewed/redacted terminal, dialog, form, settings,
+dashboard, small-text, dark-mode, and insufficient-evidence cases. Lock the
+manifests/hashes, required facts, forbidden claims, uncertainty labels, scorer,
+prompt, image budget, resource ceilings, and promotion rule. The starter
+acceptance contract is drafted in `docs/METRICS.md`.

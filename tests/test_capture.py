@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import io
+import json
 import subprocess
 import stat
 import struct
@@ -9,6 +11,8 @@ import unittest
 import zlib
 from pathlib import Path
 from types import SimpleNamespace
+from contextlib import redirect_stdout
+from unittest.mock import patch
 
 from vision_assistant.capture import (
     CaptureCancelled,
@@ -22,7 +26,7 @@ from vision_assistant.capture import (
     PngIngestor,
     normalize_png,
 )
-from vision_assistant.capture_cli import verify_generated_fixture
+from vision_assistant.capture_cli import main, verify_generated_fixture
 from vision_assistant.adapters import FakeAnswerPolicy, FakeVisionModelPort
 from vision_assistant.clock import FakeClock
 from vision_assistant.fixture import generate_fixture
@@ -97,6 +101,34 @@ class CaptureMilestoneTest(unittest.TestCase):
         for data in (b"not an image", bytes(broken)):
             with self.subTest(size=len(data)), self.assertRaises(ImageValidationError):
                 normalize_png(data)
+
+    def test_corrupt_pixel_stream_returns_typed_cli_failure(self) -> None:
+        # Valid chunk CRCs do not imply a valid compressed pixel stream.
+        png = self.fixture.png_bytes
+        broken = png[:33] + chunk(b"IDAT", b"not a zlib stream") + chunk(b"IEND", b"")
+        self.fixture.path.write_bytes(broken)
+        output = io.StringIO()
+        with redirect_stdout(output):
+            result = main(["--file", str(self.fixture.path), "--artifacts", str(self.store.root)])
+        self.assertEqual(result, 2)
+        summary = json.loads(output.getvalue())
+        self.assertEqual(summary["status"], "not_captured")
+        self.assertEqual(summary["code"], "invalid_image")
+        self.assertNotIn(str(self.fixture.path), output.getvalue())
+        self.assertEqual(list(self.store.root.iterdir()), [])
+
+    def test_cli_output_failure_releases_artifact_unless_retained(self) -> None:
+        for retain in (False, True):
+            with self.subTest(retain=retain):
+                artifacts = self.root / f"output-failure-{retain}"
+                argv = ["--file", str(self.fixture.path), "--artifacts", str(artifacts)]
+                if retain:
+                    argv.append("--retain")
+                with patch("builtins.print", side_effect=BrokenPipeError("closed output")):
+                    with self.assertRaises(BrokenPipeError):
+                        main(argv)
+                self.assertEqual(bool(list(artifacts.rglob("*.png"))), retain)
+                self.assertTrue(self.fixture.path.exists())
 
     def test_dimension_policy_is_enforced_before_artifact_write(self) -> None:
         with self.assertRaises(ImageValidationError):
