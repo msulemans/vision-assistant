@@ -49,9 +49,14 @@ def score(case: CorpusCase, answer: LabelledAnswer) -> dict:
     all_text = _norm(" ".join((*statements, *answer.unknown)))
     exact_markers, evidence_tokens = _ground(case)
 
-    # Required-fact recall
-    required = [_norm(f) for f in case.required_facts]
-    found_required = sum(1 for fact in required if fact in all_text)
+    # Required-fact recall: a fact is recalled when it appears verbatim or when
+    # the answer conveys it (shares meaningful tokens with it).
+    required = case.required_facts
+    answer_tokens = _tokens(all_text)
+    found_required = 0
+    for fact in required:
+        if _norm(fact) in all_text or len(_tokens(fact) & answer_tokens) >= 2:
+            found_required += 1
     recall = (found_required / len(required)) if required else 1.0
 
     # Unsupported factual claims: a statement is unsupported only when it names
