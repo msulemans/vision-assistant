@@ -1,15 +1,40 @@
 from __future__ import annotations
 
+import re
+
 from .corpus import CorpusCase
 from .ports import LabelledAnswer
+
+_WORD = re.compile(r"[A-Za-z0-9.]+")
 
 
 def _norm(text: str) -> str:
     return text.upper()
 
 
-def _supported(case: CorpusCase) -> set[str]:
-    return {_norm(s) for s in (*case.allowed_evidence, *case.required_facts, *case.ui_strings)}
+def _tokens(text: str) -> set[str]:
+    out: set[str] = set()
+    for word in _WORD.findall(text):
+        word = word.strip(".")
+        if len(word) >= 3:
+            out.add(word.lower())
+    return out
+
+
+def _ground(case: CorpusCase) -> tuple[frozenset[str], frozenset[str]]:
+    """Return (exact evidence markers, evidence token set) for a case.
+
+    A statement is grounded when it repeats an allowed/required/UI string
+    verbatim OR shares meaningful tokens with them. This keeps natural-language
+    prose that correctly describes the screen from being counted as an
+    unsupported claim.
+    """
+    strings = (*case.allowed_evidence, *case.required_facts, *case.ui_strings)
+    markers = frozenset(_norm(s) for s in strings)
+    tokens: set[str] = set()
+    for s in strings:
+        tokens |= _tokens(s)
+    return markers, frozenset(tokens)
 
 
 def score(case: CorpusCase, answer: LabelledAnswer) -> dict:
@@ -22,15 +47,22 @@ def score(case: CorpusCase, answer: LabelledAnswer) -> dict:
     """
     statements = (*answer.visible, *answer.inferred)
     all_text = _norm(" ".join((*statements, *answer.unknown)))
-    supported = _supported(case)
+    exact_markers, evidence_tokens = _ground(case)
 
     # Required-fact recall
     required = [_norm(f) for f in case.required_facts]
     found_required = sum(1 for fact in required if fact in all_text)
     recall = (found_required / len(required)) if required else 1.0
 
-    # Unsupported factual claims (statements that name nothing allowed/required/UI)
-    unsupported = [s for s in statements if not any(marker in _norm(s) for marker in supported)]
+    # Unsupported factual claims: a statement is unsupported only when it names
+    # neither an evidence string nor any of its meaningful tokens.
+    def _grounded(statement: str) -> bool:
+        norm = _norm(statement)
+        if any(marker in norm for marker in exact_markers):
+            return True
+        return len(_tokens(statement) & evidence_tokens) >= 2
+
+    unsupported = [s for s in statements if not _grounded(s)]
     claim_total = len(statements)
     unsupported_rate = (len(unsupported) / claim_total) if claim_total else 0.0
 

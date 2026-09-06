@@ -346,7 +346,7 @@ def _spec(category: str, index: int) -> dict:
         error = _TERMINAL_ERRORS[index]
         return {
             "question": "Why is this application failing?",
-            "allowed_evidence": (error,),
+            "allowed_evidence": (error, "./APP", "EXIT CODE 1"),
             "required_facts": (error,),
             "forbidden_claims": common_forbidden,
             "uncertainty": "Whether a service is stopped is not visible.",
@@ -371,7 +371,7 @@ def _spec(category: str, index: int) -> dict:
         title, field = _FORMS[index]
         return {
             "question": "Which field is invalid?",
-            "allowed_evidence": (field,),
+            "allowed_evidence": (title, field, "HOST", "PORT", "REQUIRED"),
             "required_facts": (field, "REQUIRED"),
             "forbidden_claims": common_forbidden + (f"The value of {field} is incorrect",),
             "uncertainty": "The exact offending value is not readable.",
@@ -384,7 +384,7 @@ def _spec(category: str, index: int) -> dict:
         title, active = _SETTINGS[index]
         return {
             "question": "Which setting is currently enabled?",
-            "allowed_evidence": (active,),
+            "allowed_evidence": (title, active, "AUTO-SAVE", "TELEMETRY"),
             "required_facts": (active,),
             "forbidden_claims": common_forbidden,
             "uncertainty": "What the setting affects outside this screen is not visible.",
@@ -397,7 +397,7 @@ def _spec(category: str, index: int) -> dict:
         stat, status_value = _DASHBOARDS[index]
         return {
             "question": "Summarize the important status on this dashboard.",
-            "allowed_evidence": (stat, status_value),
+            "allowed_evidence": (stat, status_value, "STATUS DASHBOARD"),
             "required_facts": (stat,),
             "forbidden_claims": common_forbidden,
             "uncertainty": "The meaning of the status beyond the shown value is not visible.",
@@ -437,7 +437,7 @@ def _spec(category: str, index: int) -> dict:
     title = titles[index]
     return {
         "question": "What is wrong on this screen?",
-        "allowed_evidence": (),
+        "allowed_evidence": (title, "NO CAUSE IS VISIBLE IN THIS SCREEN"),
         "required_facts": (),
         "forbidden_claims": ("The screen shows an error", "A service failed"),
         "uncertainty": "No cause is visible; the correct answer is to abstain.",

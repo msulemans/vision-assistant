@@ -382,6 +382,14 @@ Observed on 2026-09-06:
 - A smoke inference in the restricted sandbox runner failed because it exposes
   no Metal GPU (`ggml_metal_init: failed to create command queue`); the real
   bake-off must run from the user's normal Terminal, where Metal is available.
+- First real-model output inspection: the model correctly reads the screen and
+  abstains, but the scorer over-penalised natural language (a statement was
+  "unsupported" unless it repeated the exact evidence string), and the corpus
+  `allowed_evidence` listed only the primary error rather than the full visible
+  text. Corrected: the scorer now grounds a statement by evidence-token overlap,
+  and `allowed_evidence` now includes the full visible text. This is a
+  corpus/scorer correctness fix, not held-out tuning; the two inspected model
+  answers now score unsupported 0.0.
 
 ### Current gate result
 
