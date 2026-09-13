@@ -670,6 +670,23 @@ passing candidate is promoted subject to the resource measurements. The
 Qwen3-VL-8B artifacts were deleted to reclaim 5.8 GB (host-excluded; hashes
 and the exclusion remain in this record).
 
+#### Metric bug found before accepting the first v3 run
+
+Gemma's first v1.5/corpus-v3 run scored 18/24, but three `terminal` failures
+(`recall=0.00`, `ui=0.00`, `unsupported=1.00` while the model had quoted the
+error text on the lines after `[visible]`) did not reproduce: scoring the
+dumped answers locally passed them. Root cause: `runtime_llamaserver` carried
+its own duplicated `parse_answer` with the pre-M005 line-based logic, so every
+`--server` run dropped quoted continuation lines (the continuation-line fix
+had only ever landed in the mtmd-cli module). Fixed by consolidating both
+adapters onto a single parser and by requiring the closing bracket in the
+label regex (a bare `[visible]` line must never parse with `]` as its body).
+59 tests green, including a test that pins both imports to the same function.
+This is a measurement-correctness fix, not tuning: prompt, corpus, and
+thresholds are unchanged. The earlier held-out failures were all inline
+single-line quotes, so the v2 comparison stands; both candidates must now run
+the frozen fresh v3 held-out once each with the corrected scorer.
+
 ### Per-category diagnosis (2026-09-06)
 
 Passes by category: settings 3/3, terminal 2/3, dialog 2/3, form 2/3,

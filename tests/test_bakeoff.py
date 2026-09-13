@@ -155,6 +155,12 @@ class BakeoffHarnessTest(unittest.TestCase):
             self.assertTrue(answer.visible)
             self.assertIn("CONNECT TO DATABASE", answer.visible[0])
 
+    def test_server_and_cli_share_one_parser(self) -> None:
+        from vision_assistant.runtime_llamacpp import parse_answer as cli_parser
+        from vision_assistant.runtime_llamaserver import parse_answer as server_parser
+
+        self.assertIs(server_parser, cli_parser)
+
     def test_parse_answer_keeps_continuation_lines(self) -> None:
         from vision_assistant.runtime_llamacpp import parse_answer
 
@@ -167,6 +173,51 @@ class BakeoffHarnessTest(unittest.TestCase):
         answer = parse_answer(text)
         self.assertEqual(answer.visible, ("./APP 404 NOT FOUND: /API/STATUS EXIT CODE 1",))
         self.assertEqual(answer.unknown, ("The underlying cause is not visible.",))
+
+    def test_parse_answer_handles_label_only_lines(self) -> None:
+        from vision_assistant.runtime_llamacpp import parse_answer
+
+        text = (
+            "[visible]\n"
+            "./APP\n"
+            "DATABASE LOCKED BY ANOTHER SESSION\n"
+            "EXIT CODE 1\n"
+            "[unknown] The specific process locking the database is not visible."
+        )
+        answer = parse_answer(text)
+        self.assertEqual(
+            answer.visible, ("./APP DATABASE LOCKED BY ANOTHER SESSION EXIT CODE 1",)
+        )
+        self.assertEqual(
+            answer.unknown, ("The specific process locking the database is not visible.",)
+        )
+
+    def test_parse_answer_label_with_trailing_space_never_empty(self) -> None:
+        from vision_assistant.runtime_llamacpp import parse_answer
+
+        text = "[visible] \nDATABASE LOCKED BY ANOTHER SESSION\n"
+        answer = parse_answer(text)
+        self.assertEqual(answer.visible, ("DATABASE LOCKED BY ANOTHER SESSION",))
+        self.assertTrue(all(statement.strip() for statement in answer.visible))
+
+    def test_label_only_answer_scores_the_quoted_text(self) -> None:
+        from vision_assistant.corpus import build_corpus
+        from vision_assistant.runtime_llamacpp import parse_answer
+        from vision_assistant.scorer import score
+
+        case = next(c for c in build_corpus() if c.case_id == "m004-terminal-10")
+        text = (
+            "[visible] \n"
+            "./APP\n"
+            "DATABASE LOCKED BY ANOTHER SESSION\n"
+            "EXIT CODE 1\n"
+            "[unknown] The specific process locking the database is not visible."
+        )
+        result = score(case, parse_answer(text))
+        self.assertEqual(result["required_fact_recall"], 1.0)
+        self.assertEqual(result["ui_string_match"], 1.0)
+        self.assertEqual(result["unsupported_claim_rate"], 0.0)
+        self.assertTrue(result["pass"])
 
     def test_wrapped_quote_scores_ui_match(self) -> None:
         from vision_assistant.corpus import build_corpus

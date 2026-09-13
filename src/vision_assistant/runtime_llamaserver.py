@@ -12,7 +12,7 @@ from typing import Callable, Iterable
 from .corpus import CorpusCase
 from .corpus_cli import FROZEN as FROZEN_CORPUS
 from .ports import LabelledAnswer
-from .runtime_llamacpp import _STATEMENT_RE
+from .runtime_llamacpp import parse_answer
 
 # llama-server runs the model once and handles each request over HTTP, so the
 # model stays resident and the response streams. This measures a real first-token
@@ -23,23 +23,6 @@ COMPLETIONS = "/v1/chat/completions"
 
 def build_prompt(question: str) -> str:
     return f"{FROZEN_CORPUS['prompt']}\n\nQuestion: {question}"
-
-
-def parse_answer(text: str) -> LabelledAnswer:
-    buckets: dict[str, list[str]] = {"visible": [], "inferred": [], "unknown": []}
-    for line in text.splitlines():
-        match = _STATEMENT_RE.match(line.strip())
-        if not match:
-            continue
-        label, body = match.group(1).lower(), match.group(2).strip()
-        buckets[label].append(body)
-    if not any(buckets.values()) and text.strip():
-        buckets["visible"].append(text.strip())
-    return LabelledAnswer(
-        visible=tuple(buckets["visible"]),
-        inferred=tuple(buckets["inferred"]),
-        unknown=tuple(buckets["unknown"]),
-    )
 
 
 def _http_request(url: str, payload: dict, timeout_s: float) -> Iterable[str]:

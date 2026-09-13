@@ -11,7 +11,18 @@ from .ports import LabelledAnswer
 
 # A statement like "[visible] A dialog titled ... ", "VISIBLE: ...", or
 # "inferred - the cause is ...". The separator may be a space, colon, dot, or dash.
-_STATEMENT_RE = re.compile(r"^\s*\[?(visible|inferred|unknown)\]?\s*[:.\-]?\s*(.+?)\s*$", re.IGNORECASE)
+# The bracket form requires its closing bracket, so a bare "[visible]" line can
+# never be parsed with "]" as its body.
+_STATEMENT_RE = re.compile(
+    r"^\s*(?:\[\s*(visible|inferred|unknown)\s*\]|(visible|inferred|unknown))\s*[:.\-]?\s*(.+?)\s*$",
+    re.IGNORECASE,
+)
+# A label that stands alone ("[visible]", "[visible]:", "visible-"): the text
+# starts on the following lines.
+_BARE_LABEL_RE = re.compile(
+    r"^\s*(?:\[\s*(visible|inferred|unknown)\s*\]|(visible|inferred|unknown))\s*[:.\-]?\s*$",
+    re.IGNORECASE,
+)
 
 
 def build_prompt(question: str) -> str:
@@ -22,23 +33,38 @@ def build_prompt(question: str) -> str:
 def parse_answer(text: str) -> LabelledAnswer:
     """Bucket the model's labelled answer into visible/inferred/unknown.
 
-    A statement begins at a labelled line and continues across subsequent
-    unlabelled lines: models commonly quote multi-line UI text underneath a
-    single label, and dropping those lines would lose the verbatim quote.
+    Statements may wrap onto following lines, and a label may stand alone with
+    its text beginning on the next lines; models do both. Unlabelled lines
+    extend the current statement, and a label-only line starts a new one. A
+    label-only line must never produce an empty statement.
     """
     buckets: dict[str, list[str]] = {"visible": [], "inferred": [], "unknown": []}
     current: tuple[list[str], int] | None = None
+    pending: list[str] | None = None
     for line in text.splitlines():
-        match = _STATEMENT_RE.match(line.strip())
-        if match:
-            label, body = match.group(1).lower(), match.group(2).strip()
+        stripped = line.strip()
+        match = _STATEMENT_RE.match(stripped)
+        if match and match.group(3).strip():
+            label = (match.group(1) or match.group(2)).lower()
+            body = match.group(3).strip()
             buckets[label].append(body)
             current = (buckets[label], len(buckets[label]) - 1)
+            pending = None
             continue
-        stripped = line.strip()
-        if current is not None and stripped:
+        bare = _BARE_LABEL_RE.match(stripped)
+        if bare:
+            pending = buckets[(bare.group(1) or bare.group(2)).lower()]
+            current = None
+            continue
+        if not stripped:
+            continue
+        if current is not None:
             bucket, index = current
             bucket[index] = f"{bucket[index]} {stripped}".strip()
+        elif pending is not None:
+            pending.append(stripped)
+            current = (pending, len(pending) - 1)
+            pending = None
     # If the model never used labels, treat the non-empty text as one visible
     # statement so the scorer still evaluates it (and likely flags it).
     if not any(buckets.values()) and text.strip():
