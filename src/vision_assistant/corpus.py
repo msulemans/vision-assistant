@@ -317,6 +317,9 @@ _TERMINAL_ERRORS = [
     "TIMEOUT: NO RESPONSE FROM 10.0.0.7:443",
     "DISK FULL: NO SPACE LEFT ON DEVICE",
     "AUTH FAILED: INVALID CREDENTIALS",
+    "SEGMENTATION FAULT AT 0X00A1",
+    "SSL CERTIFICATE HAS EXPIRED",
+    "CONFIG FILE MISSING: SETTINGS.TOML",
 ]
 _DIALOGS = [
     ("CONNECT TO DATABASE", "ENTER THE PASSWORD TO CONTINUE"),
@@ -325,6 +328,9 @@ _DIALOGS = [
     ("NETWORK UNREACHABLE", "CHECK YOUR NETWORK CONNECTION"),
     ("LICENSE EXPIRED", "RENEW TO CONTINUE USING THIS APP"),
     ("SYNC CONFLICT", "CHOOSE WHICH VERSION TO KEEP"),
+    ("UNSAVED CHANGES", "SAVE YOUR WORK BEFORE CLOSING"),
+    ("LOW BATTERY", "PLUG IN TO KEEP WORKING"),
+    ("MIGRATION COMPLETE", "REVIEW THE CHANGES TO CONTINUE"),
 ]
 _FORMS = [
     ("LOGIN", "PASSWORD"),
@@ -333,6 +339,9 @@ _FORMS = [
     ("SETTINGS", "PORT"),
     ("CHECKOUT", "CARD NUMBER"),
     ("PROFILE", "PHONE"),
+    ("RESET PASSWORD", "CONFIRM PASSWORD"),
+    ("SHIPPING", "ZIP CODE"),
+    ("PAYMENT", "EXPIRY DATE"),
 ]
 _SETTINGS = [
     ("PREFERENCES", "AUTO-UPDATE"),
@@ -341,6 +350,9 @@ _SETTINGS = [
     ("NOTIFICATIONS", "SOUND"),
     ("PRIVACY", "ICLOUD SYNC"),
     ("ACCOUNT", "TWO-FACTOR"),
+    ("SECURITY", "FIREWALL"),
+    ("DISPLAY", "NIGHT SHIFT"),
+    ("ADVANCED", "BETA UPDATES"),
 ]
 _DASHBOARDS = [
     ("CPU 78%", "ALL SYSTEMS NORMAL"),
@@ -349,6 +361,9 @@ _DASHBOARDS = [
     ("NET 1.2GB", "ALL SYSTEMS NORMAL"),
     ("UPTIME 42H", "DEGRADED"),
     ("LATENCY 210MS", "SLOW RESPONSE"),
+    ("DISK 82%", "CLEANUP RECOMMENDED"),
+    ("BATTERY 64%", "PLUGGED IN"),
+    ("QUEUE 12", "PROCESSING"),
 ]
 _SMALL_TEXTS = [
     "END USER LICENSE AGREEMENT. BY CLICKING ACCEPT YOU AGREE TO THE TERMS BELOW.",
@@ -357,12 +372,23 @@ _SMALL_TEXTS = [
     "COOKIE NOTICE. YOU MAY DISABLE NON-ESSENTIAL COOKIES IN SETTINGS.",
     "SECURITY NOTICE. REPORT ANY SUSPECTED VULNERABILITY TO SECURITY@EXAMPLE.COM.",
     "DATA PROCESSING. TRANSFERS ARE ENCRYPTED AT REST AND IN TRANSIT.",
+    "SERVICE AGREEMENT. USAGE IS MONITORED FOR QUALITY.",
+    "BACKUP NOTICE. RESTORE POINTS ARE KEPT FOR 30 DAYS.",
+    "ACCESSIBILITY. REDUCED MOTION CAN BE ENABLED IN SETTINGS.",
 ]
 
 
 def _spec(category: str, index: int) -> dict:
     """Return the authored evidence/facts/claims for one corpus case."""
-    split = "dev" if index < 3 else "heldout"
+    if index < 3:
+        split = "dev"
+    elif index < 6:
+        # Inspected under corpus v1 while tuning; diagnostics only, never used
+        # to promote a candidate.
+        split = "legacy"
+    else:
+        # Fresh held-out cases, authored and frozen before the candidate run.
+        split = "heldout"
     common_forbidden = ("The screenshot proves the root cause", "The service is definitely stopped")
     if category == "terminal":
         error = _TERMINAL_ERRORS[index]
@@ -455,7 +481,10 @@ def _spec(category: str, index: int) -> dict:
             "dark": True,
         }
     # insufficient_evidence
-    titles = ("NOTHING TO REPORT", "PROCESSING", "NO ERRORS", "WAITING", "EMPTY", "CHECKING")
+    titles = (
+        "NOTHING TO REPORT", "PROCESSING", "NO ERRORS", "WAITING", "EMPTY", "CHECKING",
+        "ALL CLEAR", "STANDBY", "IDLE",
+    )
     title = titles[index]
     return {
         "question": "What is wrong on this screen?",
@@ -500,10 +529,10 @@ def _build_fixture(case_id: str, category: str, spec: dict) -> SyntheticFixture:
 
 
 def build_corpus(out_dir: Path | None = None) -> list[CorpusCase]:
-    """Generate all 48 frozen cases (24 dev + 24 held-out) deterministically."""
+    """Generate all 72 frozen cases (24 dev, 24 legacy, 24 fresh held-out) deterministically."""
     cases: list[CorpusCase] = []
     for category in CATEGORIES:
-        for index in range(6):
+        for index in range(9):
             spec = _spec(category, index)
             case_id = f"m004-{category}-{index + 1:02d}"
             fixture = _build_fixture(case_id, category, spec)

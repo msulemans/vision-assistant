@@ -29,14 +29,18 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 # v1.4 (M005, after the v1.3 probe; development-data-driven):
 #   - the model normalized an unusual character (`X` read as `%`, likely a
 #     printf-style prior), so the rules now forbid substituting characters
-# The held-out split was inspected under v1.0, so it is no longer clean for a
-# final promotion claim; a fresh held-out set is required before promoting.
+# Corpus v2 (M005): the v1 held-out split was inspected while tuning, so three
+# fresh cases per category were authored and frozen as the new held-out split
+# (indices 7-9). The inspected v1 cases are retained as the "legacy" split for
+# diagnostics only and are never used to promote.
 FROZEN = {
     "schema_version": "1.0",
     "config_version": "1.4",
-    "corpus_size": 48,
+    "corpus_version": "2.0",
+    "corpus_size": 72,
     "dev_cases": 24,
     "heldout_cases": 24,
+    "legacy_cases": 24,
     "image": {"max_width": 8192, "max_height": 8192, "max_pixels": 40_000_000},
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (
@@ -129,7 +133,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"manifest={manifest_path}")
         print(f"frozen-config={frozen_path}")
         cases = build_corpus()
-        print(f"cases={len(cases)} dev={sum(1 for c in cases if c.split == 'dev')} heldout={sum(1 for c in cases if c.split == 'heldout')}")
+        print(
+            f"cases={len(cases)} dev={sum(1 for c in cases if c.split == 'dev')} "
+            f"heldout={sum(1 for c in cases if c.split == 'heldout')} "
+            f"legacy={sum(1 for c in cases if c.split == 'legacy')}"
+        )
 
     if args.verify:
         cases = build_corpus()

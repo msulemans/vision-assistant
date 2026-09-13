@@ -81,7 +81,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--inspect", type=int, help="dump the raw model output for the first N held-out cases")
     parser.add_argument("--detail", action="store_true", help="print per-case results")
     parser.add_argument("--server", action="store_true", help="use the persistent llama-server adapter (streaming)")
-    parser.add_argument("--split", choices=["dev", "heldout"], default="heldout", help="which corpus split to run")
+    parser.add_argument("--split", choices=["dev", "heldout", "legacy"], default="heldout", help="which corpus split to run")
     parser.add_argument("--dump", action="store_true", help="print a raw output summary for failing cases (with --real)")
     parser.add_argument("--max-tokens", type=int, default=1024, help="generation budget for the server adapter")
     parser.add_argument("--no-think", action="store_true", help="disable the model's thinking mode via --jinja + chat_template_kwargs")

@@ -485,6 +485,28 @@ Observed on 2026-09-06:
   (a printf-style path was "corrected"), not a fixture-legibility limit; the
   fixture is deliberately not changed to make it pass. Prompt v1.4 adds a
   generic rule against substituting or normalizing characters.
+- Full dev run with the frozen v1.4 prompt (2026-09-06, 24 cases, thinking
+  off): 23/24 pass. recall 1.00, UI-string match 0.9583, unsupported-claim
+  rate 0.0, forbidden 0, abstention 1.0, first-token p95 1016 ms,
+  complete-answer p95 1750 ms. The contract's `held_out_pass_rate` is 1.0, so
+  this is still a gate miss: the single failure is terminal-02, where the
+  model insists on reading `X` as `%` in `/VAR/RUN/X.SOCK`. The fixture was
+  inspected as pixels (the glyph renders as `X`), and sibling terminal cases
+  transcribe longer strings exactly at the same scale, so this is a model
+  prior (a printf-style path), not a legibility defect.
+
+### Corpus v2 — fresh held-out set
+
+The v1 held-out split was exercised and inspected while tuning, so it cannot
+decide promotion (`docs/METRICS.md`: "tuning after inspection requires a fresh
+held-out set, not repeated attempts on the same set"). Corpus v2 therefore
+authors three new cases per category (indices 7-9), frozen as the new
+`heldout` split before the candidate run; the inspected v1 cases are retained
+as `legacy` for diagnostics only, and the dev split is unchanged so dev
+results stay comparable. Corpus v2 has 72 cases: 24 dev, 24 legacy, 24
+held-out; the deterministic self-test passes gold 72/72 and fails bad 72/72.
+The candidate must clear the fresh held-out split in a single frozen run
+(`--split heldout`, thinking off) before any promotion.
 
 ### Current gate result
 
