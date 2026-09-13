@@ -604,7 +604,15 @@ and is NOT a candidate quality result; Qwen3.5-4B (23/24) and Gemma-3-4B
 (21/24) remain the two valid held-out results. `--dump` now prints the raw SSE
 `EVENTS:` payloads whenever a run produces no text, and the next diagnostic
 step is `bakeoff_cli --probe-server --pin-dir models/qwen3-vl-8b` to capture
-the full raw response for one image.
+the full raw response for one image. The probe returned
+`{"error":{"code":500,"message":"Compute error.","type":"server_error"}}` —
+a llama.cpp graph-computation failure, typically a template/token or
+batch-shape mismatch rather than a quality signal. Diagnostics added:
+llama-server stdout/stderr are now captured to
+`runs/llama-server-<candidate>.log` (the probe prints the last lines on
+failure), and `--jinja` is an independent runtime flag — the prime suspect is
+Qwen3-VL's chat template needing Jinja expansion so the image placeholder
+tokens match the projector's embeddings.
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
