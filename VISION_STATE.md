@@ -541,6 +541,15 @@ bake-off already consumes.
 Run protocol (Gemma 3 is not a reasoning model, so thinking is not disabled):
 `bakeoff_cli --real --server --pin-dir models/gemma-3-4b --detail --dump`.
 
+Pinned on 2026-09-13 (SHA-256 verified locally, `acquire check` OK):
+`gemma-3-4b-it-Q4_K_M.gguf` 2 489 894 016 bytes
+`04a43a22e8d2003deda5acc262f68ec1005fa76c735a9962a8c77042a74a7d19`;
+`mmproj-F16.gguf` 851 251 328 bytes
+`731199e016ec5f227b8293fef839899472e0ee4c51adf5f9e5cb66f6558fa142`.
+Note: an initial parallel download corrupted the model file (two writers); the
+artifact was re-downloaded in a single process and the size and hash checks
+now pass.
+
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
