@@ -89,6 +89,16 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertEqual(len(CANDIDATE["files"]), 2)
         self.assertTrue(all(f["sha256"] == "to-pin" for f in CANDIDATE["files"]))
 
+    def test_acquire_registry_has_a_second_candidate(self) -> None:
+        from vision_assistant.acquire import CANDIDATES
+
+        self.assertEqual(sorted(CANDIDATES), ["gemma-3-4b", "qwen3.5-4b"])
+        gemma = CANDIDATES["gemma-3-4b"]
+        self.assertEqual(gemma["repo"], "unsloth/gemma-3-4b-it-GGUF")
+        self.assertEqual(gemma["family"], "gemma")
+        self.assertEqual([f["role"] for f in gemma["files"]], ["model", "mmproj"])
+        self.assertTrue(all(f["sha256"] == "to-pin" for f in gemma["files"]))
+
     def test_sse_consume_measures_and_joins_tokens(self) -> None:
         import time
 

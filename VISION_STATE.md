@@ -526,6 +526,21 @@ generic exact-transcription rule. Per the frozen candidate rule, the next step
 is the second 4B-class architecture comparison (the `<=9B` quality control is
 added only if both small candidates miss the gate).
 
+### Second candidate — Gemma 3 4B IT
+
+Chosen as the "second 4B-class architecture" because it is a different
+architecture family from Qwen (the point of the comparison), is image-text-to-
+text, and ships llama.cpp-ready GGUF artifacts: `gemma-3-4b-it-Q4_K_M.gguf`
+(2.49 GB) plus `mmproj-F16.gguf` (851 MB) from `unsloth/gemma-3-4b-it-GGUF`.
+Licence: Gemma Terms of Use (recorded with URL in `acquire.py`; not
+Apache-2.0, so packaging/redistribution checks will be needed before any
+release-grade claim). The acquisition registry now pins both candidates and
+`acquire download --candidate NAME` writes the same `pin.json` format the
+bake-off already consumes.
+
+Run protocol (Gemma 3 is not a reasoning model, so thinking is not disabled):
+`bakeoff_cli --real --server --pin-dir models/gemma-3-4b --detail --dump`.
+
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
