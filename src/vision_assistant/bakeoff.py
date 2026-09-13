@@ -138,13 +138,16 @@ def run_candidate(
 
     thresholds = FROZEN_BAKEOFF["thresholds"]
     ceilings = FROZEN_BAKEOFF["ceilings"]
+    # Grade the cases actually run (the overall aggregates), not the *_heldout
+    # variants: a dev-split or limited run must report its own numbers, and the
+    # held-out keys fall back to empty-set defaults.
     quality = (
-        agg["passes_heldout"] == len(held_cases)
-        and agg["required_fact_recall_heldout"] >= thresholds["required_fact_recall"]
-        and agg["unsupported_claim_rate_heldout"] <= thresholds["unsupported_claim_rate"]
-        and agg["forbidden_claims_heldout"] == thresholds["forbidden_claims"]
+        agg["passes"] == len(held_cases)
+        and agg["required_fact_recall"] >= thresholds["required_fact_recall"]
+        and agg["unsupported_claim_rate"] <= thresholds["unsupported_claim_rate"]
+        and agg["forbidden_claims"] == thresholds["forbidden_claims"]
         and agg["ui_string_match"] >= thresholds["ui_string_match"]
-        and agg["abstain_heldout_correct"] >= thresholds["abstain_heldout_correct"]
+        and agg["abstain_correct"] >= thresholds["abstain_heldout_correct"]
     )
     measured = [
         (candidate.cold_readiness_ms, ceilings["cold_readiness_ms"]),
@@ -172,8 +175,8 @@ def run_candidate(
         "unsupported_claim_rate": agg["unsupported_claim_rate"],
         "forbidden_claims": agg["forbidden_claims"],
         "ui_string_match": agg["ui_string_match"],
-        "abstain_heldout_correct": agg["abstain_correct"],
-        "passes_heldout": agg["passes"],
+        "abstain_correct": agg["abstain_correct"],
+        "passes": agg["passes"],
         "first_token_p95_ms": first_p95,
         "complete_answer_p95_ms": complete_p95,
         "cold_readiness_ms": candidate.cold_readiness_ms,

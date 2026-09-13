@@ -7,6 +7,47 @@ import tempfile
 from pathlib import Path
 
 
+def _summarize_raw(raw: str, content_limit: int = 1200) -> str:
+    """Summarize a captured model response for diagnosis.
+
+    For streaming SSE captures, separate the labelled answer (`content`) from
+    the chain-of-thought (`reasoning_content`) and report the finish reason, so
+    an empty answer can be distinguished from an over-abstaining one. For
+    non-streaming captures, print the raw text directly.
+    """
+    if not any(line.strip().startswith("data:") for line in raw.splitlines()):
+        return f"RAW (non-streaming, {len(raw)} chars): {raw[:content_limit]}"
+    reasoning: list[str] = []
+    content: list[str] = []
+    finish = ""
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line.startswith("data:"):
+            continue
+        payload = line[5:].strip()
+        if payload == "[DONE]":
+            break
+        try:
+            data = json.loads(payload)
+            choice = (data.get("choices") or [{}])[0]
+            delta = choice.get("delta", {})
+            if delta.get("reasoning_content"):
+                reasoning.append(delta["reasoning_content"])
+            if delta.get("content"):
+                content.append(delta["content"])
+            if choice.get("finish_reason"):
+                finish = choice["finish_reason"]
+        except (json.JSONDecodeError, IndexError, AttributeError):
+            continue
+    joined_content = "".join(content)
+    joined_reasoning = "".join(reasoning)
+    return (
+        f"CONTENT ({len(joined_content)} chars): {joined_content[:content_limit]}\n"
+        f"REASONING ({len(joined_reasoning)} chars, tail): ...{joined_reasoning[-300:]}\n"
+        f"FINISH: {finish or 'unknown'}"
+    )
+
+
 def _candidate(name, family, params_b, size_mib, first_ms, complete_ms, *, runtime_kind="fake"):
     return {
         "name": name,
@@ -41,6 +82,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--detail", action="store_true", help="print per-case results")
     parser.add_argument("--server", action="store_true", help="use the persistent llama-server adapter (streaming)")
     parser.add_argument("--split", choices=["dev", "heldout"], default="heldout", help="which corpus split to run")
+    parser.add_argument("--dump", action="store_true", help="print a raw output summary for failing cases (with --real)")
+    parser.add_argument("--max-tokens", type=int, default=1024, help="generation budget for the server adapter")
     parser.add_argument("--probe-server", action="store_true", help="send one image request and print the raw server response")
     args = parser.parse_args(argv)
 
@@ -171,10 +214,19 @@ def main(argv: list[str] | None = None) -> int:
             def _progress(index: int, case_id: str, category: str) -> None:
                 print(f"  [{index + 1}/{total}] {case_id} ({category}) ...", file=sys.stderr, flush=True)
 
+            raws: dict[str, str] = {}
+
+            def _capture(case):
+                answer, timings = adapter.predict(case)
+                raws[case.case_id] = timings.get("raw", "") if timings else ""
+                return answer, timings
+
             if args.server:
                 from .runtime_llamaserver import LlamaServerAdapter
 
-                adapter = LlamaServerAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
+                adapter = LlamaServerAdapter(
+                    pin_dir / model["name"], pin_dir / mmproj["name"], max_tokens=args.max_tokens
+                )
                 adapter.start()
             else:
                 from .runtime_llamacpp import LlamaCppAdapter
@@ -182,10 +234,17 @@ def main(argv: list[str] | None = None) -> int:
                 adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
 
             try:
-                result = run_candidate(candidate, adapter.predict, held_cases, progress=_progress)
+                result = run_candidate(candidate, _capture, held_cases, progress=_progress)
             finally:
                 if args.server:
                     adapter.stop()
+            if args.dump:
+                print("RAW DUMP (failing cases):")
+                for row in result["per_case"]:
+                    if not row["pass"]:
+                        print(f"=== {row['case_id']} ({row['category']}) ===")
+                        print(_summarize_raw(raws.get(row["case_id"], "")))
+                print("")
             if args.detail:
                 print("PER CASE:")
                 for row in result["per_case"]:

@@ -428,6 +428,21 @@ Observed on 2026-09-06:
   version may change. Consequence: the held-out split was already inspected
   under v1.0, so a fresh held-out set is required before any promotion claim —
   tuning must not become repeated attempts against the same held-out cases.
+- v1.1 dev regression (2026-09-06): the stricter prompt *reduced* dev passes to
+  9/24 (recall 0.5833, UI match 0.4167, unsupported 0.0556, complete p95
+  25023 ms, first-token p95 1087 ms). Many cases collapse to recall/ui/unsp =
+  0.00, the signature of an answer with no scorable statements — either the
+  model abstained with `[unknown]`-only text, or it produced no `content` at
+  all. Both fit the evidence, so the run is retained as a regression and
+  `bakeoff_cli --dump` now prints, for failing cases, the scored `content`,
+  the reasoning tail, and the finish reason (`--max-tokens` is also
+  configurable for diagnosis). The v1.1 prompt stays until that raw evidence
+  distinguishes over-abstention from budget exhaustion; v1.0 remains the best
+  dev result (11/24).
+- Scoring/reporting correction: `run_candidate` now grades the aggregates of
+  the split actually run (overall keys) instead of the `*_heldout` keys, which
+  fall back to empty-set defaults during dev runs. Summary keys renamed to
+  `passes` and `abstain_correct`.
 
 ### Current gate result
 

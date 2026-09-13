@@ -139,6 +139,27 @@ class BakeoffHarnessTest(unittest.TestCase):
             self.assertTrue(answer.visible)
             self.assertIn("CONNECT TO DATABASE", answer.visible[0])
 
+    def test_summarize_raw_separates_content_reasoning_and_finish(self) -> None:
+        from vision_assistant.bakeoff_cli import _summarize_raw
+
+        raw = (
+            'data: {"choices":[{"delta":{"reasoning_content":"thinking hard "}}]}\n'
+            'data: {"choices":[{"delta":{"content":"[visible] CPU 78%"}}]}\n'
+            'data: {"choices":[{"delta":{},"finish_reason":"length"}]}\n'
+            "data: [DONE]\n"
+        )
+        summary = _summarize_raw(raw)
+        self.assertIn("CONTENT (17 chars): [visible] CPU 78%", summary)
+        self.assertIn("thinking hard", summary)
+        self.assertIn("FINISH: length", summary)
+
+    def test_summarize_raw_handles_non_streaming_output(self) -> None:
+        from vision_assistant.bakeoff_cli import _summarize_raw
+
+        summary = _summarize_raw("[visible] The app shows ERROR 42.")
+        self.assertIn("non-streaming", summary)
+        self.assertIn("ERROR 42", summary)
+
 
 if __name__ == "__main__":
     unittest.main()
