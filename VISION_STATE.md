@@ -613,6 +613,17 @@ llama-server stdout/stderr are now captured to
 failure), and `--jinja` is an independent runtime flag — the prime suspect is
 Qwen3-VL's chat template needing Jinja expansion so the image placeholder
 tokens match the projector's embeddings.
+
+The server log then named the real cause: `ggml_metal_synchronize: error:
+Insufficient Memory (kIOGPUCommandBufferCallbackErrorOutOfMemory)` during
+image decode (`llama_decode: failed to decode, ret = -3` → `failed to decode
+image`). Qwen3-VL-8B's F16 vision projector overran the Metal working set on
+this host; `--jinja` is required for the image tokens to expand correctly
+(without it the server reports only a bare "Compute error"). Response:
+`--no-mmproj-offload` runs the vision projector on CPU while the language
+model stays on GPU — recorded as a configuration change, since
+`docs/METRICS.md` asks for complete-configuration comparisons and processor
+differences. Probe protocol for this candidate: `--jinja --no-mmproj-offload`.
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
