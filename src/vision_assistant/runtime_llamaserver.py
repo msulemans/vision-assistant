@@ -104,6 +104,7 @@ class LlamaServerAdapter:
         timeout_s: float = 120.0,
         jinja: bool = False,
         chat_template_kwargs: dict | None = None,
+        mmproj_offload: bool = True,
         log_path: Path | None = None,
         transport: Callable[[str, dict, float], Iterable[str]] = _http_request,
         runner: object = subprocess.Popen,
@@ -119,6 +120,7 @@ class LlamaServerAdapter:
         self.timeout_s = timeout_s
         self.jinja = jinja
         self.chat_template_kwargs = dict(chat_template_kwargs) if chat_template_kwargs else None
+        self.mmproj_offload = mmproj_offload
         self.log_path = Path(log_path) if log_path is not None else None
         self._log_handle: object | None = None
         self._transport = transport
@@ -141,6 +143,8 @@ class LlamaServerAdapter:
         ]
         if self.jinja:
             argv.append("--jinja")
+        if not self.mmproj_offload:
+            argv.append("--no-mmproj-offload")
         return argv
 
     def _spawn_kwargs(self) -> dict:

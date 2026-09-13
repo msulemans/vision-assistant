@@ -95,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-tokens", type=int, default=1024, help="generation budget for the server adapter")
     parser.add_argument("--no-think", action="store_true", help="disable the model's thinking mode via --jinja + chat_template_kwargs")
     parser.add_argument("--jinja", action="store_true", help="run llama-server with --jinja (use the model's own chat template)")
+    parser.add_argument("--no-mmproj-offload", action="store_true", help="run the vision projector on CPU (avoids Metal OOM on larger models)")
     parser.add_argument("--probe-server", action="store_true", help="send one image request and print the raw server response")
     args = parser.parse_args(argv)
 
@@ -174,7 +175,11 @@ def main(argv: list[str] | None = None) -> int:
         mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
         log_path = LOG_DIR / f"llama-server-{pin['candidate']}.log"
         adapter = LlamaServerAdapter(
-            pin_dir / model["name"], pin_dir / mmproj["name"], jinja=args.jinja, log_path=log_path
+            pin_dir / model["name"],
+            pin_dir / mmproj["name"],
+            jinja=args.jinja,
+            mmproj_offload=not args.no_mmproj_offload,
+            log_path=log_path,
         )
         adapter.start()
         try:
@@ -248,6 +253,7 @@ def main(argv: list[str] | None = None) -> int:
                     max_tokens=args.max_tokens,
                     jinja=args.no_think or args.jinja,
                     chat_template_kwargs={"enable_thinking": False} if args.no_think else None,
+                    mmproj_offload=not args.no_mmproj_offload,
                     log_path=LOG_DIR / f"llama-server-{pin['candidate']}.log",
                 )
                 adapter.start()

@@ -218,6 +218,16 @@ class BakeoffHarnessTest(unittest.TestCase):
         thinking_off = LlamaServerAdapter(Path("models/x"), Path("models/y"), jinja=True)
         self.assertIn("--jinja", thinking_off._server_argv())
 
+    def test_server_argv_disables_mmproj_offload_only_when_requested(self) -> None:
+        from pathlib import Path
+
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        plain = LlamaServerAdapter(Path("models/x"), Path("models/y"))
+        self.assertNotIn("--no-mmproj-offload", plain._server_argv())
+        cpu_vision = LlamaServerAdapter(Path("models/x"), Path("models/y"), mmproj_offload=False)
+        self.assertIn("--no-mmproj-offload", cpu_vision._server_argv())
+
     def test_server_spawn_kwargs_use_log_file_when_provided(self) -> None:
         import subprocess
         import tempfile
