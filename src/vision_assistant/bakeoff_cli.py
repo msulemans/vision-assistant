@@ -41,11 +41,18 @@ def _summarize_raw(raw: str, content_limit: int = 1200) -> str:
             continue
     joined_content = "".join(content)
     joined_reasoning = "".join(reasoning)
-    return (
-        f"CONTENT ({len(joined_content)} chars): {joined_content[:content_limit]}\n"
-        f"REASONING ({len(joined_reasoning)} chars, tail): ...{joined_reasoning[-300:]}\n"
-        f"FINISH: {finish or 'unknown'}"
-    )
+    lines_out = [
+        f"CONTENT ({len(joined_content)} chars): {joined_content[:content_limit]}",
+        f"REASONING ({len(joined_reasoning)} chars, tail): ...{joined_reasoning[-300:]}",
+        f"FINISH: {finish or 'unknown'}",
+    ]
+    if not joined_content and not joined_reasoning:
+        # No generated text at all: show the raw SSE payloads so server-side
+        # errors (which arrive as `data: {"error": ...}` events) are visible
+        # instead of being reported as an empty answer.
+        samples = [line.strip() for line in raw.splitlines() if line.strip().startswith("data:")]
+        lines_out.append("EVENTS: " + " | ".join(sample[:240] for sample in samples[:3]))
+    return "\n".join(lines_out)
 
 
 def _candidate(name, family, params_b, size_mib, first_ms, complete_ms, *, runtime_kind="fake"):

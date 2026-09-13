@@ -592,6 +592,19 @@ Pinned on 2026-09-13 (`acquire check --candidate qwen3-vl-8b` OK):
 `mmproj-Qwen3VL-8B-Instruct-F16.gguf` 1 159 029 824 bytes
 `ca524100ebf825c9a870db1c580d03879e0da0ab2541697e2458e64891cf9d38`.
 Free space after acquisition: 47 GiB (frozen floor 30 GiB).
+
+### Qwen3-VL-8B run — infrastructure failure (not a quality result)
+
+The first Qwen3-VL-8B held-out run produced no generated text on any of the
+24 cases (`CONTENT 0 chars`, `FINISH: unknown`, first-token and complete p95
+0.0 ms). The server passed its health check and answered every request with
+SSE data lines that carried no `choices[].delta` payload — the shape of
+server-side error events. This run is recorded as an infrastructure incident
+and is NOT a candidate quality result; Qwen3.5-4B (23/24) and Gemma-3-4B
+(21/24) remain the two valid held-out results. `--dump` now prints the raw SSE
+`EVENTS:` payloads whenever a run produces no text, and the next diagnostic
+step is `bakeoff_cli --probe-server --pin-dir models/qwen3-vl-8b` to capture
+the full raw response for one image.
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24

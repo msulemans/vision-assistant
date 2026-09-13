@@ -265,6 +265,18 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertIn("non-streaming", summary)
         self.assertIn("ERROR 42", summary)
 
+    def test_summarize_raw_reveals_unrecognized_events(self) -> None:
+        from vision_assistant.bakeoff_cli import _summarize_raw
+
+        raw = (
+            'data: {"error":{"message":"failed to process image","code":400}}\n'
+            "data: [DONE]\n"
+        )
+        summary = _summarize_raw(raw)
+        self.assertIn("CONTENT (0 chars)", summary)
+        self.assertIn("EVENTS:", summary)
+        self.assertIn("failed to process image", summary)
+
 
 if __name__ == "__main__":
     unittest.main()
