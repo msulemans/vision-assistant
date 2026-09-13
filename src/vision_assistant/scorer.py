@@ -16,7 +16,10 @@ def _tokens(text: str) -> set[str]:
     out: set[str] = set()
     for word in _WORD.findall(text):
         word = word.strip(".")
-        if len(word) >= 3:
+        # Keep words of 3+ characters and all numeric tokens. Short numbers are
+        # meaningful evidence ("CPU 78%", "ERRORS 3", "EXIT CODE 1"), while
+        # short function words ("of", "to") are safely dropped.
+        if len(word) >= 3 or any(ch.isdigit() for ch in word):
             out.add(word.lower())
     return out
 

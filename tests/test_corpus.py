@@ -6,6 +6,7 @@ import unittest
 
 from vision_assistant.corpus import CATEGORIES, build_corpus, manifest
 from vision_assistant.corpus_cli import FROZEN, bad_answer, gold_answer
+from vision_assistant.ports import LabelledAnswer
 from vision_assistant.scorer import score
 
 
@@ -57,6 +58,14 @@ class CorpusMilestoneTest(unittest.TestCase):
         self.assertIn("promotion", FROZEN)
         self.assertIn("ceilings", FROZEN)
         self.assertLessEqual(FROZEN["thresholds"]["unsupported_claim_rate"], 0.05)
+
+    def test_numeric_evidence_counts_as_recall(self) -> None:
+        """A short but meaningful number ("78" in "CPU 78%") must not be dropped."""
+        case = next(c for c in self.cases if c.case_id == "m004-dashboard-01")
+        paraphrase = LabelledAnswer(visible=("The CPU usage reads 78 percent.",), inferred=(), unknown=())
+        self.assertEqual(score(case, paraphrase)["required_fact_recall"], 1.0)
+        vague = LabelledAnswer(visible=("The CPU looks busy.",), inferred=(), unknown=())
+        self.assertEqual(score(case, vague)["required_fact_recall"], 0.0)
 
 
 if __name__ == "__main__":

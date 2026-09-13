@@ -360,7 +360,8 @@ trace cleanliness?
 - `corpus.py` fixture readability fix: small_text is now wrapped at a 2× scale
   and the dashboard metric card is larger/prominent so a 4B can read them.
 - `corpus_cli.py` prompt tightened to suppress unsupported inference and to force
-  `[unknown]` abstention on insufficient-evidence cases.
+  `[unknown]` abstention on insufficient-evidence cases; revised to config v1.1
+  to require verbatim on-screen quoting and cap answers at 3 statements.
 - `runtime_llamaserver.py` adds a persistent, streaming `LlamaServerAdapter`
   (model resident, SSE) so a real first-token latency can be measured;
   `bakeoff_cli.py --server` uses it.
@@ -416,6 +417,17 @@ Observed on 2026-09-06:
   failure profile is genuine model behaviour (paraphrasing UI strings, no
   abstention on no-evidence screens, slight verbosity just over the 20 s
   ceiling) rather than a reporting bug.
+- Dev-driven iteration, config v1.1 (2026-09-06): thresholds and ceilings are
+  unchanged. The frozen prompt now requires (a) verbatim on-screen quoting,
+  (b) a mandatory `[unknown]` statement when the requested cause is not
+  visible, and (c) at most 3 statements to cut verbosity. The scorer's
+  tokeniser now retains numeric tokens, fixing a false "missed fact" where
+  "CPU usage reads 78 percent" failed to recall `CPU 78%`. Rationale:
+  `docs/METRICS.md` says "Use development data to choose the configuration and
+  prompt"; the thresholds are frozen targets that only a new evaluation
+  version may change. Consequence: the held-out split was already inspected
+  under v1.0, so a fresh held-out set is required before any promotion claim —
+  tuning must not become repeated attempts against the same held-out cases.
 
 ### Current gate result
 

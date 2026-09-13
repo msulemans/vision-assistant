@@ -14,24 +14,35 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 
 # Frozen evaluation configuration for the M004 corpus (locked before any model
 # is downloaded). M005 must not change these without a new version and reruns.
+#
+# v1.1 (M005, development-data-driven; thresholds and ceilings unchanged):
+#   - require verbatim on-screen quoting (the UI-string metric is exact match)
+#   - require an [unknown] statement when the requested cause is not visible
+#   - cap the answer at 3 statements to cut verbosity (complete-answer p95)
+# The held-out split was inspected under v1.0, so it is no longer clean for a
+# final promotion claim; a fresh held-out set is required before promoting.
 FROZEN = {
     "schema_version": "1.0",
+    "config_version": "1.1",
     "corpus_size": 48,
     "dev_cases": 24,
     "heldout_cases": 24,
     "image": {"max_width": 8192, "max_height": 8192, "max_pixels": 40_000_000},
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (
-        "You are reading one user-selected screenshot. Answer the question with "
-        "at most a few statements, each labelled [visible], [inferred], or "
+        "You are reading one user-selected screenshot. Answer the question in "
+        "at most 3 statements, each labelled [visible], [inferred], or "
         "[unknown].\n"
+        "Copy every on-screen string exactly as shown, character for "
+        "character (labels, values, numbers, error codes, status phrases); "
+        "never reword, paraphrase, or round a shown string.\n"
         "[visible]: only what the screenshot plainly shows.\n"
         "[inferred]: only a cause that is strongly supported by the visible "
         "evidence; if you are not sure, do not use [inferred].\n"
         "[unknown]: what the screenshot does not establish.\n"
-        "If the screenshot does not show a cause or the needed answer, output "
-        "ONLY one [unknown] statement saying so. Never invent a [visible] or "
-        "[inferred] claim that is not supported."
+        "If the screenshot does not show the requested cause or answer, your "
+        "reply MUST include an [unknown] statement saying it is not visible, "
+        "and you must not guess a cause."
     ),
     "answer_schema": {"visible": "list[str]", "inferred": "list[str]", "unknown": "list[str]"},
     "decoding": {"max_tokens": 256, "deadline_s": 30},
