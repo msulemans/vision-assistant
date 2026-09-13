@@ -466,6 +466,16 @@ Observed on 2026-09-06:
   Fixes: `parse_answer` now keeps continuation lines inside the current
   statement, and prompt v1.2 asks for exactly one [visible] line plus one
   [unknown] line with a short example and bans layout/absence descriptions.
+- v1.2 probe (2026-09-06, 8 cases, thinking off): every case stops cleanly
+  (`FINISH: stop`), the unsupported-claim rate is 0.0, complete-answer p95
+  falls from 25708 ms to 1540 ms (the latency ceiling now passes), and the
+  parse fix takes terminal-03 to ui 1.0; terminal-01 and terminal-03 pass.
+  Remaining gap: the two-line format makes the model quote a single string, so
+  dialog cases quote the body instead of the required heading (recall 0.0) and
+  form cases miss the second fact (`REQUIRED`, recall 0.5). Prompt v1.3 asks
+  for every task-relevant string separated by "; ", including headings; a
+  format-compliance test proves that a compliant answer clears dialog-01,
+  form-01, and terminal-03.
 
 ### Current gate result
 

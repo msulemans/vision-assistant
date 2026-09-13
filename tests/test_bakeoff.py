@@ -169,6 +169,29 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertEqual(result["required_fact_recall"], 1.0)
         self.assertTrue(result["pass"])
 
+    def test_multi_string_quote_passes_dialog_and_form(self) -> None:
+        from vision_assistant.corpus import build_corpus
+        from vision_assistant.runtime_llamacpp import parse_answer
+        from vision_assistant.scorer import score
+
+        cases = {c.case_id: c for c in build_corpus()}
+
+        dialog = parse_answer(
+            "[visible] CONNECT TO DATABASE; ENTER THE PASSWORD TO CONTINUE\n"
+            "[unknown] Whether the user has already entered a password is not visible."
+        )
+        result = score(cases["m004-dialog-01"], dialog)
+        self.assertEqual(result["ui_string_match"], 1.0)
+        self.assertTrue(result["pass"])
+
+        form = parse_answer(
+            "[visible] PASSWORD; REQUIRED\n"
+            "[unknown] Whether the user entered a valid password is not visible."
+        )
+        result = score(cases["m004-form-01"], form)
+        self.assertEqual(result["required_fact_recall"], 1.0)
+        self.assertTrue(result["pass"])
+
     def test_server_argv_includes_jinja_only_when_enabled(self) -> None:
         from pathlib import Path
 
