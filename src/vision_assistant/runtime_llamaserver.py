@@ -104,6 +104,7 @@ class LlamaServerAdapter:
         timeout_s: float = 120.0,
         jinja: bool = False,
         chat_template_kwargs: dict | None = None,
+        log_path: Path | None = None,
         transport: Callable[[str, dict, float], Iterable[str]] = _http_request,
         runner: object = subprocess.Popen,
         monotonic_ns: object = time.monotonic_ns,
@@ -118,6 +119,8 @@ class LlamaServerAdapter:
         self.timeout_s = timeout_s
         self.jinja = jinja
         self.chat_template_kwargs = dict(chat_template_kwargs) if chat_template_kwargs else None
+        self.log_path = Path(log_path) if log_path is not None else None
+        self._log_handle: object | None = None
         self._transport = transport
         self._runner = runner
         self._monotonic_ns = monotonic_ns
@@ -140,15 +143,20 @@ class LlamaServerAdapter:
             argv.append("--jinja")
         return argv
 
+    def _spawn_kwargs(self) -> dict:
+        """Stdio + env for the server process (log file when configured)."""
+        env = {"PATH": "/usr/bin:/bin:/usr/sbin:/opt/homebrew/bin", "LC_ALL": "C"}
+        if self._log_handle is not None:
+            return {"stdout": self._log_handle, "stderr": self._log_handle, "env": env}
+        return {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "env": env}
+
     def start(self, *, wait_s: float = 60.0) -> None:
         if self._process is not None:
             return
-        self._process = self._runner(
-            self._server_argv(),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            env={"PATH": "/usr/bin:/bin:/usr/sbin:/opt/homebrew/bin", "LC_ALL": "C"},
-        )
+        if self.log_path is not None:
+            self.log_path.parent.mkdir(parents=True, exist_ok=True)
+            self._log_handle = self.log_path.open("w", encoding="utf-8")
+        self._process = self._runner(self._server_argv(), **self._spawn_kwargs())
         deadline = time.monotonic() + wait_s
         while time.monotonic() < deadline:
             try:
@@ -171,6 +179,12 @@ class LlamaServerAdapter:
             except Exception:
                 pass
         self._process = None
+        if self._log_handle is not None:
+            try:
+                self._log_handle.close()  # type: ignore[union-attr]
+            except Exception:
+                pass
+            self._log_handle = None
 
     def predict(self, case: CorpusCase) -> tuple[LabelledAnswer, dict]:
         if case.fixture.path is None or not case.fixture.path.exists():

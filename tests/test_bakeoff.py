@@ -218,6 +218,26 @@ class BakeoffHarnessTest(unittest.TestCase):
         thinking_off = LlamaServerAdapter(Path("models/x"), Path("models/y"), jinja=True)
         self.assertIn("--jinja", thinking_off._server_argv())
 
+    def test_server_spawn_kwargs_use_log_file_when_provided(self) -> None:
+        import subprocess
+        import tempfile
+        from pathlib import Path
+
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        with tempfile.TemporaryDirectory() as tmp:
+            log_path = Path(tmp) / "server.log"
+            adapter = LlamaServerAdapter(Path("models/x"), Path("models/y"), log_path=log_path)
+            adapter._log_handle = log_path.open("w", encoding="utf-8")
+            kwargs = adapter._spawn_kwargs()
+            self.assertIs(kwargs["stdout"], adapter._log_handle)
+            self.assertIs(kwargs["stderr"], adapter._log_handle)
+            adapter._log_handle.close()
+            adapter._log_handle = None
+            kwargs = adapter._spawn_kwargs()
+            self.assertIs(kwargs["stdout"], subprocess.DEVNULL)
+            self.assertIs(kwargs["stderr"], subprocess.DEVNULL)
+
     def test_server_adapter_sends_chat_template_kwargs(self) -> None:
         import tempfile
         from pathlib import Path
