@@ -139,9 +139,45 @@ class BakeoffHarnessTest(unittest.TestCase):
             self.assertTrue(answer.visible)
             self.assertIn("CONNECT TO DATABASE", answer.visible[0])
 
+    def test_server_argv_includes_jinja_only_when_enabled(self) -> None:
+        from pathlib import Path
+
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        plain = LlamaServerAdapter(Path("models/x"), Path("models/y"))
+        self.assertNotIn("--jinja", plain._server_argv())
+        thinking_off = LlamaServerAdapter(Path("models/x"), Path("models/y"), jinja=True)
+        self.assertIn("--jinja", thinking_off._server_argv())
+
+    def test_server_adapter_sends_chat_template_kwargs(self) -> None:
+        import tempfile
+        from pathlib import Path
+
+        from vision_assistant.corpus import build_corpus
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        captured: list[dict] = []
+
+        def transport(url, payload, timeout):
+            captured.append(payload)
+            return ['data: {"choices":[{"delta":{"content":"[visible] OK"}}]}', "data: [DONE]"]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            case = [c for c in build_corpus(Path(tmp)) if c.split == "dev"][0]
+            thinking_off = LlamaServerAdapter(
+                Path("models/x"),
+                Path("models/y"),
+                chat_template_kwargs={"enable_thinking": False},
+                transport=transport,
+            )
+            thinking_off.predict(case)
+            plain = LlamaServerAdapter(Path("models/x"), Path("models/y"), transport=transport)
+            plain.predict(case)
+        self.assertEqual(captured[0]["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertNotIn("chat_template_kwargs", captured[1])
+
     def test_summarize_raw_separates_content_reasoning_and_finish(self) -> None:
         from vision_assistant.bakeoff_cli import _summarize_raw
-
         raw = (
             'data: {"choices":[{"delta":{"reasoning_content":"thinking hard "}}]}\n'
             'data: {"choices":[{"delta":{"content":"[visible] CPU 78%"}}]}\n'

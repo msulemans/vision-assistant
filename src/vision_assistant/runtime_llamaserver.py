@@ -102,6 +102,8 @@ class LlamaServerAdapter:
         max_tokens: int = 1024,
         seed: int = 42,
         timeout_s: float = 120.0,
+        jinja: bool = False,
+        chat_template_kwargs: dict | None = None,
         transport: Callable[[str, dict, float], Iterable[str]] = _http_request,
         runner: object = subprocess.Popen,
         monotonic_ns: object = time.monotonic_ns,
@@ -114,6 +116,8 @@ class LlamaServerAdapter:
         self.max_tokens = max_tokens
         self.seed = seed
         self.timeout_s = timeout_s
+        self.jinja = jinja
+        self.chat_template_kwargs = dict(chat_template_kwargs) if chat_template_kwargs else None
         self._transport = transport
         self._runner = runner
         self._monotonic_ns = monotonic_ns
@@ -123,18 +127,24 @@ class LlamaServerAdapter:
     def base_url(self) -> str:
         return f"http://{self.host}:{self.port}"
 
+    def _server_argv(self) -> list[str]:
+        argv = [
+            self.executable,
+            "-m", str(self.model_path),
+            "--mmproj", str(self.mmproj_path),
+            "--host", self.host,
+            "--port", str(self.port),
+            "--no-webui",
+        ]
+        if self.jinja:
+            argv.append("--jinja")
+        return argv
+
     def start(self, *, wait_s: float = 60.0) -> None:
         if self._process is not None:
             return
         self._process = self._runner(
-            [
-                self.executable,
-                "-m", str(self.model_path),
-                "--mmproj", str(self.mmproj_path),
-                "--host", self.host,
-                "--port", str(self.port),
-                "--no-webui",
-            ],
+            self._server_argv(),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             env={"PATH": "/usr/bin:/bin:/usr/sbin:/opt/homebrew/bin", "LC_ALL": "C"},
@@ -182,6 +192,8 @@ class LlamaServerAdapter:
             "seed": self.seed,
             "stream": True,
         }
+        if self.chat_template_kwargs:
+            payload["chat_template_kwargs"] = dict(self.chat_template_kwargs)
         started = self._monotonic_ns()
         raw_collected: list[str] = []
 

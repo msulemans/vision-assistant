@@ -443,6 +443,17 @@ Observed on 2026-09-06:
   the split actually run (overall keys) instead of the `*_heldout` keys, which
   fall back to empty-set defaults during dev runs. Summary keys renamed to
   `passes` and `abstain_correct`.
+- Diagnosis confirmed (2026-09-06, `--split dev --limit 8 --dump`): five of the
+  eight cases ended with `FINISH: length` and 0-8 chars of scored `content`
+  after 3700-4200 chars of chain-of-thought. The v1.1 regression is
+  reasoning-budget exhaustion, not over-abstention: the labelled answer never
+  gets emitted before the 1024-token budget ends. The one case that finished
+  (`terminal-02`, `FINISH: stop`) scored recall 1.00 and quoted the error line.
+  Action: `--no-think` runs the server with `--jinja` and
+  `chat_template_kwargs: {"enable_thinking": false}` as a comparable candidate
+  configuration, and `--max-tokens` is configurable for the fallback. Also
+  noted: `terminal-02` misread the glyph `X` as `%` in `X.SOCK` (exact-match UI
+  fail) — a fixture-legibility margin to watch.
 
 ### Current gate result
 
