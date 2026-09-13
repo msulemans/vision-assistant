@@ -20,14 +20,25 @@ def build_prompt(question: str) -> str:
 
 
 def parse_answer(text: str) -> LabelledAnswer:
-    """Bucket the model's labelled answer into visible/inferred/unknown."""
+    """Bucket the model's labelled answer into visible/inferred/unknown.
+
+    A statement begins at a labelled line and continues across subsequent
+    unlabelled lines: models commonly quote multi-line UI text underneath a
+    single label, and dropping those lines would lose the verbatim quote.
+    """
     buckets: dict[str, list[str]] = {"visible": [], "inferred": [], "unknown": []}
+    current: tuple[list[str], int] | None = None
     for line in text.splitlines():
         match = _STATEMENT_RE.match(line.strip())
-        if not match:
+        if match:
+            label, body = match.group(1).lower(), match.group(2).strip()
+            buckets[label].append(body)
+            current = (buckets[label], len(buckets[label]) - 1)
             continue
-        label, body = match.group(1).lower(), match.group(2).strip()
-        buckets[label].append(body)
+        stripped = line.strip()
+        if current is not None and stripped:
+            bucket, index = current
+            bucket[index] = f"{bucket[index]} {stripped}".strip()
     # If the model never used labels, treat the non-empty text as one visible
     # statement so the scorer still evaluates it (and likely flags it).
     if not any(buckets.values()) and text.strip():

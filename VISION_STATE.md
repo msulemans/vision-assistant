@@ -454,6 +454,18 @@ Observed on 2026-09-06:
   configuration, and `--max-tokens` is configurable for the fallback. Also
   noted: `terminal-02` misread the glyph `X` as `%` in `X.SOCK` (exact-match UI
   fail) — a fixture-legibility margin to watch.
+- `--no-think` dev probe (2026-09-06, 8 cases): thinking is disabled
+  (`REASONING 0 chars`), required-fact recall is 1.00 on all eight cases, four
+  cases stop cleanly (`FINISH: stop`) and two pass (terminal-01, form-01).
+  Two findings: (a) with thinking off the model never stops on its own —
+  dialog-02/03 and form-02 ran to the 1024-token cap (4.7-5.6k chars) piling up
+  ungrounded statements (unsupported 0.51-0.70), which is what lifted
+  complete-answer p95 to 25.7 s; (b) `parse_answer` dropped unlabelled
+  continuation lines, so terminal-03's correctly quoted multi-line text
+  (`404 NOT FOUND: /API/STATUS`) never entered the visible statements (ui 0.0).
+  Fixes: `parse_answer` now keeps continuation lines inside the current
+  statement, and prompt v1.2 asks for exactly one [visible] line plus one
+  [unknown] line with a short example and bans layout/absence descriptions.
 
 ### Current gate result
 

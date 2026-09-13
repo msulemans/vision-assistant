@@ -139,6 +139,36 @@ class BakeoffHarnessTest(unittest.TestCase):
             self.assertTrue(answer.visible)
             self.assertIn("CONNECT TO DATABASE", answer.visible[0])
 
+    def test_parse_answer_keeps_continuation_lines(self) -> None:
+        from vision_assistant.runtime_llamacpp import parse_answer
+
+        text = (
+            "[visible]: ./APP\n"
+            "404 NOT FOUND: /API/STATUS\n"
+            "EXIT CODE 1\n"
+            "[unknown]: The underlying cause is not visible."
+        )
+        answer = parse_answer(text)
+        self.assertEqual(answer.visible, ("./APP 404 NOT FOUND: /API/STATUS EXIT CODE 1",))
+        self.assertEqual(answer.unknown, ("The underlying cause is not visible.",))
+
+    def test_wrapped_quote_scores_ui_match(self) -> None:
+        from vision_assistant.corpus import build_corpus
+        from vision_assistant.runtime_llamacpp import parse_answer
+        from vision_assistant.scorer import score
+
+        case = next(c for c in build_corpus() if c.case_id == "m004-terminal-03")
+        text = (
+            "[visible] ./APP\n"
+            "404 NOT FOUND: /API/STATUS\n"
+            "EXIT CODE 1\n"
+            "[unknown] The underlying cause is not visible."
+        )
+        result = score(case, parse_answer(text))
+        self.assertEqual(result["ui_string_match"], 1.0)
+        self.assertEqual(result["required_fact_recall"], 1.0)
+        self.assertTrue(result["pass"])
+
     def test_server_argv_includes_jinja_only_when_enabled(self) -> None:
         from pathlib import Path
 

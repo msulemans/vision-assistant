@@ -19,30 +19,36 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 #   - require verbatim on-screen quoting (the UI-string metric is exact match)
 #   - require an [unknown] statement when the requested cause is not visible
 #   - cap the answer at 3 statements to cut verbosity (complete-answer p95)
+# v1.2 (M005, after the --no-think diagnosis; development-data-driven):
+#   - with thinking disabled the model never stops on its own, so the format is
+#     now one [visible] line plus one [unknown] line, with a short example;
+#     layout/absence descriptions are explicitly banned
 # The held-out split was inspected under v1.0, so it is no longer clean for a
 # final promotion claim; a fresh held-out set is required before promoting.
 FROZEN = {
     "schema_version": "1.0",
-    "config_version": "1.1",
+    "config_version": "1.2",
     "corpus_size": 48,
     "dev_cases": 24,
     "heldout_cases": 24,
     "image": {"max_width": 8192, "max_height": 8192, "max_pixels": 40_000_000},
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (
-        "You are reading one user-selected screenshot. Answer the question in "
-        "at most 3 statements, each labelled [visible], [inferred], or "
-        "[unknown].\n"
-        "Copy every on-screen string exactly as shown, character for "
-        "character (labels, values, numbers, error codes, status phrases); "
-        "never reword, paraphrase, or round a shown string.\n"
-        "[visible]: only what the screenshot plainly shows.\n"
-        "[inferred]: only a cause that is strongly supported by the visible "
-        "evidence; if you are not sure, do not use [inferred].\n"
-        "[unknown]: what the screenshot does not establish.\n"
-        "If the screenshot does not show the requested cause or answer, your "
-        "reply MUST include an [unknown] statement saying it is not visible, "
-        "and you must not guess a cause."
+        "You are reading one user-selected screenshot. Answer the question "
+        "with exactly one [visible] line and one [unknown] line:\n"
+        "[visible] the on-screen text that answers the question, copied "
+        "exactly\n"
+        "[unknown] what the screenshot does not establish about the question\n"
+        "Example reply:\n"
+        "[visible] BACKUP COMPLETE\n"
+        "[unknown] Whether a later backup ran is not visible.\n"
+        "Rules:\n"
+        "- Copy on-screen text character for character (labels, values, "
+        "numbers, error codes); never reword, paraphrase, or round a shown "
+        "string.\n"
+        "- Write nothing else: no extra statements, no descriptions of "
+        "buttons, colours, or layout, and no lists of things that are absent.\n"
+        "- Never guess a cause or any fact that the screenshot does not show."
     ),
     "answer_schema": {"visible": "list[str]", "inferred": "list[str]", "unknown": "list[str]"},
     "decoding": {"max_tokens": 256, "deadline_s": 30},
