@@ -570,6 +570,28 @@ rule, both small candidates have now missed the gate, so the `<=9B` quality
 control is eligible as the next comparison. Resource ceilings were not
 measured for either candidate (`rss_gib`/`swap_mib`/`acquisition_gib` null,
 `resource_measured` 0); a real promotion will need those measurements.
+
+### Third comparison — Qwen3-VL-8B quality control
+
+Selected for the eligible `<=9B` slot: `qwen3-vl-8b` (official
+`Qwen/Qwen3-VL-8B-Instruct-GGUF`, Apache-2.0, `Qwen3VL-8B-Instruct-Q4_K_M.gguf`
+5.03 GB + `mmproj-Qwen3VL-8B-Instruct-F16.gguf` 1.16 GB), because its expanded
+OCR stack targets exactly the residual failure mode (single-character
+transcription). Run protocol is unchanged for comparability: same frozen
+prompt v1.4, same fresh held-out corpus v2, single run, no thinking mode.
+Resource expectation: about 4.7 GiB of weights makes the 8 GiB balanced-RSS
+ceiling unlikely; if it passes quality it will be a quality-class
+configuration (14 GiB ceiling). Acquisition budget on 2026-09-13: 48 GiB free
+before the third download, ~46 GiB expected after, and about 13 GiB acquired
+in total — both within the frozen limits (25 GiB acquired, 30 GiB free
+afterward).
+
+Pinned on 2026-09-13 (`acquire check --candidate qwen3-vl-8b` OK):
+`Qwen3VL-8B-Instruct-Q4_K_M.gguf` 5 027 784 800 bytes
+`67d1659bfe71b89d50b45a4ad1a9e5b997e5bb16ce5da66a6a6167abd569e9e2`;
+`mmproj-Qwen3VL-8B-Instruct-F16.gguf` 1 159 029 824 bytes
+`ca524100ebf825c9a870db1c580d03879e0da0ab2541697e2458e64891cf9d38`.
+Free space after acquisition: 47 GiB (frozen floor 30 GiB).
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
