@@ -508,6 +508,24 @@ held-out; the deterministic self-test passes gold 72/72 and fails bad 72/72.
 The candidate must clear the fresh held-out split in a single frozen run
 (`--split heldout`, thinking off) before any promotion.
 
+### Frozen held-out result (corpus v2, single run)
+
+Qwen3.5-4B (Q4_K_M, llama.cpp, thinking disabled, frozen prompt v1.4) ran the
+24 fresh held-out cases once: 23/24 pass. required-fact recall 1.00, UI-string
+match 0.9583, unsupported-claim rate 0.0, forbidden 0, abstention 1.0,
+first-token p95 1032 ms, complete-answer p95 1734 ms. Every aggregate
+threshold and every latency ceiling is met, but the frozen contract requires
+`held_out_pass_rate = 1.0`, so the candidate does NOT meet the gate and is not
+promoted. The single failure is `dialog-07`: the fixture renders
+`UNSAVED CHANGES` (verified in pixels) and the model wrote `UNSAVED_CHANGES`.
+Together with `terminal-02` (`X` read as `%`), the residual failure mode is
+character-level normalisation of unusual strings — not comprehension, recall,
+or abstention. Both failures are single-character substitutions that the
+strict UI-string metric is designed to catch, and neither responded to a
+generic exact-transcription rule. Per the frozen candidate rule, the next step
+is the second 4B-class architecture comparison (the `<=9B` quality control is
+added only if both small candidates miss the gate).
+
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
