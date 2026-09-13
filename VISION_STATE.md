@@ -549,7 +549,27 @@ Pinned on 2026-09-13 (SHA-256 verified locally, `acquire check` OK):
 Note: an initial parallel download corrupted the model file (two writers); the
 artifact was re-downloaded in a single process and the size and hash checks
 now pass.
+### Second held-out result — Gemma 3 4B (single run)
 
+Gemma 3 4B (Q4_K_M, llama.cpp, frozen prompt v1.4, no thinking mode) ran the
+same 24 fresh held-out cases once: 21/24 pass. required-fact recall 1.00,
+UI-string match 0.875, unsupported 0.0, forbidden 0, abstention 1.0,
+first-token p95 2803 ms, complete-answer p95 3200 ms. All three failures are
+`small_text`: the model replaced the quote's terminal punctuation with a
+separator character (`...FOR QUALITY.` written as `...FOR QUALITY;`;
+`ACCESSIBILITY.` written as `ACCESSIBILITY:`), consistent with the prompt's
+`"; "` string-separator convention being imitated into the quoted text.
+
+Head-to-head on the frozen held-out (single run each): Qwen3.5-4B 23/24
+(ui 0.9583) vs Gemma-3-4B 21/24 (ui 0.875); both miss the gate because the
+contract requires `held_out_pass_rate` 1.0, and both residual failure modes
+are single-character transcription substitutions rather than comprehension,
+recall, abstention, or over-claiming errors (unsupported 0.0 for both). Qwen
+is also faster (first-token p95 1032 ms vs 2803 ms). Per the frozen candidate
+rule, both small candidates have now missed the gate, so the `<=9B` quality
+control is eligible as the next comparison. Resource ceilings were not
+measured for either candidate (`rss_gib`/`swap_mib`/`acquisition_gib` null,
+`resource_measured` 0); a real promotion will need those measurements.
 ### Current gate result
 
 In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
