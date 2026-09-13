@@ -26,11 +26,14 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 # v1.3 (M005, after the v1.2 probe; development-data-driven):
 #   - cases need every task-critical string (heading plus detail), so the
 #     [visible] line now quotes all relevant strings separated by "; "
+# v1.4 (M005, after the v1.3 probe; development-data-driven):
+#   - the model normalized an unusual character (`X` read as `%`, likely a
+#     printf-style prior), so the rules now forbid substituting characters
 # The held-out split was inspected under v1.0, so it is no longer clean for a
 # final promotion claim; a fresh held-out set is required before promoting.
 FROZEN = {
     "schema_version": "1.0",
-    "config_version": "1.3",
+    "config_version": "1.4",
     "corpus_size": 48,
     "dev_cases": 24,
     "heldout_cases": 24,
@@ -49,6 +52,8 @@ FROZEN = {
         "- Copy on-screen text character for character (labels, values, "
         "numbers, error codes); never reword, paraphrase, or round a shown "
         "string.\n"
+        "- Never substitute or normalize characters: transcribe each character "
+        "exactly as shown, however unusual it looks.\n"
         "- Quote every string the answer depends on, not just the most "
         "prominent one.\n"
         "- Write nothing else: no extra statements, no descriptions of "

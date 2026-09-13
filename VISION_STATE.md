@@ -476,6 +476,15 @@ Observed on 2026-09-06:
   for every task-relevant string separated by "; ", including headings; a
   format-compliance test proves that a compliant answer clears dialog-01,
   form-01, and terminal-03.
+- v1.3 probe (2026-09-06, 8 cases, thinking off): 7/8 pass. recall 1.00,
+  ui 0.875, unsupported 0.0, forbidden 0, complete-answer p95 1663 ms,
+  first-token p95 1018 ms, and every reply stops cleanly. Dialog and form cases
+  now quote heading plus detail. The only failure is terminal-02: the model
+  read `X` as `%` in `/VAR/RUN/X.SOCK` — the same scale-2 rendering that
+  terminal-01 and terminal-03 transcribe exactly, so this is a model prior
+  (a printf-style path was "corrected"), not a fixture-legibility limit; the
+  fixture is deliberately not changed to make it pass. Prompt v1.4 adds a
+  generic rule against substituting or normalizing characters.
 
 ### Current gate result
 
