@@ -2,10 +2,9 @@
 
 Last updated: 2026-09-13 (Australia/Sydney)
 
-Status: Milestone 005 complete with a documented no-promotion outcome — two
-4B-class candidates were compared on a frozen fresh held-out corpus and both
-missed the gate on single-character transcription; the `<=9B` quality control
-is excluded by host feasibility.
+Status: Milestone 005 complete with a documented no-promotion outcome; a
+post-close transcription-robustness iteration (prompt v1.5 plus corpus v3
+fresh held-out) is under way — no new claim until its single fresh-set run.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -654,6 +653,22 @@ latency, or resource use. No configuration passes the frozen gate, and
 nothing is promoted. Any future change to that claim requires either a new
 evaluation version (fresh corpus plus comparable reruns) or a
 transcription-robustness iteration validated on a third fresh held-out set.
+
+### Transcription-robustness iteration (prompt v1.5, corpus v3)
+
+Motivated by development evidence only: both 4B candidates' sole failures were
+character-level substitutions, and Gemma's three failures imitated the
+prompt's own `"; "` separator (a `.` became `;` or `:`). The format therefore
+no longer uses separators — task-relevant strings are space-joined and the
+rules require copying each string character for character with nothing extra
+inside, between, or around them (config v1.5). Corpus v3 authors three new
+cases per category (indices 10-12; 96 cases total: 24 dev, 48 legacy — now
+including the inspected v2 held-out — and 24 fresh held-out), re-frozen
+before any candidate sees it. Deterministic self-test: gold 96/96, bad 96/96.
+The two 4B candidates will each run the fresh held-out once under v1.5; a
+passing candidate is promoted subject to the resource measurements. The
+Qwen3-VL-8B artifacts were deleted to reclaim 5.8 GB (host-excluded; hashes
+and the exclusion remain in this record).
 
 ### Per-category diagnosis (2026-09-06)
 

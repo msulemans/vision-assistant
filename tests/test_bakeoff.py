@@ -193,7 +193,7 @@ class BakeoffHarnessTest(unittest.TestCase):
         cases = {c.case_id: c for c in build_corpus()}
 
         dialog = parse_answer(
-            "[visible] CONNECT TO DATABASE; ENTER THE PASSWORD TO CONTINUE\n"
+            "[visible] CONNECT TO DATABASE ENTER THE PASSWORD TO CONTINUE\n"
             "[unknown] Whether the user has already entered a password is not visible."
         )
         result = score(cases["m004-dialog-01"], dialog)
@@ -201,7 +201,7 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertTrue(result["pass"])
 
         form = parse_answer(
-            "[visible] PASSWORD; REQUIRED\n"
+            "[visible] PASSWORD REQUIRED\n"
             "[unknown] Whether the user entered a valid password is not visible."
         )
         result = score(cases["m004-form-01"], form)

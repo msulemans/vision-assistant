@@ -29,33 +29,37 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 # v1.4 (M005, after the v1.3 probe; development-data-driven):
 #   - the model normalized an unusual character (`X` read as `%`, likely a
 #     printf-style prior), so the rules now forbid substituting characters
-# Corpus v2 (M005): the v1 held-out split was inspected while tuning, so three
-# fresh cases per category were authored and frozen as the new held-out split
-# (indices 7-9). The inspected v1 cases are retained as the "legacy" split for
-# diagnostics only and are never used to promote.
+# v1.5 (M005, transcription-robustness iteration):
+#   - the `"; "` string-separator convention was imitated into quoted text
+#     (a `.` became `;` or `:`), so separators are gone: strings are space-joined
+#     and the rules say to write nothing extra around the copied text
+# Corpus v3: the v2 held-out split was inspected by two candidate runs, so the
+# legacy split now covers indices 4-9 and three new cases per category
+# (indices 10-12) are the fresh held-out set for this revision.
 FROZEN = {
     "schema_version": "1.0",
-    "config_version": "1.4",
-    "corpus_version": "2.0",
-    "corpus_size": 72,
+    "config_version": "1.5",
+    "corpus_version": "3.0",
+    "corpus_size": 96,
     "dev_cases": 24,
     "heldout_cases": 24,
-    "legacy_cases": 24,
+    "legacy_cases": 48,
     "image": {"max_width": 8192, "max_height": 8192, "max_pixels": 40_000_000},
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (
         "You are reading one user-selected screenshot. Answer the question "
         "with exactly one [visible] line and one [unknown] line:\n"
-        "[visible] every task-relevant on-screen string, copied exactly and "
-        "separated by \"; \" (include any screen or dialog heading)\n"
+        "[visible] every task-relevant on-screen string, copied exactly, "
+        "separated only by a single space (include any screen or dialog "
+        "heading)\n"
         "[unknown] what the screenshot does not establish about the question\n"
         "Example reply:\n"
-        "[visible] BACKUP COMPLETE; LAST RUN 14:02\n"
+        "[visible] BACKUP COMPLETE LAST RUN 14:02\n"
         "[unknown] Whether a later backup ran is not visible.\n"
         "Rules:\n"
-        "- Copy on-screen text character for character (labels, values, "
-        "numbers, error codes); never reword, paraphrase, or round a shown "
-        "string.\n"
+        "- Copy on-screen text character for character, including its own "
+        "punctuation; write nothing extra inside, between, or around the "
+        "copied strings.\n"
         "- Never substitute or normalize characters: transcribe each character "
         "exactly as shown, however unusual it looks.\n"
         "- Quote every string the answer depends on, not just the most "
