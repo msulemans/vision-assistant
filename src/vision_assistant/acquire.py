@@ -36,6 +36,17 @@ CANDIDATES = {
             {"name": "mmproj-F16.gguf", "role": "mmproj", "bytes": 851_251_328, "sha256": "to-pin", "revision": "main"},
         ],
     },
+    "qwen3-vl-8b": {
+        "candidate": "qwen3-vl-8b",
+        "repo": "Qwen/Qwen3-VL-8B-Instruct-GGUF",
+        "licence": "Apache-2.0",
+        "family": "qwen",
+        "params_b": 8.0,
+        "files": [
+            {"name": "Qwen3VL-8B-Instruct-Q4_K_M.gguf", "role": "model", "bytes": 5_027_784_800, "sha256": "to-pin", "revision": "main"},
+            {"name": "mmproj-Qwen3VL-8B-Instruct-F16.gguf", "role": "mmproj", "bytes": 1_159_029_824, "sha256": "to-pin", "revision": "main"},
+        ],
+    },
 }
 DEFAULT_CANDIDATE = "qwen3.5-4b"
 
