@@ -1,9 +1,11 @@
 # Local Vision Assistant — State
 
-Last updated: 2026-08-31 (Australia/Sydney)
+Last updated: 2026-09-13 (Australia/Sydney)
 
-Status: Milestone 005 in progress — bake-off contract and deterministic
-harness frozen; a real local model/runtime bake-off is pending.
+Status: Milestone 005 complete with a documented no-promotion outcome — two
+4B-class candidates were compared on a frozen fresh held-out corpus and both
+missed the gate on single-character transcription; the `<=9B` quality control
+is excluded by host feasibility.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -329,8 +331,8 @@ downloaded. Milestone 005 is the sole next gate.
 
 ## Milestone 005 — local VLM and runtime bake-off
 
-Status: in progress; frozen contract and deterministic harness pass, real model
-acquisition and evaluation pending.
+Status: complete — the bake-off ran end-to-end on the frozen corpus and
+ceilings; no candidate is promoted (documented negative result).
 
 ### Question
 
@@ -624,13 +626,34 @@ this host; `--jinja` is required for the image tokens to expand correctly
 model stays on GPU — recorded as a configuration change, since
 `docs/METRICS.md` asks for complete-configuration comparisons and processor
 differences. Probe protocol for this candidate: `--jinja --no-mmproj-offload`.
-### Current gate result
+### Current gate result — final (M005)
 
-In progress. The Qwen3.5-4B (Q4_K_M, llama.cpp) candidate was run on the 24
-held-out cases: 11/24 pass. It does NOT meet the frozen gate (required-fact
-recall 0.79, unsupported-claim rate 0.26, UI-string match 0.83, held-out
-abstention 0.875, first-token p95 7520 ms). The candidate is preserved as a
-losing result.
+No candidate is promoted. The frozen held-out comparison (corpus v2 fresh
+split, single run each, thinking off where applicable):
+
+| Candidate | Pass | Recall | UI match | Unsupported | First p95 | Complete p95 | Outcome |
+|---|---|---|---|---|---|---|---|
+| Qwen3.5-4B Q4_K_M | 23/24 | 1.00 | 0.9583 | 0.0 | 1032 ms | 1734 ms | Gate unmet: one space→underscore substitution |
+| Gemma-3-4B Q4_K_M | 21/24 | 1.00 | 0.875 | 0.0 | 2803 ms | 3200 ms | Gate unmet: three punctuation→separator substitutions |
+| Qwen3-VL-8B Q4_K_M | — | — | — | — | — | — | Excluded by host feasibility |
+
+The Qwen3-VL-8B `<=9B` quality control produced no valid run on the reference
+host: at defaults the F16 vision projector overran the Metal GPU working set
+(`kIOGPUCommandBufferCallbackErrorOutOfMemory` during image decode), and with
+the vision encoder on CPU (`--no-mmproj-offload`) one 397-token answer took
+40.3 s — beyond the 20 s complete-answer ceiling — so the run was interrupted
+by the user and is not scored. The resource ceilings did their job: the
+quality control is disqualified by host capability, not by a quality
+measurement.
+
+Phase 1's bake-off therefore ends with an honest negative. The best local
+configuration is Qwen3.5-4B (small, fast, private, 23/24), and the residual
+gap for both 4B-class candidates is single-character transcription of small
+synthetic UI text — not comprehension, recall, abstention, over-claiming,
+latency, or resource use. No configuration passes the frozen gate, and
+nothing is promoted. Any future change to that claim requires either a new
+evaluation version (fresh corpus plus comparable reruns) or a
+transcription-robustness iteration validated on a third fresh held-out set.
 
 ### Per-category diagnosis (2026-09-06)
 
