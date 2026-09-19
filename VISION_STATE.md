@@ -2,8 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 016 complete — M006 through M016 are complete (see their
-sections); M017 (public beta hardening) is next and not started.
+Status: Milestone 017 in progress — M006 through M016 are complete (see their
+sections); M017 (public beta hardening) scope is frozen and the first build
+is under way.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1599,4 +1600,51 @@ docs/evidence/2026-09-20-m016-field-manual.md. Learning map M16=done,
 M17=current; figures: 321 tests = 315 product + 6 learning.
 
 Next milestone: M017 — public beta hardening.
+
+## Milestone 017 — public beta hardening
+
+Status: in progress. Scope frozen before implementation (2026-09-20).
+
+- Objective: audit the product against the eleven named areas, fix what the
+  audit finds, and close with an honest release: a reproducible bundle, a
+  content-hash release manifest, a support matrix, and re-verified
+  rollback and removal. Apple signing/notarization is not available in
+  this lab and is documented as a known limitation, never claimed.
+- New artifacts:
+  - `audit.py` — the hardening check suite: eleven frozen categories, each
+    returning findings with severity (critical or note): capture privacy
+    (artifact roots git-ignored, private modes, release by default, no
+    network on the capture path), trace redaction (dynamic canaries:
+    planted evidence text and pixel bytes never reach traces; preview
+    payloads carry geometry and hashes only), malicious screen text (the
+    M014 adversarial scenario suite plus the M010 payload funnel, both
+    re-run deterministically), action policy (schema rejects coordinates;
+    containment bypasses = 0), permission changes (typed
+    permission_changed/required scenarios green), supply chain
+    (stdlib-only import scan against sys.stdlib_module_names; model files
+    verified against the pin; runtime build recorded; licence manifest
+    complete), crash recovery (corrupt input → typed failure + zero
+    leftover artifacts; purge and cancelled-trace guarantees),
+    accessibility (every input labeled, every button named; the site
+    contracts exist), long-session resources (bounded turns and prompt
+    budgets; sequential sessions leave zero artifacts), reproducibility
+    (two bundle builds byte-identical), and release integrity (rollback +
+    code-only uninstall re-verified on real bundles; content-hash release
+    manifest).
+  - `audit_cli.py` — `run` (executes the suite; writes
+    runs/m017/audit-<id>.json; exit 0 iff zero critical findings), `sign`
+    (reproducible release manifest: SHA-256 over every bundle file plus an
+    aggregate), and `support` (writes `docs/SUPPORT.md` from the manifest
+    and the failure catalog's known limitations).
+  - `docs/SUPPORT.md` — the support matrix: host requirements, tested and
+    verified interpreters, runtime build, permission table, read-only vs
+    action-opt-in feature matrix, known limitations, and the exact
+    rollback/removal commands.
+- Gate: `audit_cli run` reports zero critical findings; the release
+  manifest is byte-stable across builds; rollback and removal are
+  re-verified on real bundles; SUPPORT.md facts match the manifest.
+- Evidence: runs/m017/audit-<id>.json plus the release manifest, the
+  audit's own test suite, and SUPPORT.md.
+
+End of the frozen roadmap: M001 through M017.
 
