@@ -203,3 +203,15 @@ gate (23/24) and every measured ceiling (RSS 3.792 GiB, swap 0, acquisition
 certification (cold-readiness and cancellation trials) remains open for
 packaging; see `VISION_STATE.md` and
 `docs/evidence/2026-09-19-user-v4-results.json` for preserved original results.
+
+### One-shot assistant (M006)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png --preview-only
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png
+```
+
+Previews and normalizes a screenshot you selected, asks one question with the
+pinned Qwen3.5-4B configuration (context 4096, thinking off), prints
+`[visible]`/`[inferred]`/`[unknown]` labels with real timings, writes a JSONL
+trace under `runs/m006/`, and deletes the private artifact before exit.

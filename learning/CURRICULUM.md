@@ -143,3 +143,11 @@ Phase-1 configuration: 23/24 on the frozen v4 held-out (0.95 pass-rate gate),
 all safety metrics perfect, RSS 3.792 GiB, swap 0, acquisition 6.29 GiB.
 Cold-readiness and cancellation certification trials remain open for
 packaging. Next milestone: M006 — one-shot local Vision Assistant.
+
+## M006 first build — the one-shot assistant
+
+`assistant_cli` previews (normalize, hash, report), then asks one question and
+prints a labelled answer with real timings; the JSONL trace records
+preview/model_started/answer/done, and the private artifact is deleted on exit
+(retain is explicit). Deterministic tests cover success, failure, and retain
+paths. Remaining: a live screenshot demo, interrupt check, capstone smoke list.

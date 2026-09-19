@@ -61,7 +61,7 @@ class LearningSiteContractTest(unittest.TestCase):
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
             "M005 · complete — Qwen3.5-4B selected",
-            "70 passing · 64 product + 6 learning",
+            "73 passing · 67 product + 6 learning",
             "None acquired",
             "Intentionally absent",
             "selection_timed_out",

@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 005 complete — Qwen3.5-4B selected as the Phase-1
-configuration (see "M005 outcome"); release-grade certification trials
-(cold readiness, cancellation) remain open for packaging.
+Status: Milestone 006 in progress — the one-shot assistant CLI is built and
+covered by fast deterministic tests; a live screenshot demo and the
+interrupt/capstone checks remain.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -812,3 +812,29 @@ frozen 48-warm-trial schedule. Until those runs are recorded, this selection
 is the milestone result and is not yet a release-grade promotion.
 
 Next milestone: M006 — one-shot local Vision Assistant on this configuration.
+
+## Milestone 006 — one-shot local Vision Assistant
+
+Status: in progress. First build complete:
+
+- `assistant.py` — one explicit flow: preview (normalize + private artifact) →
+  submit one question → labelled answer → artifact release. Steps are timed
+  and written to a JSONL trace (`preview`, `model_started`, `answer`, `done`;
+  failures record `failed`, interrupts record `cancelled`).
+- `assistant_cli.py` — `--preview-only` and full-ask paths on the
+  M005-selected configuration (Qwen3.5-4B, thinking off, `--ctx-size 4096`).
+
+Commands:
+
+```bash
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png --preview-only
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png
+```
+
+Evidence so far (deterministic): `tests/test_assistant.py` covers the answer
+flow (exact trace record order, timings, artifact deleted), the failure path
+(`failed` recorded, artifact deleted) and the retain path; the `--preview-only`
+smoke run on a corpus PNG reported 480x300, byte size, sha256, and released
+the artifact. Remaining for the M006 gate: a live demo run on a real
+screenshot with the pinned model, an interrupt (stop) check, and the capstone
+smoke checklist; retry = re-run with the same image, reset = artifact release.

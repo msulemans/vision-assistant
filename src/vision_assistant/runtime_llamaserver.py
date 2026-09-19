@@ -186,13 +186,17 @@ class LlamaServerAdapter:
         if case.fixture.path is None or not case.fixture.path.exists():
             case.fixture.path.parent.mkdir(parents=True, exist_ok=True)
             case.fixture.path.write_bytes(case.fixture.png_bytes)
-        data_uri = "data:image/png;base64," + base64.b64encode(case.fixture.png_bytes).decode("ascii")
+        return self.predict_image(case.fixture.png_bytes, case.question)
+
+    def predict_image(self, png_bytes: bytes, question: str) -> tuple[LabelledAnswer, dict]:
+        """Answer one question about one PNG (the M006 one-shot path)."""
+        data_uri = "data:image/png;base64," + base64.b64encode(png_bytes).decode("ascii")
         payload = {
             "messages": [
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": build_prompt(case.question)},
+                        {"type": "text", "text": build_prompt(question)},
                         {"type": "image_url", "image_url": {"url": data_uri}},
                     ],
                 }
