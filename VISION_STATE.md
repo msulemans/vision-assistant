@@ -993,7 +993,7 @@ Next milestone: M009 — usable capture and answer UI.
 
 ## Milestone 009 — usable capture and answer UI
 
-Status: in progress. Scope frozen 2026-09-19:
+Status: complete (2026-09-19). Scope was frozen before implementation:
 
 - A loopback-only stdlib UI server owns the trusted side (submission,
   artifact lifecycle, model calls, session state, traces) and serves a
@@ -1032,5 +1032,16 @@ now bounded — `pixels.fit_for_model` integer-downscales captures above
 below the budget) in both the one-shot flow and chat sessions, and traces
 record `image_scaled`. OCR evidence still reads the full-resolution artifact.
 
-Next: the user re-runs the five capstones in the browser on Metal.
+Capstones (2026-09-19): all five passed live on the pinned model through the
+UI — (1) real screenshots answered with verbatim quotes and timings
+(author-driven); (2) three bounded follow-ups on a text capture: one-shot
+1252 ms, reference quoted `MIDNIGHT` at 1284 ms, correction refused the false
+"cancelled" claim at 1306 ms; (3) stop returned `model_stopped`+`released`
+with no orphaned process; (4) corrupt PNG → typed `invalid_image`, next valid
+capture succeeded; (5) reset released the capture and the artifact root ended
+empty. Two fixes from the run: bounded model view (`2fddb3c`) and prompt
+startup abort on stop (`2972c7c`). Evidence:
+`docs/evidence/2026-09-19-m009-capstones.md`.
+
+Next milestone: M010 — typed action intents and policy, no execution.
 

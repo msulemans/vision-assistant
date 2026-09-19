@@ -184,4 +184,19 @@ reset and exceeding the limit are typed errors. Measured on the pinned model:
 a fact from the earlier turn) and three corrections (a false premise must be
 contradicted with the true value) — every artifact released and prompts
 bounded (max 333 characters). Follow-ups answered in 1.1–1.6 s. Next
-milestone: M009 — usable capture and answer UI.
+milestone was M009 — usable capture and answer UI (complete; see below).
+
+## M009 outcome — the usable local UI
+
+A loopback-only stdlib server owns the trusted side and serves a
+dependency-free page: pick a PNG, drag to redact a region before sending,
+ask, and keep bounded follow-ups on one capture; stop shuts the model down
+and releases everything; reset releases between sessions; failures appear as
+typed banners with recovery hints. All five frozen read-only capstones passed
+live on the pinned model (one-shot on real screenshots; reference and
+correction follow-ups ~1.3 s; stop with no orphaned process; corrupt-file
+recovery; empty artifact root after the privacy cycle). Two real bugs found
+by the run were fixed: large captures overflowed the model context (a bounded
+model view now downscales above 3M pixels for the model call only) and stop
+during model load now aborts promptly. Next milestone: M010 — typed action
+intents and policy (no execution).

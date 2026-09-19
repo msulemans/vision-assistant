@@ -60,8 +60,8 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M008 · complete",
-            "111 passing · 105 product + 6 learning",
+            "M009 · complete",
+            "121 passing · 115 product + 6 learning",
             "pinned, local",
             "Intentionally absent",
             "selection_timed_out",
@@ -78,7 +78,8 @@ class LearningSiteContractTest(unittest.TestCase):
         self.assertIn('status: "done", title: "One-shot local Vision Assistant"', self.js)
         self.assertIn('status: "done", title: "Evidence augmentation and focused re-observation"', self.js)
         self.assertIn('status: "done", title: "Multi-turn visual conversation"', self.js)
-        self.assertIn('status: "current", title: "Usable capture and answer UI"', self.js)
+        self.assertIn('status: "done", title: "Usable capture and answer UI"', self.js)
+        self.assertIn('status: "current", title: "Typed action intents and policy—no execution"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)

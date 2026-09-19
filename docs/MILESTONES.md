@@ -123,6 +123,12 @@ Gate: a new user completes the five read-only capstones without terminal help;
 permission and model failures have actionable recovery; sensitive captures are
 not silently retained.
 
+Delivered: loopback-only stdlib UI server (`ui_server.py`) + dependency-free
+page (`ui_page.html`): picker/reuse, drag-to-redact, ask + bounded follow-ups,
+stop/reset/copy, status, typed failure banners, bounded model view for large
+captures. All five capstones passed live 2026-09-19 (no terminal help).
+**Complete.**
+
 ## Phase 3 — Propose before acting
 
 ### 010 — Typed action intents and policy, no execution

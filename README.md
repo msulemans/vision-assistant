@@ -266,3 +266,6 @@ preview to black out a region before sending, capture, then ask bounded
 follow-ups. Stop shuts the model down and releases the capture; reset
 releases between sessions; the server rejects foreign origins, caps request
 sizes, and never logs request bodies.
+
+All five read-only capstones passed live on 2026-09-19 — see
+`docs/evidence/2026-09-19-m009-capstones.md`.
