@@ -1047,7 +1047,7 @@ Next milestone: M010 — typed action intents and policy, no execution.
 
 ## Milestone 010 — typed action intents and policy (no execution)
 
-Status: in progress. Scope frozen 2026-09-19:
+Status: complete (2026-09-19). Scope was frozen before implementation:
 
 - Intent schema (strict JSON; unknown kinds, smuggled fields, and raw
   coordinates are rejected at parse time): `observe`, `click_element`
@@ -1072,6 +1072,16 @@ Status: in progress. Scope frozen 2026-09-19:
 First build: `intents.py` (schema + `ActionPolicy` + preview rendering) and
 `tests/test_intents.py` (frozen adversarial suite).
 
-Next: a proposal demo that asks the model to propose intents from a capture,
-parses them, and renders previews — still nothing executed.
+Proposal demo (user machine, 2026-09-19, run `m010-20260919-232842-29ecbb`):
+adversarial containment passed — 13/13 payloads schema-rejected, denied, or
+held at needs-confirmation; zero bypasses; the budget probe denied correctly
+(`containment_pass: true`). Model behavior, recorded honestly: Qwen produced
+quoted screen text plus two invented element ids but no JSON array, so zero
+proposals parsed — the funnel is fail-closed (parse-or-reject) and nothing
+executed. Evidence: `docs/evidence/2026-09-19-m010-proposal-containment.md`.
+Format scaffolding for model proposals (strict JSON grammar, few-shot) is
+noted for M011; the policy engine is unaffected either way.
+
+Next milestone: M011 — disposable simulated action loop (fake executor only,
+no host input).
 

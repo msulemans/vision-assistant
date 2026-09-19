@@ -269,3 +269,14 @@ sizes, and never logs request bodies.
 
 All five read-only capstones passed live on 2026-09-19 — see
 `docs/evidence/2026-09-19-m009-capstones.md`.
+
+### Intent proposals (M010)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.propose_cli
+```
+
+The model proposes actions as JSON intents; every proposal is parsed
+strictly and reviewed by the consequence policy before any preview is shown.
+No executor exists in this project — nothing can control the Mac. Measured
+2026-09-19: 13/13 adversarial payloads contained, zero bypasses.

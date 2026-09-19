@@ -198,5 +198,21 @@ correction follow-ups ~1.3 s; stop with no orphaned process; corrupt-file
 recovery; empty artifact root after the privacy cycle). Two real bugs found
 by the run were fixed: large captures overflowed the model context (a bounded
 model view now downscales above 3M pixels for the model call only) and stop
-during model load now aborts promptly. Next milestone: M010 — typed action
-intents and policy (no execution).
+during model load now aborts promptly. Next milestone was M010 — typed action
+intents and policy (complete; see below).
+
+## M010 outcome — typed proposals, zero execution
+
+Seven intent kinds have a strict schema: unknown fields, raw coordinates,
+oversized text, control characters, modifier-combo keys, and scroll abuse are
+rejected at parse time. A consequence policy classifies every valid intent as
+preview-only (observe/cancel/finish), needs-confirmation (all mutating
+intents), or denied (secret-entry targets, window-scope escapes, budget
+overruns). A frozen adversarial set — now 21 tests — cannot bypass any of it,
+and a source-scanning test proves there is no executor anywhere. Live demo:
+13/13 adversarial payloads contained with zero bypasses. The 4B model itself
+proposed no parseable JSON yet — it quoted screen text and invented element
+ids; the funnel is fail-closed, so nothing happened. Format scaffolding for
+model proposals is noted for M011. Next milestone: M011 — disposable
+simulated action loop (a fake executor in a practice app; still no host
+input).

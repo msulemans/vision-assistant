@@ -142,6 +142,12 @@ press, scroll, cancel, and finish. Render a visible proposal/target preview.
 Gate: adversarial fixtures cannot bypass validation, scope, confirmations,
 budgets, secret-entry rules, or forbidden actions. Nothing controls the Mac.
 
+Delivered: `intents.py` (strict schema + `ActionPolicy` + previews),
+`propose_cli.py` (model proposes, policy disposes, frozen adversarial
+funnel), 21 adversarial tests. Measured 2026-09-19: 13/13 payloads contained,
+zero bypasses, budget denied, nothing executed. **Complete** for the frozen
+scope.
+
 ### 011 — Disposable simulated action loop
 
 Build: fake executor and purpose-built local practice app with observe ->
