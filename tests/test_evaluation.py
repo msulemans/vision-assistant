@@ -12,6 +12,7 @@ from vision_assistant.evaluation import (
     COMPARISONS,
     DEFAULT_SITE_DATA,
     FAILURE_CATALOG,
+    FAILURE_COMPONENTS,
     REPRODUCTION_COMMANDS,
     TEACH_BACK_TASKS,
     ascii_waterfall,
@@ -102,6 +103,7 @@ class CatalogTest(unittest.TestCase):
         for entry in FAILURE_CATALOG:
             with self.subTest(entry=entry["id"]):
                 self.assertIn(entry["status"], {"fixed", "known-limitation"})
+                self.assertIn(entry["component"], FAILURE_COMPONENTS)
                 self.assertTrue(entry["cause"])
                 self.assertTrue(entry["fix"])
                 evidence = ROOT / "docs" / "evidence" / entry["evidence"]

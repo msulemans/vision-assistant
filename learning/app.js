@@ -290,11 +290,35 @@ function renderComparisons() {
   });
 }
 
-function renderFailures(query) {
+const failureFilter = { query: "", component: "all" };
+
+function renderComponentChips() {
+  const root = $("#failureComponents");
+  const components = ["all", ...new Set(evalData.failures.map((entry) => entry.component))];
+  components.forEach((component) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = component;
+    button.dataset.component = component;
+    if (component === "all") button.classList.add("active");
+    button.addEventListener("click", () => {
+      failureFilter.component = component;
+      $$("#failureComponents button").forEach((chip) => chip.classList.toggle("active", chip === button));
+      renderFailures();
+    });
+    root.appendChild(button);
+  });
+}
+
+function renderFailures() {
   const list = $("#failureList");
   list.innerHTML = "";
-  const needle = (query || "").trim().toLowerCase();
-  const matches = evalData.failures.filter((entry) => !needle || JSON.stringify(entry).toLowerCase().includes(needle));
+  const needle = failureFilter.query.trim().toLowerCase();
+  const matches = evalData.failures.filter((entry) => {
+    const componentOk = failureFilter.component === "all" || entry.component === failureFilter.component;
+    const queryOk = !needle || JSON.stringify(entry).toLowerCase().includes(needle);
+    return componentOk && queryOk;
+  });
   matches.forEach((entry) => {
     const item = document.createElement("li");
     if (entry.status === "fixed") item.classList.add("fixed");
@@ -367,8 +391,12 @@ function renderCommands() {
 if (evalData) {
   renderWaterfall();
   renderComparisons();
-  renderFailures("");
+  renderComponentChips();
+  renderFailures();
   renderTeachBack();
   renderCommands();
-  $("#failureSearch").addEventListener("input", (event) => renderFailures(event.target.value));
+  $("#failureSearch").addEventListener("input", (event) => {
+    failureFilter.query = event.target.value;
+    renderFailures();
+  });
 }

@@ -297,4 +297,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .command-list code { font-size: .68rem; word-break: break-all; display: block; }
 .command-list small { color: var(--muted); font-size: .62rem; }
 .command-list button { border: 1px solid var(--line); background: white; border-radius: 6px; padding: .3rem .55rem; cursor: pointer; font-size: .66rem; }
+.component-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
+.component-chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: .18rem .6rem; font-size: .64rem; cursor: pointer; color: var(--muted); text-transform: capitalize; }
+.component-chips button.active { background: var(--blue-soft); color: var(--blue); border-color: var(--blue); }
 @media (max-width: 960px) { .manual-grid { grid-template-columns: 1fr; } }

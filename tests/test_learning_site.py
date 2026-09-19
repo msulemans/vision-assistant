@@ -61,6 +61,7 @@ class LearningSiteContractTest(unittest.TestCase):
             "compareBody",
             "failureSearch",
             "failureList",
+            "failureComponents",
             "teachBackList",
             "commandList",
         }

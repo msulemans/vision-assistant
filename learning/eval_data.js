@@ -135,6 +135,7 @@ window.VISION_EVAL = {
   "failures": [
     {
       "cause": "The model was asked a why-question; nothing in the pipeline separated visible facts from inference.",
+      "component": "model",
       "evidence": "2026-09-19-user-v4-results.json",
       "fix": "[visible]/[inferred]/[unknown] labels, abstention scoring, and an unsupported-claim rate in the frozen gate.",
       "id": "f01-unsupported-claims",
@@ -145,6 +146,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "The substring scoring tier accepted mid-word sequences without a word boundary.",
+      "component": "grounding",
       "evidence": "2026-09-19-m012-live-grounding.json",
       "fix": "Substring matches require a word boundary and at least four characters; frozen regression task (\"card\" must not match \"DISCARD\").",
       "id": "f02-midword-substring",
@@ -155,6 +157,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "macOS can produce black captures for occluded/secondary-display windows.",
+      "component": "capture",
       "evidence": "2026-09-20-m013-supervised-execution.md",
       "fix": "Near-uniform darkness is detected, replaced by a placeholder, and recorded as capture: black; the element list is declared authoritative.",
       "id": "f03-black-capture",
@@ -165,6 +168,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "macOS 14+ ignores cross-app activation: NSRunningApplication.activate() reports success while frontmost never changes.",
+      "component": "actions",
       "evidence": "2026-09-20-m013-attempt2-model.json",
       "fix": "Typing writes the identified element's value through the accessibility API and reads it back \u2014 no activation, no stray keystrokes.",
       "id": "f04-frontmost-mismatch",
@@ -175,6 +179,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "The runner proposed and performed without first checking whether the task was already satisfied.",
+      "component": "actions",
       "evidence": "2026-09-20-m013-attempt1-model.json",
       "fix": "already_done pre-check before any proposal \u2014 a satisfied task needs no action.",
       "id": "f05-blind-toggle",
@@ -185,6 +190,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "Free-form decoding had no grammar; politeness is not a format.",
+      "component": "model",
       "evidence": "2026-09-19-m011-simulated-loop.json",
       "fix": "llama.cpp constrained decoding (response_format.json_schema) \u2014 valid intents on the first try.",
       "id": "f06-format-compliance",
@@ -195,6 +201,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "A 1800\u00d72400 image encoded to more tokens than the configured context.",
+      "component": "capture",
       "evidence": "2026-09-19-m009-capstones.md",
       "fix": "Integer nearest-neighbour downscale (fit_for_model) to an empirical pixel budget before the model; OCR evidence stays full-res.",
       "id": "f07-context-overflow",
@@ -205,6 +212,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "The interrupt handler assumed the model was already running.",
+      "component": "runtime",
       "evidence": "2026-09-19-m006-stop-check.md",
       "fix": "Stop path purges the artifact, records a cancelled trace, and exits 130 cleanly.",
       "id": "f08-leaked-artifact-on-stop",
@@ -215,6 +223,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "The wrapper shifted the subcommand away before exec.",
+      "component": "packaging",
       "evidence": "2026-09-20-m015-packaging-offline.md",
       "fix": "Passthrough routes keep \"$@\"; behavioral tests now execute the real dispatcher.",
       "id": "f09-dispatcher-subcommand",
@@ -225,6 +234,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "Byte counts are not integrity.",
+      "component": "packaging",
       "evidence": "2026-09-20-m015-packaging-offline.md",
       "fix": "--full-hash recomputes SHA-256 and is the honest choice when certainty matters.",
       "id": "f10-size-mode-blindspot",
@@ -235,6 +245,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "Electron exposes the full tree only after an accessibility-enhancement write, which this project refuses to perform.",
+      "component": "grounding",
       "evidence": "2026-09-19-m012-live-grounding.json",
       "fix": "Documented limitation; grounding gates use apps that expose honest trees.",
       "id": "f11-shallow-electron-tree",
@@ -245,6 +256,7 @@ window.VISION_EVAL = {
     },
     {
       "cause": "Small UI text is below reliable VNRecognizeTextRequest scale.",
+      "component": "capture",
       "evidence": "2026-09-19-m007-ocr-smoke.md",
       "fix": "Zoom \u00d72 before OCR (\u00d74 regresses); the frozen pipeline is zoom \u2192 literal OCR \u2192 prompt.",
       "id": "f12-small-text-misread",

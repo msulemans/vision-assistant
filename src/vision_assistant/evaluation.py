@@ -16,6 +16,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TRACE = REPO_ROOT / "learning" / "data" / "canonical-turn.jsonl"
 DEFAULT_SITE_DATA = REPO_ROOT / "learning" / "eval_data.js"
 
+FAILURE_COMPONENTS = ("capture", "model", "grounding", "actions", "runtime", "packaging")
+
 STAGE_LABELS = {
     "preview": "Capture handed to the pipeline",
     "model_started": "Prompt assembled; model begins",
@@ -113,6 +115,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f01-unsupported-claims",
         "milestone": "M004",
+        "component": "model",
         "title": "Dialog answers over-claimed beyond the pixels",
         "symptom": "A dialog screenshot produced causal claims (a password problem) that no pixels supported.",
         "cause": "The model was asked a why-question; nothing in the pipeline separated visible facts from inference.",
@@ -123,6 +126,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f02-midword-substring",
         "milestone": "M012",
+        "component": "grounding",
         "title": "\"AC\" matched \"Subtract\"",
         "symptom": "Grounding resolved the target \"AC\" to a Calculator button named Subtract (score 0.80).",
         "cause": "The substring scoring tier accepted mid-word sequences without a word boundary.",
@@ -133,6 +137,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f03-black-capture",
         "milestone": "M013",
+        "component": "capture",
         "title": "Secondary-display window captured black",
         "symptom": "A window capture returned a near-uniform black PNG; the model reported it could not see anything.",
         "cause": "macOS can produce black captures for occluded/secondary-display windows.",
@@ -143,6 +148,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f04-frontmost-mismatch",
         "milestone": "M013",
+        "component": "actions",
         "title": "Synthetic keystrokes could never be aimed",
         "symptom": "Typing refused with frontmost_mismatch; nothing was typed.",
         "cause": "macOS 14+ ignores cross-app activation: NSRunningApplication.activate() reports success while frontmost never changes.",
@@ -153,6 +159,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f05-blind-toggle",
         "milestone": "M013",
+        "component": "actions",
         "title": "A blind click toggled an already-on checkbox",
         "symptom": "The notify click turned an already-on checkbox off; verification correctly failed.",
         "cause": "The runner proposed and performed without first checking whether the task was already satisfied.",
@@ -163,6 +170,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f06-format-compliance",
         "milestone": "M011",
+        "component": "model",
         "title": "The model would not emit JSON",
         "symptom": "Every task blocked with no_proposal; the model answered in prose despite repair prompts.",
         "cause": "Free-form decoding had no grammar; politeness is not a format.",
@@ -173,6 +181,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f07-context-overflow",
         "milestone": "M009",
+        "component": "capture",
         "title": "Large image exceeded the model context",
         "symptom": "llama-server returned 400: request (4252 tokens) exceeds context (4096).",
         "cause": "A 1800×2400 image encoded to more tokens than the configured context.",
@@ -183,6 +192,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f08-leaked-artifact-on-stop",
         "milestone": "M006",
+        "component": "runtime",
         "title": "Stop during model load leaked an artifact",
         "symptom": "Ctrl+C during adapter start produced a traceback and a leftover artifact.",
         "cause": "The interrupt handler assumed the model was already running.",
@@ -193,6 +203,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f09-dispatcher-subcommand",
         "milestone": "M015",
+        "component": "packaging",
         "title": "The installed dispatcher consumed its subcommand",
         "symptom": "vision doctor failed: package_cli received no arguments.",
         "cause": "The wrapper shifted the subcommand away before exec.",
@@ -203,6 +214,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f10-size-mode-blindspot",
         "milestone": "M015",
+        "component": "packaging",
         "title": "Size verification cannot see same-size corruption",
         "symptom": "A single flipped byte kept every size check green.",
         "cause": "Byte counts are not integrity.",
@@ -213,6 +225,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f11-shallow-electron-tree",
         "milestone": "M012",
+        "component": "grounding",
         "title": "Electron apps expose a shallow accessibility tree",
         "symptom": "A VS Code window dumped only window chrome; its internals were invisible.",
         "cause": "Electron exposes the full tree only after an accessibility-enhancement write, which this project refuses to perform.",
@@ -223,6 +236,7 @@ FAILURE_CATALOG: tuple[dict, ...] = (
     {
         "id": "f12-small-text-misread",
         "milestone": "M007",
+        "component": "capture",
         "title": "\"UNSAVED REPORT\" misread at 1×",
         "symptom": "OCR at original scale produced '(UNSEVED BEFOBT)'.",
         "cause": "Small UI text is below reliable VNRecognizeTextRequest scale.",
