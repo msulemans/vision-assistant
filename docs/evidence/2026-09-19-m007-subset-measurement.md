@@ -44,7 +44,8 @@ gate: {"baseline_passes": 3, "dialog14_baseline_pass": false, "dialog14_ocr_pass
   fact text (the result JSON holds model answers on synthetic fixtures).
 - No new permissions (Vision OCR needs none), no persistent artifacts.
 
-## Pending
+## Follow-up
 
-- Full held-out guard run (`--heldout-all`, 48 model calls): held-out must
-  stay ≥ 0.95 with unsupported 0 and forbidden 0 before M007 closes.
+- Completed: the full held-out guard run is recorded in
+  `2026-09-19-m007-heldout-measurement.md` — baseline 23/24 reproduced,
+  OCR 24/24, no regressions.

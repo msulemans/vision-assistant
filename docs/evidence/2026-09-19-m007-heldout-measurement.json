@@ -1,0 +1,1412 @@
+{
+  "config": {
+    "candidate": "qwen3.5-4b",
+    "cases": [
+      "m004-terminal-13",
+      "m004-terminal-14",
+      "m004-terminal-15",
+      "m004-dialog-13",
+      "m004-dialog-14",
+      "m004-dialog-15",
+      "m004-form-13",
+      "m004-form-14",
+      "m004-form-15",
+      "m004-settings-13",
+      "m004-settings-14",
+      "m004-settings-15",
+      "m004-dashboard-13",
+      "m004-dashboard-14",
+      "m004-dashboard-15",
+      "m004-small_text-13",
+      "m004-small_text-14",
+      "m004-small_text-15",
+      "m004-dark_mode-13",
+      "m004-dark_mode-14",
+      "m004-dark_mode-15",
+      "m004-insufficient_evidence-13",
+      "m004-insufficient_evidence-14",
+      "m004-insufficient_evidence-15"
+    ],
+    "ctx_size": 4096,
+    "evidence": "vision-ocr-apple, zoom x2, literal"
+  },
+  "gate": {
+    "baseline_passes": 23,
+    "dialog14_baseline_pass": false,
+    "dialog14_ocr_pass": true,
+    "forbidden_claim_total": 0,
+    "ocr_passes": 24,
+    "small_text_regressions": [],
+    "unsupported_rate_sum": {
+      "baseline": 0.0,
+      "ocr": 0.0
+    }
+  },
+  "rows": [
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will fail again is not visible."
+          ],
+          "visible": [
+            "/APP HOST KEY VERIFICATION FAILED EXIT CODE 1"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The screenshot does not establish whether the failure is caused by a missing host key, a misconfigured SSH client, or a network issue."
+          ],
+          "visible": [
+            "/APP HOST KEY VERIFICATION FAILED EXIT CODE 1"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-13",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-terminal-13",
+      "category": "terminal",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-13",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1094.8,
+        "ocr": 1420.0,
+        "ocr_collect": 244.968
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will fail again is not visible."
+          ],
+          "visible": [
+            "/APP TOO MANY OPEN FILES EXIT CODE 1"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The screenshot does not establish whether the application is failing due to insufficient system resources, a bug, or a configuration error."
+          ],
+          "visible": [
+            "/APP TOO MANY OPEN FILES EXIT CODE 1"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-14",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-terminal-14",
+      "category": "terminal",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-14",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1076.4,
+        "ocr": 1378.5,
+        "ocr_collect": 232.126
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will fail again is not visible."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The screenshot does not establish whether the application will recover or if the memory issue is temporary."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-15",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-terminal-15",
+      "category": "terminal",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-terminal-15",
+        "category": "terminal",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1223.4,
+        "ocr": 1434.0,
+        "ocr_collect": 192.27
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has already signed in again is not visible."
+          ],
+          "visible": [
+            "\"SESSION TIMEOUT\" \"SIGN IN AGAIN TO CONTINUE\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has already clicked a button to sign in."
+          ],
+          "visible": [
+            "\"SESSION TIMEOUT\" \"SIGN IN AGAIN TO CONTINUE\""
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-13",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dialog-13",
+      "category": "dialog",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-13",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1349.9,
+        "ocr": 1339.4,
+        "ocr_collect": 175.293
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has already exported the data is not visible."
+          ],
+          "visible": [
+            "UNSAVED_REPORT EXPORT BEFORE CLOSING"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Which specific action the user should take is not established."
+          ],
+          "visible": [
+            "UNSAVED REPORT EXPORT BEFORE CLOSING"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-14",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": false,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 0.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dialog-14",
+      "category": "dialog",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-14",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1278.6,
+        "ocr": 1247.6,
+        "ocr_collect": 167.99
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user must paste the copied content immediately or can do so later."
+          ],
+          "visible": [
+            "\"COPY COMPLETE\" \"PASTE WHERE NEEDED\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user must paste the copied content is not explicitly stated."
+          ],
+          "visible": [
+            "COPY COMPLETE PASTE WHERE NEEDED"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-15",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dialog-15",
+      "category": "dialog",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-15",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1384.7,
+        "ocr": 1283.1,
+        "ocr_collect": 163.675
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the field marked as REQUIRED is actually invalid or just marked as required."
+          ],
+          "visible": [
+            "SIGN IN HOST USERNAME PORT REQUIRED"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the invalid field is the one labeled REQUIRED."
+          ],
+          "visible": [
+            "SIGN IN HOST USERNAME PORT REQUIRED"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-form-13",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-form-13",
+      "category": "form",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-form-13",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 5,
+      "timing_ms": {
+        "baseline": 1308.9,
+        "ocr": 1271.9,
+        "ocr_collect": 164.861
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the invalid field is the DATE field is not established."
+          ],
+          "visible": [
+            "BOOKING HOST DATE PORT REQUIRED"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the invalid field is the one labeled REQUIRED is not established."
+          ],
+          "visible": [
+            "BOOKING HOST DATE PORT REQUIRED"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-form-14",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-form-14",
+      "category": "form",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-form-14",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 5,
+      "timing_ms": {
+        "baseline": 1241.4,
+        "ocr": 1302.0,
+        "ocr_collect": 169.791
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the invalid field is due to missing input or incorrect input is not visible."
+          ],
+          "visible": [
+            "CANCEL PLAN HOST REASON PORT REQUIRED"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the screenshot establishes that the field marked as invalid is the only invalid field."
+          ],
+          "visible": [
+            "CANCEL PLAN HOST REASON PORT REQUIRED"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-form-15",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-form-15",
+      "category": "form",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-form-15",
+        "category": "form",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 5,
+      "timing_ms": {
+        "baseline": 1389.0,
+        "ocr": 1397.5,
+        "ocr_collect": 176.964
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether other settings exist outside the visible area."
+          ],
+          "visible": [
+            "STORAGE CLOUD BACKUP AUTO-SAVE TELEMETRY"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the screenshot establishes which setting is currently enabled."
+          ],
+          "visible": [
+            "STORAGE CLOUD BACKUP AUTO-SAVE TELEMETRY"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-13",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-settings-13",
+      "category": "settings",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-13",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 4,
+      "timing_ms": {
+        "baseline": 1308.2,
+        "ocr": 1374.3,
+        "ocr_collect": 180.64
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether other settings exist outside the visible area."
+          ],
+          "visible": [
+            "MOBILE DATA ROAMING AUTO-SAVE TELEMETRY"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether other settings exist on the screen is not visible."
+          ],
+          "visible": [
+            "MOBILE DATA ROAMING AUTO-SAVE TELEMETRY"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-14",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-settings-14",
+      "category": "settings",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-14",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 4,
+      "timing_ms": {
+        "baseline": 1329.8,
+        "ocr": 1450.6,
+        "ocr_collect": 208.351
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether other settings exist outside the visible area."
+          ],
+          "visible": [
+            "ACCESSIBILITY LARGER TEXT AUTO-SAVE TELEMETRY"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether other settings exist outside the visible area is not established."
+          ],
+          "visible": [
+            "ACCESSIBILITT LARGER TEXT AUTO-SAVE TELEMETRY"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-15",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-settings-15",
+      "category": "settings",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-settings-15",
+        "category": "settings",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 4,
+      "timing_ms": {
+        "baseline": 1314.9,
+        "ocr": 1421.1,
+        "ocr_collect": 200.677
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "The number of jobs that have completed is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD JOBS 4 RUNNING"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The specific number of jobs that are currently running is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD JOBS 4 RUNNING"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-13",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dashboard-13",
+      "category": "dashboard",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-13",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1296.8,
+        "ocr": 1307.8,
+        "ocr_collect": 204.845
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the device is fully charged is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the device is fully charged is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-14",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dashboard-14",
+      "category": "dashboard",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-14",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1358.5,
+        "ocr": 1313.9,
+        "ocr_collect": 173.402
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "The screenshot does not establish whether the temperature is within a safe range."
+          ],
+          "visible": [
+            "STATUS DASHBOARD TEMP 61C NORMAL"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the temperature is within a safe range is not established."
+          ],
+          "visible": [
+            "STATUS DASHBOARD TEMP 61C NORMAL"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-15",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dashboard-15",
+      "category": "dashboard",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dashboard-15",
+        "category": "dashboard",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 3,
+      "timing_ms": {
+        "baseline": 1373.0,
+        "ocr": 1319.3,
+        "ocr_collect": 174.811
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the maintenance will actually occur is not established."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The specific time of the maintenance window is not established."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-13",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-13",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-13",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1440.2,
+        "ocr": 1428.7,
+        "ocr_collect": 185.056
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user can still perform any actions is not visible."
+          ],
+          "visible": [
+            "USAGE LIMIT. YOU HAVE 2 GB REMAINING THIS WEEK."
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has exceeded the limit in the past is not visible."
+          ],
+          "visible": [
+            "USAGE LIMIT. YOU HAVE 2 GB REMAINING THIS WEEK."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-14",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-14",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-14",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1437.1,
+        "ocr": 1491.2,
+        "ocr_collect": 169.675
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the report is complete or if additional steps are needed beyond downloading the summary."
+          ],
+          "visible": [
+            "\"REPORT READY. DOWNLOAD THE SUMMARY FROM THE PORTAL.\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the report is already downloaded or if the user must take action to download it."
+          ],
+          "visible": [
+            "REPORT READY. DOWNLOAD THE SUMMARY FROM THE PORTAL."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-15",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-15",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-15",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1473.8,
+        "ocr": 1466.6,
+        "ocr_collect": 173.941
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Which button the user will click is not established."
+          ],
+          "visible": [
+            "\"SESSION TIMEOUT\" \"SIGN IN AGAIN TO CONTINUE\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Which button is active or which action the user should take is not established."
+          ],
+          "visible": [
+            "SESSION TIMEOUT SIGN IN AGAIN TO CONTINUE"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-13",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dark_mode-13",
+      "category": "dark_mode",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-13",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1375.2,
+        "ocr": 1348.5,
+        "ocr_collect": 199.608
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user must export the report before closing is not explicitly stated."
+          ],
+          "visible": [
+            "\"UNSAVED REPORT\" \"EXPORT BEFORE CLOSING\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Which specific action the user should take is not established."
+          ],
+          "visible": [
+            "UNSAVED REPORT EXPORT BEFORE CLOSING"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-14",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dark_mode-14",
+      "category": "dark_mode",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-14",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1453.6,
+        "ocr": 1364.2,
+        "ocr_collect": 187.807
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user must paste the copied content immediately or can do so later."
+          ],
+          "visible": [
+            "\"COPY COMPLETE\" \"PASTE WHERE NEEDED\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user must paste the copied content immediately is not established."
+          ],
+          "visible": [
+            "COPY COMPLETE PASTE WHERE NEEDED"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-15",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dark_mode-15",
+      "category": "dark_mode",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dark_mode-15",
+        "category": "dark_mode",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1431.1,
+        "ocr": 1310.1,
+        "ocr_collect": 190.624
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether a later backup ran is not visible."
+          ],
+          "visible": [
+            "RUNNING NORMALLY NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether a later backup ran is not visible."
+          ],
+          "visible": [
+            "RUNNING NORMALLY NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-13",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-insufficient_evidence-13",
+      "category": "insufficient_evidence",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-13",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1345.5,
+        "ocr": 1301.6,
+        "ocr_collect": 262.45
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether a later backup ran is not visible."
+          ],
+          "visible": [
+            "NO ACTION NEEDED NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The specific reason why no cause is visible is not established."
+          ],
+          "visible": [
+            "NO ACTION NEEDED NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-14",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-insufficient_evidence-14",
+      "category": "insufficient_evidence",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-14",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1410.8,
+        "ocr": 1424.5,
+        "ocr_collect": 195.568
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "The specific reason why the screen is marked as \"HEALTHY\" is not established."
+          ],
+          "visible": [
+            "HEALTHY NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether a later backup ran is not visible."
+          ],
+          "visible": [
+            "HEALTHY NO CAUSE IS VISIBLE IN THIS SCREEN"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-15",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-insufficient_evidence-15",
+      "category": "insufficient_evidence",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-insufficient_evidence-15",
+        "category": "insufficient_evidence",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1589.9,
+        "ocr": 1333.8,
+        "ocr_collect": 195.759
+      }
+    }
+  ],
+  "run_id": "m007-20260919-230357-585e6a",
+  "summary": {
+    "baseline": {
+      "abstain_correct": 24,
+      "forbidden_claim_total": 0,
+      "passes": 23,
+      "required_fact_recall_mean": 1.0,
+      "ui_string_match_mean": 0.9583,
+      "unsupported_claim_rate_mean": 0.0
+    },
+    "cases": 24,
+    "ocr": {
+      "abstain_correct": 24,
+      "forbidden_claim_total": 0,
+      "passes": 24,
+      "required_fact_recall_mean": 1.0,
+      "ui_string_match_mean": 1.0,
+      "unsupported_claim_rate_mean": 0.0
+    }
+  },
+  "total_ms": 70229.7
+}

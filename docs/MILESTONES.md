@@ -90,6 +90,16 @@ bounded second-look request. Trusted code retains provenance for each fact.
 Gate: augmentation improves the predeclared difficult subset without
 increasing unsupported claims, privacy scope, or latency beyond ceilings.
 
+Delivered: `pixels.py` (stdlib crop/zoom), `tools/vision_ocr.swift` +
+`ocr_vision.py` (local Vision OCR; no permission, no package), `evidence.py`
+(provenance; facts in prompts only, trace-safe summaries), `--evidence-ocr`
+in the assistant, and `augment_cli.py` measurement. Frozen subset and full
+held-out measured 2026-09-19: 23/24 → 24/24 (the single failure flipped), no
+regressions, unsupported 0, forbidden 0, 1.25–1.49 s per call.
+Accessibility snapshot and second-look were deferred: both would widen scope
+(a new TCC permission / a second model call) without a demonstrated need in
+the measured subset. **Complete** for the frozen scope.
+
 ### 008 — Multi-turn visual conversation
 
 Build: follow-up questions over an explicit current capture, bounded history,

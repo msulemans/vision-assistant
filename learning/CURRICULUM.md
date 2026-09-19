@@ -156,4 +156,18 @@ check ran twice (Ctrl+C during model load): clean cancel — one JSON line,
 `cancelled` trace, artifact purged, exit 130, no orphaned server. That check
 found and fixed a real bug: a startup interrupt used to crash with a traceback
 and leak the artifact; regression tests now protect every stage. Next
-milestone: M007 — evidence augmentation and focused re-observation.
+milestone was M007 — evidence augmentation (complete; see below).
+
+## M007 outcome — evidence augmentation closes the last failure
+
+Augmentation was frozen before output was inspected: the difficult subset was
+`m004-dialog-14` (the only held-out failure) plus `m004-small_text-13..15` as
+an exact-text guard. Local OCR (macOS Vision, compiled from
+`tools/vision_ocr.swift`; no package, no permission) misread the block-font
+title at 1× ("UNSEVED BEFOBT"); zooming ×2 first (pure-stdlib `pixels.py`)
+read `UNSAVED REPORT` at confidence 1.0 — ×4 regressed. Measured on the
+pinned model: baseline reproduced v4 exactly (23/24, ui 0.9583) and
+OCR-augmented prompts scored 24/24 — flipping the last failure — with
+unsupported 0, forbidden 0, no guard regressions, and 1.25–1.49 s per
+augmented call. Facts enter the model prompt only; traces record counts and
+kinds, never text. Next milestone: M008 — multi-turn visual conversation.

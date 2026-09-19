@@ -237,3 +237,7 @@ PYTHONPATH=src python -m vision_assistant.augment_cli --heldout-all
 Runs the frozen difficult subset (or the full held-out set) twice per case —
 baseline question vs question plus local Vision OCR facts — scores both with
 the frozen scorer, and writes a side-by-side JSON under `runs/m007/`.
+
+Measured 2026-09-19 on the pinned model: held-out 23/24 → **24/24** with OCR
+evidence (the only failure recovered, no regressions, unsupported 0,
+forbidden 0).

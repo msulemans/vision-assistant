@@ -37,8 +37,8 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M006 · complete — one-shot assistant live on the sealed M005 config</dd></div>
-          <div><dt>Tests</dt><dd>76 passing · 70 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M007 · complete — OCR augmentation flips the last held-out failure</dd></div>
+          <div><dt>Tests</dt><dd>97 passing · 91 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>Qwen3.5-4B · Q4_K_M — pinned, local</dd></div>
           <div><dt>Action access</dt><dd>None</dd></div>
         </dl>
@@ -140,9 +140,9 @@
         <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
 
-      <p><strong>Plan checkpoint:</strong> M006 is complete — preview, ask, stop, and
-        reset were all verified live. M005 sealed the configuration; M007 adds
-        deterministic augmentation; M009 brings the browser-UI treatment. After M009,
+      <p><strong>Plan checkpoint:</strong> M007 is complete — zoom ×2 plus local
+        OCR evidence fixed the only held-out failure with no regressions. M008 adds
+        bounded follow-up questions; M009 brings the browser-UI treatment. After M009,
         desktop actions are optional and read-only packaging can proceed. These are
         planned gates.</p>
 
@@ -253,6 +253,9 @@
         nothing left behind. The stop check deliberately surfaced a real bug — a
         leaked artifact and an unhandled traceback — now protected by regression
         tests.</p>
+      <p>M007 held-out: baseline reproduced 23/24, and the OCR-augmented prompts
+        scored 24/24 — the missed dialog string is read reliably after a zoom. Facts
+        reach the model prompt only; traces keep counts, never text.</p>
       <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
       <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
     </section>

@@ -871,7 +871,7 @@ Next milestone: M007 — evidence augmentation and focused re-observation.
 
 ## Milestone 007 — evidence augmentation and focused re-observation
 
-Status: in progress. Scope frozen 2026-09-19, before any augmentation output
+Status: complete (2026-09-19). Scope was frozen before any augmentation output
 was inspected:
 
 - Predeclared difficult subset (from the v4 held-out records): `m004-dialog-14`,
@@ -932,5 +932,19 @@ ui 1.00 (no regressions); unsupported 0.0 and forbidden 0 in both
 conditions; augmented model calls 1108–1353 ms. Evidence:
 `docs/evidence/2026-09-19-m007-subset-measurement.md` (+ JSON copy).
 
-Pending: the full held-out guard run (`--heldout-all`) before M007 closes.
+Full held-out guard (user machine, run `subset-m007-20260919-230357-585e6a`):
+baseline reproduced v4 exactly (23/24, ui 0.9583, recall 1.0, unsupported 0,
+forbidden 0, abstain 24/24); OCR-augmented prompts scored 24/24 — the one
+failure flipped with no regressions, unsupported 0, forbidden 0; augmented
+calls 1248–1491 ms. Evidence:
+`docs/evidence/2026-09-19-m007-heldout-measurement.md` (+ JSON copy).
+
+Delivered scope: crop/zoom (`pixels.py`), local Vision OCR
+(`tools/vision_ocr.swift`, `ocr_vision.py`), provenance layer (`evidence.py`),
+`--evidence-ocr`, and the measurement harness (`augment_cli.py`).
+Accessibility snapshot and second-look were deferred: both would widen scope
+(a new TCC permission / an extra model call) without a demonstrated need in
+the measured subset; recorded as future work.
+
+Next milestone: M008 — multi-turn visual conversation.
 
