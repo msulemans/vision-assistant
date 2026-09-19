@@ -98,6 +98,17 @@ class ScoreLabelTest(unittest.TestCase):
         self.assertEqual(score_label("SAVE ALL", "SAVE"), 0.0)
         self.assertEqual(score_label("DELETE", "DISCARD"), 0.0)
 
+    def test_short_or_midword_substrings_do_not_match(self) -> None:
+        # Live finding: "AC" matched Calculator's "Subtract" through the old
+        # substring tier because "ac" appears mid-word.
+        self.assertEqual(score_label("AC", "Subtract"), 0.0)
+        self.assertEqual(score_label("tract", "Subtract"), 0.0)
+        self.assertEqual(score_label("card", "DISCARD"), 0.0)
+
+    def test_word_boundary_substrings_still_match(self) -> None:
+        self.assertEqual(score_label("sort", "sorting"), 0.8)
+        self.assertEqual(score_label("Sear", "Search Field"), 0.8)
+
 
 class ResolveTargetTest(unittest.TestCase):
     def _elements(self) -> tuple[AxElement, ...]:
@@ -136,6 +147,12 @@ class ResolveTargetTest(unittest.TestCase):
     def test_absent_target_is_not_found(self) -> None:
         result = resolve_target(self._elements(), TargetSpec("DELETE"))
         self.assertEqual(result.status, "not_found")
+
+    def test_short_query_does_not_match_a_midword_identifier(self) -> None:
+        elements = (_element("w0/0", identifier="Subtract"),)
+        result = resolve_target(elements, TargetSpec("AC"))
+        self.assertEqual(result.status, "not_found")
+        self.assertIsNone(result.chosen)
 
     def test_clear_winner_is_not_flagged_ambiguous(self) -> None:
         elements = (

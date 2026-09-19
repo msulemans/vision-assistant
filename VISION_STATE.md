@@ -1184,3 +1184,13 @@ resolution), `grounding_fixture.py` + `grounding_eval.py` (frozen gate),
 `grounding_cli.py` (`--verify`, `--check`, `--request-permission`, `--dump`,
 `--ground`), and fast deterministic tests including the no-input source scan.
 
+Amendment (2026-09-19, during the first live run): resolving "AC" against
+Calculator matched "Subtract" — the old substring tier accepted mid-word
+character sequences for short queries. Scoring now requires a word boundary
+and at least four characters for substring matches; the frozen set gained a
+regression task ("card" must not match "DISCARD"), so the gate runs
+11 tasks × 4 variants = 44 checks. Two live ergonomics findings were folded
+in: `--app NAME` selects an application by name (the frontmost app races
+with typing the next command in a terminal), and OCR cross-checks zoom
+crops smaller than 96 px by 2x (the M007 legibility finding).
+

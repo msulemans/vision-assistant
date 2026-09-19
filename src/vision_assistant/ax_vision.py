@@ -227,8 +227,14 @@ class AxVisionAdapter:
         if self._helper is not None:
             return self._helper
         if self.helper_path.is_file() and os.access(self.helper_path, os.X_OK):
-            self._helper = self.helper_path
-            return self._helper
+            source = self.helper_source
+            stale = (
+                source.is_file()
+                and source.stat().st_mtime > self.helper_path.stat().st_mtime
+            )
+            if not stale:
+                self._helper = self.helper_path
+                return self._helper
         swiftc = shutil.which("swiftc") or "/usr/bin/swiftc"
         if not Path(swiftc).exists():
             raise AxUnavailable("toolchain", "swiftc not found; install Xcode command line tools")
@@ -292,15 +298,19 @@ class AxVisionAdapter:
         self,
         *,
         pid: int | None = None,
+        app_name: str | None = None,
         frontmost: bool = False,
         max_depth: int = 12,
     ) -> AxSnapshot:
         """Read a snapshot of one application's windows. Read-only."""
-        if pid is not None and frontmost:
-            raise ValueError("pass either pid or frontmost, not both")
+        provided = (pid is not None, app_name is not None, frontmost)
+        if sum(1 for value in provided if value) > 1:
+            raise ValueError("pass exactly one of pid, app_name, frontmost")
         args = ["--dump"]
         if pid is not None:
             args += ["--pid", str(int(pid))]
+        elif app_name is not None:
+            args += ["--app", str(app_name)]
         else:
             args += ["--frontmost"]
         if max_depth != 12:

@@ -7,9 +7,11 @@ drift. Variants cover two layouts (frames reflowed, same identities) at two
 scales (1x / 2x, as a Retina capture would be), each at a different window
 origin so offset math has teeth.
 
-Frozen tasks (10) run on all variants; see `FROZEN_TASKS`. The duplicate
+Frozen tasks (11) run on all variants; see `FROZEN_TASKS`. The duplicate
 "SYNC" checkbox exists deliberately: it must be resolvable only through its
-stable identifier and must fail closed (`ambiguous`) without it.
+stable identifier and must fail closed (`ambiguous`) without it. The set
+gained one regression task after the first live run: "card" must not match
+"DISCARD" mid-word.
 """
 
 from __future__ import annotations
@@ -209,5 +211,6 @@ FROZEN_TASKS: tuple[GroundingTask, ...] = (
     ),
     GroundingTask("negative-delete", TargetSpec("DELETE"), "not_found"),
     GroundingTask("negative-save-all", TargetSpec("SAVE ALL"), "not_found"),
+    GroundingTask("negative-card", TargetSpec("card"), "not_found"),
     GroundingTask("ambiguous-sync", TargetSpec("SYNC"), "ambiguous"),
 )

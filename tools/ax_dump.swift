@@ -10,8 +10,8 @@
 // Modes:
 //   ax_dump --check
 //   ax_dump --request-permission
-//   ax_dump --windows [--pid N | --frontmost]
-//   ax_dump --dump [--pid N | --frontmost] [--max-depth D]
+//   ax_dump --windows [--pid N | --app NAME | --frontmost]
+//   ax_dump --dump [--pid N | --app NAME | --frontmost] [--max-depth D]
 //
 // Exit codes: 0 ok, 2 not permitted, 3 usage, 4 runtime failure.
 //
@@ -236,6 +236,14 @@ if mode == "--windows" || mode == "--dump" {
     if let raw = argumentValue("--pid") {
         guard let parsed = Int32(raw), parsed > 0 else { fail("--pid must be a positive integer", code: 3) }
         pid = parsed
+    } else if let wanted = argumentValue("--app") {
+        let target = wanted.lowercased()
+        guard let app = NSWorkspace.shared.runningApplications.first(where: {
+            ($0.localizedName ?? "").lowercased() == target
+        }) else {
+            fail("no running application named \(wanted)", code: 4)
+        }
+        pid = app.processIdentifier
     } else {
         guard let front = NSWorkspace.shared.frontmostApplication else {
             fail("no frontmost application", code: 4)
@@ -289,6 +297,6 @@ if mode == "--windows" || mode == "--dump" {
 
 fail(
     "usage: ax_dump --check | --request-permission | --windows | --dump "
-        + "[--pid N | --frontmost] [--max-depth D]",
+        + "[--pid N | --app NAME | --frontmost] [--max-depth D]",
     code: 3
 )

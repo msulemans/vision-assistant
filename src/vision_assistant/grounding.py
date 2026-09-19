@@ -61,6 +61,7 @@ _EXACT = 1.0
 _TOKEN_SUBSET = 0.9
 _SUBSTRING = 0.8
 _CORE_COVERED = 0.75
+_SUBSTRING_MIN_CHARS = 4
 
 _FIELD_WEIGHTS = (("title", 1.0), ("identifier", 1.0), ("description", 0.95), ("value", 0.85))
 
@@ -83,7 +84,10 @@ def score_label(query: str, label: str) -> float:
     Query words must all be accounted for: words that are not present in the
     candidate must be generic role nouns ("field", "button", ...) or fillers.
     Extra candidate words are allowed — real UI labels are more specific than
-    the target phrasing ("CANCEL CHANGES" for "cancel").
+    the target phrasing ("CANCEL CHANGES" for "cancel"). A substring match
+    only counts at a word boundary and only for queries of at least four
+    characters, so short queries can never match the middle of a word
+    ("AC" must not match "Subtract").
     """
     query_norm = normalize(query)
     label_norm = normalize(label)
@@ -95,7 +99,7 @@ def score_label(query: str, label: str) -> float:
     label_tokens = _tokens(label)
     if query_tokens and query_tokens <= label_tokens:
         return _TOKEN_SUBSET
-    if query_norm in label_norm:
+    if len(query_norm) >= _SUBSTRING_MIN_CHARS and f" {query_norm}" in f" {label_norm}":
         return _SUBSTRING
     core = query_tokens - _ROLE_NOUNS - _FILLERS
     if core and core <= label_tokens:

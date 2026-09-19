@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -171,6 +172,34 @@ class AxVisionAdapterTest(unittest.TestCase):
             helper.chmod(0o700)
             adapter = self._adapter(tool_dir)
             self.assertEqual(adapter.snapshot(frontmost=True).app, "ok")
+
+            helper.write_text(
+                "#!/usr/bin/env python3\n"
+                "import json, sys\n"
+                "if sys.argv[1:] != ['--dump', '--app', 'Calculator']:\n"
+                "    sys.exit(9)\n"
+                "print(json.dumps({'app': 'ok', 'pid': 42, 'trusted': True, 'windows': []}))\n",
+                encoding="utf-8",
+            )
+            helper.chmod(0o700)
+            adapter = self._adapter(tool_dir)
+            self.assertEqual(adapter.snapshot(app_name="Calculator").app, "ok")
+            with self.assertRaises(ValueError):
+                adapter.snapshot(pid=1, frontmost=True)
+
+    def test_stale_helper_is_rebuilt_when_the_source_is_newer(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tool_dir = root / "tools"
+            _json_helper(tool_dir, {"trusted": False})
+            source = root / "ax_dump.swift"
+            source.write_text("this is not valid swift", encoding="utf-8")
+            newer = (tool_dir / "ax_dump").stat().st_mtime + 10
+            os.utime(source, (newer, newer))
+            adapter = AxVisionAdapter(tool_dir=tool_dir, helper_source=source)
+            with self.assertRaises(AxUnavailable) as caught:
+                adapter.check()
+            self.assertIn(caught.exception.reason, {"compile", "toolchain"})
 
     def test_missing_source_and_no_toolchain_raise_unavailable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -31,7 +31,7 @@ from .grounding import (
     normalize,
 )
 from .grounding_eval import DEFAULT_OUT_DIR, run_frozen_gate
-from .pixels import crop_png, decode_png
+from .pixels import crop_png, decode_png, zoom_png
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TMP_DIR = REPO_ROOT / "runs" / "m012-tmp"
@@ -125,15 +125,26 @@ def _window_lines(snapshot, json_mode: bool, max_depth: int) -> int:
     return 0
 
 
+def _select_window_target(args: argparse.Namespace) -> tuple[int | None, str | None, bool] | None:
+    provided = [args.pid is not None, args.app is not None, args.frontmost]
+    if sum(1 for item in provided if item) > 1:
+        _print("choose one of --pid, --app, --frontmost")
+        return None
+    frontmost = args.frontmost or (args.pid is None and args.app is None)
+    return args.pid, args.app, frontmost
+
+
 def cmd_dump(args: argparse.Namespace) -> int:
-    if args.frontmost and args.pid is not None:
-        _print("choose either --pid or --frontmost")
+    target = _select_window_target(args)
+    if target is None:
         return 2
+    pid, app_name, frontmost = target
     adapter = _adapter()
     try:
         snapshot = adapter.snapshot(
-            pid=args.pid,
-            frontmost=(args.frontmost or args.pid is None),
+            pid=pid,
+            app_name=app_name,
+            frontmost=frontmost,
             max_depth=args.max_depth,
         )
     except AxUnavailable as error:
@@ -174,12 +185,13 @@ def _target_matches_fact(target: str, fact_text: str) -> bool:
 
 
 def cmd_ground(args: argparse.Namespace) -> int:
-    if args.frontmost and args.pid is not None:
-        _print("choose either --pid or --frontmost")
+    target = _select_window_target(args)
+    if target is None:
         return 2
+    pid, app_name, frontmost = target
     adapter = _adapter()
     try:
-        snapshot = adapter.snapshot(pid=args.pid, frontmost=(args.frontmost or args.pid is None))
+        snapshot = adapter.snapshot(pid=pid, app_name=app_name, frontmost=frontmost)
     except AxUnavailable as error:
         _describe_ax_error(error)
         return 2 if error.reason == "permission" else 1
@@ -243,8 +255,10 @@ def cmd_ground(args: argparse.Namespace) -> int:
             _print(f"candidate: {alternative.element.role} {alternative.element.display_name!r} score={alternative.score:.2f}")
 
     crop_bytes: bytes | None = None
+    region_size: tuple[int, int] | None = None
     if result.chosen is not None and result.chosen.region is not None:
         x, y, width, height = result.chosen.region
+        region_size = (width, height)
         crop_bytes = crop_png(image_bytes, x=x, y=y, width=width, height=height)
         if args.crop_out is not None:
             out_path = Path(args.crop_out)
@@ -258,14 +272,19 @@ def cmd_ground(args: argparse.Namespace) -> int:
         else:
             from .ocr_vision import OcrUnavailable, VisionOcrAdapter
 
+            ocr_input = crop_bytes
+            note = ""
+            if region_size is not None and min(region_size) < 96:
+                ocr_input = zoom_png(crop_bytes, factor=2)  # M007 finding: tiny crops need 2x
+                note = " (crop zoomed x2)"
             try:
-                report = VisionOcrAdapter().collect(crop_bytes)
+                report = VisionOcrAdapter().collect(ocr_input)
             except OcrUnavailable as error:
                 _print(f"ocr cross-check: unavailable — {error}")
             else:
                 matched = [fact for fact in report.facts if _target_matches_fact(args.target, fact.text)]
                 _print(
-                    f"ocr cross-check: {len(report.facts)} line(s) read; "
+                    f"ocr cross-check: {len(report.facts)} line(s) read{note}; "
                     + (f"matched {matched[0].text!r}" if matched else "no line matched the target text")
                 )
 
@@ -286,9 +305,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--element-id", type=str, default=None)
     parser.add_argument("--pid", type=int, default=None)
     parser.add_argument(
+        "--app",
+        type=str,
+        default=None,
+        help="select a running application by name (more reliable than --frontmost)",
+    )
+    parser.add_argument(
         "--frontmost",
         action="store_true",
-        help="use the frontmost application (default when --pid is absent)",
+        help="use the frontmost application (default when neither --pid nor --app is given)",
     )
     parser.add_argument("--max-depth", type=int, default=12)
     parser.add_argument("--json", action="store_true")
