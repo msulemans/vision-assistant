@@ -1085,3 +1085,30 @@ noted for M011; the policy engine is unaffected either way.
 Next milestone: M011 — disposable simulated action loop (fake executor only,
 no host input).
 
+## Milestone 011 — disposable simulated action loop
+
+Status: in progress. Scope frozen 2026-09-19:
+
+- Practice app: a deterministic Python state machine (`practice_app.py`)
+  rendered to a PNG with the embedded font; elements are addressed by stable
+  ids (`app:sync-toggle`, `app:search`, `app:cancel`, ...). Execution is
+  `apply_intent`, a Python state change — there is no host UI and no
+  input-event path anywhere in the codebase.
+- Loop (`action_loop.py`): observe → propose → validate (M010 schema) →
+  approve (simulation auto-approval; denial is final) → fake-execute (stale
+  observations refused) → verify (state predicates) with bounded retries;
+  cancellation and emergency stop are final.
+- Budgets: 12 steps per task; 2 retries. Denial, cancellation, staleness,
+  and exhausted budgets are final states.
+- Frozen tasks: enable Sync; type "hello" into the search field; close the
+  confirmation dialog via Cancel or Escape.
+- Gate reading: all frozen tasks done within budget with zero host
+  input events (`host_input_events: 0` recorded per task; source-scan tests
+  prove the modules have no execution capability).
+
+First build: `practice_app.py`, `action_loop.py`, `sim_cli.py` (model-driven
+run with one JSON repair attempt per step), and `tests/test_action_loop.py`
+(deterministic scripted-loop tests for every terminal state).
+
+Next: the user's live run on the pinned model.
+
