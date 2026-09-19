@@ -360,3 +360,11 @@ substring matches, black captures, cross-app activation bans, dispatcher
 argv, a 3.9 fallback), and let constraints redesign the system instead of
 being defeated. Every claim in this curriculum traces to a command whose
 observed result is recorded. That is the whole curriculum.
+
+## Planned M018 — from practice window to browser tasks
+
+Read [the computer-use plan](../docs/COMPUTER_USE_AGENT_PLAN.md). Learn why
+a model's finish message is not a success oracle, why screenshot-only and
+DOM-assisted observations need separate results, and why correct refusals
+must not inflate productive completion rate. The 50 tasks and M018A–E gates
+are proposals; no browser-agent benchmark result is claimed.

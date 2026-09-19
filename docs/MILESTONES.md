@@ -300,3 +300,10 @@ bundles; unsigned artifacts documented as a known limitation. The audit's
 own tests caught a real Python 3.9 fallback bug in the import scanner,
 fixed the same day. **Complete. End of the frozen roadmap:** M001 through
 M017 are complete and evidenced.
+
+## Proposed extension — M018 browser computer-use agent
+
+Planning only; M001–M017 completion records remain unchanged.
+See [COMPUTER_USE_AGENT_PLAN.md](COMPUTER_USE_AGENT_PLAN.md) for the screenshot
+loop, browser scope, 50 tasks, held-out evaluation, and staged cost limits.
+The next proposed stage is M018A (manifest and oracles), not a model run.

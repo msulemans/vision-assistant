@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Roadmap complete — M001 through M017 are complete and evidenced
-(see their sections). There is no next milestone; changes after this point
-must go through the same freeze–evidence discipline as any milestone.
+Status: Original roadmap records M001 through M017 as complete (see their
+sections). M018 browser computer-use extension is planned, not implemented;
+M018A is the proposed next stage under the same freeze–evidence discipline.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1669,3 +1669,14 @@ Learning map: every milestone done; figures: 337 tests = 331 product +
 
 End of the frozen roadmap: M001 through M017 — all complete and evidenced.
 
+
+## M018 extension planned — 2026-09-20
+
+User requested a screenshot/mouse/keyboard/browser agent plan, including a
+Hacker News top-three-AI-stories goal and 50 tasks measured by completion rate.
+`docs/COMPUTER_USE_AGENT_PLAN.md` specifies M018A–E, 30 development / 20 held-out
+tasks, independent oracles, separate productive completion and refusal metrics,
+a five-task smoke stage, and a separate live HN pilot. This is planned only:
+no new model runs, downloads, or browser actions were performed. The existing
+M001–M017 completion records were consulted, not re-audited. M018A is proposed
+next; implementation has not started.

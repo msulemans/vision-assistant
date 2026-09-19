@@ -420,3 +420,10 @@ bundle builds byte-identical; install→upgrade→rollback→uninstall
 re-verified on real bundles; the release manifest is byte-stable. Unsigned
 artifacts (no Apple notarization in this lab) are documented in
 `docs/SUPPORT.md`.
+
+## Planned browser-agent extension
+
+[M018: computer-use agent](docs/COMPUTER_USE_AGENT_PLAN.md) adds a planned
+screenshot-driven browser loop, 50 evaluation tasks, independent completion
+checks, and a bounded Hacker News pilot. Planning only; start with the task
+manifest and oracles before running models.
