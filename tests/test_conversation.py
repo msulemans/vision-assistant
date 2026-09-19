@@ -15,6 +15,7 @@ from vision_assistant.conversation import (
     TurnLimitReached,
 )
 from vision_assistant.ports import LabelledAnswer
+from vision_assistant.pixels import decode_png
 
 
 def _make_png(width: int = 24, height: int = 16) -> bytes:
@@ -37,9 +38,11 @@ def _make_png(width: int = 24, height: int = 16) -> bytes:
 class _FakeAdapter:
     def __init__(self) -> None:
         self.prompts: list[str] = []
+        self.pngs: list[bytes] = []
 
     def predict_image(self, png_bytes: bytes, question: str):
         self.prompts.append(question)
+        self.pngs.append(png_bytes)
         answer = LabelledAnswer(
             visible=("VISIBLE FACT",), inferred=(), unknown=("UNKNOWN PART",)
         )
@@ -121,6 +124,20 @@ class ConversationSessionTest(unittest.TestCase):
             self.assertTrue(session_a.matches(frame_a))
             self.assertFalse(session_a.matches(frame_b))
             self.assertEqual(adapter_b.prompts[0], "Current question: question for b?")
+
+    def test_large_capture_is_downscaled_for_the_model(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            session, adapter, _ = _open_session(Path(tmp), model_image_max_pixels=100)
+            session.ask("scaled?")
+            sent = decode_png(adapter.pngs[0])
+            self.assertEqual((sent.width, sent.height), (12, 8))
+
+    def test_small_capture_reaches_the_model_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            session, adapter, frame = _open_session(Path(tmp))
+            expected = Path(frame.image_path).read_bytes()
+            session.ask("unchanged?")
+            self.assertEqual(adapter.pngs[0], expected)
 
     def test_stale_warning_after_idle_without_blocking(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

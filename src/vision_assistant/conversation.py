@@ -32,6 +32,7 @@ from .events import (
     KIND_REAL,
 )
 from .evidence import EvidencePort, EvidenceReport, facts_to_prompt
+from .pixels import MODEL_IMAGE_MAX_PIXELS, fit_for_model
 from .ports import CapturedFrame, LabelledAnswer
 from .trace import JsonlTraceSink
 
@@ -75,6 +76,7 @@ class ConversationSession:
         max_turns: int = MAX_TURNS,
         max_context_chars: int = MAX_CONTEXT_CHARS,
         stale_after_s: float = STALE_AFTER_S,
+        model_image_max_pixels: int = MODEL_IMAGE_MAX_PIXELS,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.frame = frame
@@ -85,6 +87,7 @@ class ConversationSession:
         self._max_turns = max_turns
         self._max_context_chars = max_context_chars
         self._stale_after_s = stale_after_s
+        self._model_image_max_pixels = model_image_max_pixels
         self._clock = clock
         self._turns: list[Turn] = []
         self._closed = False
@@ -198,15 +201,21 @@ class ConversationSession:
         turn_index = len(self._turns) + 1
         prompt = self._compose(question)
         png_bytes = Path(self.frame.image_path).read_bytes() if self.frame.image_path else b""
+        model_bytes = fit_for_model(png_bytes, max_pixels=self._model_image_max_pixels)
 
         self._emit(
             "model_started",
             ANALYSING,
-            {"turn": turn_index, "question": question, "stale_warning": stale_warning},
+            {
+                "turn": turn_index,
+                "question": question,
+                "stale_warning": stale_warning,
+                "image_scaled": model_bytes is not png_bytes,
+            },
         )
         started = self._clock()
         try:
-            answer, timings = self.adapter.predict_image(png_bytes, prompt)
+            answer, timings = self.adapter.predict_image(model_bytes, prompt)
         except KeyboardInterrupt:
             self._emit("cancelled", CANCELLED, {"turn": turn_index, "reason": "user_interrupt"})
             self._write_trace()

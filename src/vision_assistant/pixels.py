@@ -8,6 +8,7 @@ the same bounds as captured ones. No new dependencies.
 
 from __future__ import annotations
 
+import math
 import struct
 import zlib
 from dataclasses import dataclass
@@ -22,6 +23,12 @@ from .capture import (
 )
 
 _MAX_ZOOM = 8
+
+# Frozen 2026-09-19 (M009 capstone finding): the pinned 4096-token context
+# rejects images above ~4M pixels (llama-server 400: "4252 tokens"). The model
+# view is therefore capped below the observed safe size; OCR evidence still
+# reads the full-resolution artifact.
+MODEL_IMAGE_MAX_PIXELS = 3_000_000
 
 
 def _channels(colour_type: int) -> int:
@@ -194,3 +201,43 @@ def zoom_png(data: bytes, *, factor: int) -> bytes:
     )
     normalize_png(result)
     return result
+
+
+def scale_png(data: bytes, *, max_pixels: int) -> bytes:
+    """Integer nearest-neighbour downscale until the pixel count fits.
+
+    Returns the input unchanged (same object) when it already fits.
+    """
+    draw = decode_png(data)
+    if draw.width * draw.height <= max_pixels:
+        return data
+    factor = 2
+    while math.ceil(draw.width / factor) * math.ceil(draw.height / factor) > max_pixels:
+        factor += 1
+    new_width = max(1, math.ceil(draw.width / factor))
+    new_height = max(1, math.ceil(draw.height / factor))
+    bpp = draw.bytes_per_pixel
+    rows: list[bytes] = []
+    for y in range(new_height):
+        source_row = draw.rows[min(y * factor, draw.height - 1)]
+        out = bytearray()
+        for x in range(new_width):
+            start = min(x * factor, draw.width - 1) * bpp
+            out += source_row[start : start + bpp]
+        rows.append(bytes(out))
+    result = encode_png(
+        PngPixels(
+            width=new_width,
+            height=new_height,
+            colour_type=draw.colour_type,
+            bit_depth=draw.bit_depth,
+            rows=tuple(rows),
+        )
+    )
+    normalize_png(result)
+    return result
+
+
+def fit_for_model(data: bytes, *, max_pixels: int = MODEL_IMAGE_MAX_PIXELS) -> bytes:
+    """The bounded model view: byte-identical when within budget, scaled otherwise."""
+    return scale_png(data, max_pixels=max_pixels)

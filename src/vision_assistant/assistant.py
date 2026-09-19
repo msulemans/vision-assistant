@@ -25,7 +25,7 @@ from .events import (
     KIND_REAL,
 )
 from .evidence import EvidencePort, EvidenceReport, facts_to_prompt
-from .pixels import zoom_png
+from .pixels import fit_for_model, zoom_png
 from .ports import CaptureSource, CapturedFrame
 from .trace import JsonlTraceSink
 
@@ -171,6 +171,7 @@ def answer_frame(
     })
 
     png_bytes = Path(frame.image_path).read_bytes() if frame.image_path else b""
+    model_bytes = fit_for_model(png_bytes)
     evidence_report: EvidenceReport | None = None
     prompt = question
     if evidence_port is not None:
@@ -184,10 +185,18 @@ def answer_frame(
             if block:
                 prompt = f"{question}\n\n{block}"
 
-    emit("model_started", ANALYSING, {"question": question, "evidence": evidence_report is not None})
+    emit(
+        "model_started",
+        ANALYSING,
+        {
+            "question": question,
+            "evidence": evidence_report is not None,
+            "image_scaled": model_bytes is not png_bytes,
+        },
+    )
     try:
         started = clock()
-        answer, timings = adapter.predict_image(png_bytes, prompt)
+        answer, timings = adapter.predict_image(model_bytes, prompt)
         total_ms = (clock() - started) * 1000.0
     except KeyboardInterrupt:
         emit("cancelled", CANCELLED, {"reason": "user_interrupt"})

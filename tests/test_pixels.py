@@ -5,7 +5,7 @@ import unittest
 import zlib
 
 from vision_assistant.capture import PNG_SIGNATURE, ImageValidationError, _png_chunk, normalize_png
-from vision_assistant.pixels import crop_png, decode_png, zoom_png
+from vision_assistant.pixels import crop_png, decode_png, scale_png, zoom_png
 
 
 def _pixels(width: int, height: int) -> list[bytes]:
@@ -115,6 +115,25 @@ class ZoomPngTest(unittest.TestCase):
             zoom_png(png, factor=1)
         with self.assertRaises(ImageValidationError):
             zoom_png(png, factor=9)
+
+
+class ScalePngTest(unittest.TestCase):
+    def test_scale_downscales_to_budget_by_integer_sampling(self) -> None:
+        png = _make_png(24, 16)
+        source = decode_png(png)
+        scaled = scale_png(png, max_pixels=100)
+        result = decode_png(scaled)
+        self.assertEqual((result.width, result.height), (12, 8))
+        bpp = source.bytes_per_pixel
+        expected = b"".join(
+            source.rows[0][x * 2 * bpp : x * 2 * bpp + bpp] for x in range(12)
+        )
+        self.assertEqual(result.rows[0], expected)
+        normalize_png(scaled)
+
+    def test_scale_passthrough_when_within_budget(self) -> None:
+        png = _make_png(24, 16)
+        self.assertIs(scale_png(png, max_pixels=10_000), png)
 
 
 if __name__ == "__main__":

@@ -1024,5 +1024,13 @@ failure banner with typed hints). Tests: `tests/test_ui_server.py` — HTTP-leve
 plumbing with a fake adapter (capture→ask→follow-up→reset, stop, origins,
 typed failures, status).
 
-Next: the user runs the five capstones in the browser on Metal.
+Capstone-run finding (2026-09-19): a real 1800×2400 screenshot exceeded the
+pinned context — llama-server rejected the request ("4252 tokens > 4096") and
+the UI surfaced it as a typed, recoverable failure. Fix: the model view is
+now bounded — `pixels.fit_for_model` integer-downscales captures above
+3,000,000 pixels (deterministic nearest-neighbour; byte-identical passthrough
+below the budget) in both the one-shot flow and chat sessions, and traces
+record `image_scaled`. OCR evidence still reads the full-resolution artifact.
+
+Next: the user re-runs the five capstones in the browser on Metal.
 
