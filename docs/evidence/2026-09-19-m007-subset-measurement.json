@@ -1,0 +1,268 @@
+{
+  "config": {
+    "candidate": "qwen3.5-4b",
+    "cases": [
+      "m004-dialog-14",
+      "m004-small_text-13",
+      "m004-small_text-14",
+      "m004-small_text-15"
+    ],
+    "ctx_size": 4096,
+    "evidence": "vision-ocr-apple, zoom x2, literal"
+  },
+  "gate": {
+    "baseline_passes": 3,
+    "dialog14_baseline_pass": false,
+    "dialog14_ocr_pass": true,
+    "forbidden_claim_total": 0,
+    "ocr_passes": 4,
+    "small_text_regressions": [],
+    "unsupported_rate_sum": {
+      "baseline": 0.0,
+      "ocr": 0.0
+    }
+  },
+  "rows": [
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has already exported the data is not visible."
+          ],
+          "visible": [
+            "UNSAVED_REPORT EXPORT BEFORE CLOSING"
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Which specific action the user should take is not established."
+          ],
+          "visible": [
+            "UNSAVED REPORT EXPORT BEFORE CLOSING"
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-14",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": false,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 0.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-dialog-14",
+      "category": "dialog",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-dialog-14",
+        "category": "dialog",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1080.3,
+        "ocr": 1108.5
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the maintenance will actually occur is not established."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "The specific time of the maintenance window is not established."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-13",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-13",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-13",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1165.4,
+        "ocr": 1234.4
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user can still perform any actions is not visible."
+          ],
+          "visible": [
+            "USAGE LIMIT. YOU HAVE 2 GB REMAINING THIS WEEK."
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the user has exceeded the limit in the past is not visible."
+          ],
+          "visible": [
+            "USAGE LIMIT. YOU HAVE 2 GB REMAINING THIS WEEK."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-14",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-14",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-14",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1157.0,
+        "ocr": 1283.5
+      }
+    },
+    {
+      "answers": {
+        "baseline": {
+          "inferred": [],
+          "unknown": [
+            "Whether the report is complete or if additional steps are needed beyond downloading the summary."
+          ],
+          "visible": [
+            "\"REPORT READY. DOWNLOAD THE SUMMARY FROM THE PORTAL.\""
+          ]
+        },
+        "ocr": {
+          "inferred": [],
+          "unknown": [
+            "Whether the report is already downloaded or if the user must take action to download it."
+          ],
+          "visible": [
+            "REPORT READY. DOWNLOAD THE SUMMARY FROM THE PORTAL."
+          ]
+        }
+      },
+      "baseline": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-15",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "case_id": "m004-small_text-15",
+      "category": "small_text",
+      "ocr": {
+        "abstain_correct": true,
+        "case_id": "m004-small_text-15",
+        "category": "small_text",
+        "forbidden_claim_count": 0,
+        "forbidden_hits": [],
+        "pass": true,
+        "required_fact_recall": 1.0,
+        "split": "heldout",
+        "ui_string_match": 1.0,
+        "unsupported_claim_rate": 0.0,
+        "unsupported_claims": []
+      },
+      "ocr_facts": 2,
+      "timing_ms": {
+        "baseline": 1343.7,
+        "ocr": 1352.9
+      }
+    }
+  ],
+  "run_id": "m007-20260919-230302-95ea55",
+  "summary": {
+    "baseline": {
+      "abstain_correct": 4,
+      "forbidden_claim_total": 0,
+      "passes": 3,
+      "required_fact_recall_mean": 1.0,
+      "ui_string_match_mean": 0.75,
+      "unsupported_claim_rate_mean": 0.0
+    },
+    "cases": 4,
+    "ocr": {
+      "abstain_correct": 4,
+      "forbidden_claim_total": 0,
+      "passes": 4,
+      "required_fact_recall_mean": 1.0,
+      "ui_string_match_mean": 1.0,
+      "unsupported_claim_rate_mean": 0.0
+    }
+  },
+  "total_ms": 10678.9
+}

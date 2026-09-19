@@ -159,7 +159,11 @@ def main(argv: list[str] | None = None) -> int:
                     "ocr_facts": len(report.facts),
                     "baseline": base_score,
                     "ocr": aug_score,
-                    "timing_ms": {"baseline": round(base_ms, 1), "ocr": round(aug_ms, 1)},
+                    "timing_ms": {
+                        "baseline": round(base_ms, 1),
+                        "ocr": round(aug_ms, 1),
+                        "ocr_collect": report.elapsed_ms,
+                    },
                     "answers": {
                         "baseline": {
                             "visible": list(base_answer.visible),

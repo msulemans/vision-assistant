@@ -925,5 +925,12 @@ PYTHONPATH=src python -m vision_assistant.augment_cli                # frozen su
 PYTHONPATH=src python -m vision_assistant.augment_cli --heldout-all  # full held-out guard
 ```
 
-Pending: the measurement run and its result record.
+Subset measurement (user machine, 2026-09-19, run
+`subset-m007-20260919-230302-95ea55`): `m004-dialog-14` FAIL (ui 0.00) →
+PASS (ui 1.00) with 2 OCR facts; `m004-small_text-13..15` stay PASS at
+ui 1.00 (no regressions); unsupported 0.0 and forbidden 0 in both
+conditions; augmented model calls 1108–1353 ms. Evidence:
+`docs/evidence/2026-09-19-m007-subset-measurement.md` (+ JSON copy).
+
+Pending: the full held-out guard run (`--heldout-all`) before M007 closes.
 
