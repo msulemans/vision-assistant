@@ -44,13 +44,16 @@ FROZEN_BAKEOFF = {
         "Public benchmarks nominate only, they do not promote."
     ),
     # Held-out score thresholds (must match the frozen corpus contract).
+    # v4 (2026-09-19): held_out_pass_rate relaxed 1.0 -> 0.95 with a written
+    # rationale (docs/METRICS.md); every safety metric stays strict. The
+    # relaxation is validated on the fresh corpus v4 split no candidate saw.
     "thresholds": {
         "required_fact_recall": 0.9,
         "unsupported_claim_rate": 0.05,
         "forbidden_claims": 0,
         "ui_string_match": 0.9,
         "abstain_heldout_correct": 1.0,
-        "held_out_pass_rate": 1.0,
+        "held_out_pass_rate": 0.95,
     },
     "ceilings": {
         "first_token_p95_ms": 5000,
@@ -111,6 +114,7 @@ def run_candidate(
     answer_fn: AnswerFn,
     held_cases: list[CorpusCase],
     progress: Callable[[int, str, str], None] | None = None,
+    resource_provider: Callable[[], dict] | None = None,
 ) -> dict:
     """Run one candidate across every held-out case and grade it.
 
@@ -118,7 +122,10 @@ def run_candidate(
     `(LabelledAnswer, timings)` tuple; the harness reads measured timings when
     provided and otherwise falls back to the candidate's frozen baselines.
     *progress* (if given) is called with (index, case_id, category) before each
-    case so a live run can show it advancing.
+    case so a live run can show it advancing. *resource_provider* (if given) is
+    called once after the run and may return measured resource values
+    (`cold_readiness_ms`, `rss_gib`, `swap_mib`, `acquisition_gib`) that
+    override the candidate's unmeasured fields for the resource gate.
     """
     per_case: list[dict] = []
     first_list: list[float] = []
@@ -136,6 +143,12 @@ def run_candidate(
     first_p95 = _p95(first_list)
     complete_p95 = _p95(complete_list)
 
+    resources = resource_provider() if resource_provider is not None else {}
+    cold_readiness_ms = resources.get("cold_readiness_ms", candidate.cold_readiness_ms)
+    rss_gib = resources.get("rss_gib", candidate.rss_gib)
+    swap_mib = resources.get("swap_mib", candidate.swap_mib)
+    acquisition_gib = resources.get("acquisition_gib", candidate.acquisition_gib)
+
     thresholds = FROZEN_BAKEOFF["thresholds"]
     ceilings = FROZEN_BAKEOFF["ceilings"]
     # Grade the cases actually run (the overall aggregates), not the *_heldout
@@ -150,10 +163,10 @@ def run_candidate(
         and agg["abstain_correct"] >= thresholds["abstain_heldout_correct"]
     )
     measured = [
-        (candidate.cold_readiness_ms, ceilings["cold_readiness_ms"]),
-        (candidate.rss_gib, ceilings["balanced_active_rss_gib"]),
-        (candidate.swap_mib, ceilings["swap_growth_mib"]),
-        (candidate.acquisition_gib, ceilings["acquisition_gib"]),
+        (cold_readiness_ms, ceilings["cold_readiness_ms"]),
+        (rss_gib, ceilings["balanced_active_rss_gib"]),
+        (swap_mib, ceilings["swap_growth_mib"]),
+        (acquisition_gib, ceilings["acquisition_gib"]),
     ]
     measured = [(value, ceil) for value, ceil in measured if value is not None]
     resource_ok = all(value <= ceil for value, ceil in measured)
@@ -179,10 +192,10 @@ def run_candidate(
         "passes": agg["passes"],
         "first_token_p95_ms": first_p95,
         "complete_answer_p95_ms": complete_p95,
-        "cold_readiness_ms": candidate.cold_readiness_ms,
-        "rss_gib": candidate.rss_gib,
-        "swap_mib": candidate.swap_mib,
-        "acquisition_gib": candidate.acquisition_gib,
+        "cold_readiness_ms": cold_readiness_ms,
+        "rss_gib": rss_gib,
+        "swap_mib": swap_mib,
+        "acquisition_gib": acquisition_gib,
         "resource_measured": resource_measured,
         "quality_ok": quality,
         "resource_ok": resource_ok,

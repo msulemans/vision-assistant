@@ -33,17 +33,18 @@ DEFAULT_CORPUS = REPO_ROOT / "runs" / "m004-corpus"
 #   - the `"; "` string-separator convention was imitated into quoted text
 #     (a `.` became `;` or `:`), so separators are gone: strings are space-joined
 #     and the rules say to write nothing extra around the copied text
-# Corpus v3: the v2 held-out split was inspected by two candidate runs, so the
-# legacy split now covers indices 4-9 and three new cases per category
-# (indices 10-12) are the fresh held-out set for this revision.
+# Corpus v4 (evaluation revision, 2026-09-19): the v3 held-out split was
+# inspected by both candidate runs, so the legacy split now covers indices
+# 4-12 and three new cases per category (indices 13-15) are the fresh
+# held-out set; see docs/METRICS.md for the v4 rationale.
 FROZEN = {
     "schema_version": "1.0",
     "config_version": "1.5",
-    "corpus_version": "3.0",
-    "corpus_size": 96,
+    "corpus_version": "4.0",
+    "corpus_size": 120,
     "dev_cases": 24,
     "heldout_cases": 24,
-    "legacy_cases": 48,
+    "legacy_cases": 72,
     "image": {"max_width": 8192, "max_height": 8192, "max_pixels": 40_000_000},
     "image_tokens": {"policy": "internal artifact reference; no raw pixels in trace"},
     "prompt": (

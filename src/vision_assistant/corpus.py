@@ -323,6 +323,9 @@ _TERMINAL_ERRORS = [
     "DATABASE LOCKED BY ANOTHER SESSION",
     "CONNECTION RESET BY PEER",
     "UNSUPPORTED FILE FORMAT: REPORT.CSV",
+    "HOST KEY VERIFICATION FAILED",
+    "TOO MANY OPEN FILES",
+    "OUT OF MEMORY: KILLED BY SIGNAL 9",
 ]
 _DIALOGS = [
     ("CONNECT TO DATABASE", "ENTER THE PASSWORD TO CONTINUE"),
@@ -337,6 +340,9 @@ _DIALOGS = [
     ("RESTART REQUIRED", "CLOSE THE APP TO FINISH UPDATING"),
     ("CERTIFICATE WARNING", "CONTINUE ONLY IF YOU TRUST THIS SITE"),
     ("STORAGE ALMOST FULL", "REMOVE FILES TO FREE SPACE"),
+    ("SESSION TIMEOUT", "SIGN IN AGAIN TO CONTINUE"),
+    ("UNSAVED REPORT", "EXPORT BEFORE CLOSING"),
+    ("COPY COMPLETE", "PASTE WHERE NEEDED"),
 ]
 _FORMS = [
     ("LOGIN", "PASSWORD"),
@@ -351,6 +357,9 @@ _FORMS = [
     ("DELETE ACCOUNT", "CONFIRM EMAIL"),
     ("INVOICE", "TAX ID"),
     ("TRANSFER", "AMOUNT"),
+    ("SIGN IN", "USERNAME"),
+    ("BOOKING", "DATE"),
+    ("CANCEL PLAN", "REASON"),
 ]
 _SETTINGS = [
     ("PREFERENCES", "AUTO-UPDATE"),
@@ -365,6 +374,9 @@ _SETTINGS = [
     ("NETWORK", "VPN"),
     ("SOUND", "NOISE CANCEL"),
     ("UPDATES", "AUTO RESTART"),
+    ("STORAGE", "CLOUD BACKUP"),
+    ("MOBILE DATA", "ROAMING"),
+    ("ACCESSIBILITY", "LARGER TEXT"),
 ]
 _DASHBOARDS = [
     ("CPU 78%", "ALL SYSTEMS NORMAL"),
@@ -379,6 +391,9 @@ _DASHBOARDS = [
     ("MEMORY 91%", "PRESSURE HIGH"),
     ("SESSIONS 5", "ACTIVE"),
     ("RETRIES 2", "RECOVERING"),
+    ("JOBS 4", "RUNNING"),
+    ("POWER 87%", "CHARGING"),
+    ("TEMP 61C", "NORMAL"),
 ]
 _SMALL_TEXTS = [
     "END USER LICENSE AGREEMENT. BY CLICKING ACCEPT YOU AGREE TO THE TERMS BELOW.",
@@ -393,6 +408,9 @@ _SMALL_TEXTS = [
     "TRIAL NOTICE. YOUR TRIAL ENDS IN 7 DAYS.",
     "REMINDER. PASSWORD CHANGES TAKE EFFECT IMMEDIATELY.",
     "OFFLINE MODE. CHANGES SYNC WHEN CONNECTION RETURNS.",
+    "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT.",
+    "USAGE LIMIT. YOU HAVE 2 GB REMAINING THIS WEEK.",
+    "REPORT READY. DOWNLOAD THE SUMMARY FROM THE PORTAL.",
 ]
 
 
@@ -400,8 +418,8 @@ def _spec(category: str, index: int) -> dict:
     """Return the authored evidence/facts/claims for one corpus case."""
     if index < 3:
         split = "dev"
-    elif index < 9:
-        # Inspected under corpus v1/v2 while tuning; diagnostics only, never
+    elif index < 12:
+        # Inspected under corpus v1-v3 while tuning; diagnostics only, never
         # used to promote a candidate.
         split = "legacy"
     else:
@@ -503,6 +521,7 @@ def _spec(category: str, index: int) -> dict:
         "NOTHING TO REPORT", "PROCESSING", "NO ERRORS", "WAITING", "EMPTY", "CHECKING",
         "ALL CLEAR", "STANDBY", "IDLE",
         "NO ISSUES FOUND", "COMPLETED", "MONITORING",
+        "RUNNING NORMALLY", "NO ACTION NEEDED", "HEALTHY",
     )
     title = titles[index]
     return {
@@ -548,10 +567,10 @@ def _build_fixture(case_id: str, category: str, spec: dict) -> SyntheticFixture:
 
 
 def build_corpus(out_dir: Path | None = None) -> list[CorpusCase]:
-    """Generate all 96 frozen cases (24 dev, 48 legacy, 24 fresh held-out) deterministically."""
+    """Generate all 120 frozen cases (24 dev, 72 legacy, 24 fresh held-out) deterministically."""
     cases: list[CorpusCase] = []
     for category in CATEGORIES:
-        for index in range(12):
+        for index in range(15):
             spec = _spec(category, index)
             case_id = f"m004-{category}-{index + 1:02d}"
             fixture = _build_fixture(case_id, category, spec)

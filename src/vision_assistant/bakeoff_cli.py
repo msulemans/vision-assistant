@@ -96,6 +96,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--no-think", action="store_true", help="disable the model's thinking mode via --jinja + chat_template_kwargs")
     parser.add_argument("--jinja", action="store_true", help="run llama-server with --jinja (use the model's own chat template)")
     parser.add_argument("--no-mmproj-offload", action="store_true", help="run the vision projector on CPU (avoids Metal OOM on larger models)")
+    parser.add_argument("--measure", action="store_true", help="sample process-tree RSS and swap during a --server run")
+    parser.add_argument("--ctx-size", type=int, default=None, help="bound the server context size (default: model metadata)")
     parser.add_argument("--probe-server", action="store_true", help="send one image request and print the raw server response")
     args = parser.parse_args(argv)
 
@@ -238,11 +240,24 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  [{index + 1}/{total}] {case_id} ({category}) ...", file=sys.stderr, flush=True)
 
             raws: dict[str, str] = {}
+            sampler = None
 
             def _capture(case):
                 answer, timings = adapter.predict(case)
                 raws[case.case_id] = timings.get("raw", "") if timings else ""
                 return answer, timings
+
+            def _resources() -> dict:
+                nonlocal sampler
+                if sampler is None:
+                    return {}
+                sampler.stop()
+                values = {
+                    "rss_gib": round(sampler.peak_mib / 1024, 3),
+                    "swap_mib": round(max(0.0, sampler.swap_end_mib - sampler.swap_start_mib), 1),
+                }
+                sampler = None
+                return values
 
             if args.server:
                 from .runtime_llamaserver import LlamaServerAdapter
@@ -254,19 +269,32 @@ def main(argv: list[str] | None = None) -> int:
                     jinja=args.no_think or args.jinja,
                     chat_template_kwargs={"enable_thinking": False} if args.no_think else None,
                     mmproj_offload=not args.no_mmproj_offload,
+                    ctx_size=args.ctx_size,
                     log_path=LOG_DIR / f"llama-server-{pin['candidate']}.log",
                 )
                 adapter.start()
+                if args.measure:
+                    from .measure import PeakSampler
+
+                    pid = adapter.pid
+                    if pid is not None:
+                        sampler = PeakSampler(pid)
+                        sampler.start()
             else:
                 from .runtime_llamacpp import LlamaCppAdapter
 
                 adapter = LlamaCppAdapter(pin_dir / model["name"], pin_dir / mmproj["name"])
 
             try:
-                result = run_candidate(candidate, _capture, held_cases, progress=_progress)
+                result = run_candidate(
+                    candidate, _capture, held_cases, progress=_progress, resource_provider=_resources
+                )
             finally:
                 if args.server:
                     adapter.stop()
+                if sampler is not None:
+                    sampler.stop()
+                    sampler = None
             if args.dump:
                 print("RAW DUMP (failing cases):")
                 for row in result["per_case"]:

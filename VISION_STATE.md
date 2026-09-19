@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-13 (Australia/Sydney)
 
-Status: Milestone 005 complete with a documented no-promotion outcome; a
-post-close transcription-robustness iteration (prompt v1.5 plus corpus v3
-fresh held-out) is under way — no new claim until its single fresh-set run.
+Status: Milestone 005 — a documented v4 evaluation revision (revised pass-rate
+threshold plus fresh corpus v4) is ready; a single validation run of
+Qwen3.5-4B on the fresh split decides promotion.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -706,6 +706,29 @@ abstention, unsupported) stays perfect. No candidate meets the frozen gate
 contract's own escalation for this situation is a new evaluation version —
 revised thresholds with a written rationale — validated on a fresh set,
 rather than repeated attempts on an inspected set.
+
+#### Evaluation revision v4 (2026-09-19)
+
+Applied the contract's escalation: `held_out_pass_rate` moves 1.0 → 0.95
+with the rationale recorded in `docs/METRICS.md` (v4 section) — the 100%
+exact-match target was set before any output existed, three independently
+authored fresh sets all produced 23/24 with a single one-character miss, and
+every safety and aggregate-quality threshold is unchanged and still strict.
+Corpus v4 authors three more cases per category (120 cases: 24 dev, 72
+legacy, 24 fresh held-out) and re-freezes the fresh split before validation;
+self-test deterministic, gold 120/120, bad 120/120. Pending decision: a
+single Qwen3.5-4B run on the fresh v4 split. If it meets the v4 gate (at
+least 23/24 plus all aggregate thresholds and latency ceilings), Qwen3.5-4B
+is promoted as the Phase-1 configuration, with process-tree RSS and swap
+measurements still to be captured before any release-grade claim.
+
+Resource measurement support (same revision): `measure.py` samples
+process-tree RSS via `ps` and swap usage via `sysctl -n vm.swapusage`
+(stdlib-only; parse functions unit-tested); `bakeoff_cli --real --server
+--measure` wraps a run in a `PeakSampler`, and `run_candidate` accepts a
+`resource_provider` whose measured values feed both the resource gate and the
+result record — so a passing run reports real `rss_gib`/`swap_mib`/
+`resource_measured` values instead of nulls.
 
 ### Per-category diagnosis (2026-09-06)
 

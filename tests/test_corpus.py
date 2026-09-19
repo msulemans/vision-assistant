@@ -17,18 +17,18 @@ class CorpusMilestoneTest(unittest.TestCase):
         self.cases = build_corpus()
 
     def test_case_count_and_splits(self) -> None:
-        self.assertEqual(len(self.cases), 96)
+        self.assertEqual(len(self.cases), 120)
         self.assertEqual(sum(1 for c in self.cases if c.split == "dev"), 24)
         self.assertEqual(sum(1 for c in self.cases if c.split == "heldout"), 24)
-        self.assertEqual(sum(1 for c in self.cases if c.split == "legacy"), 48)
+        self.assertEqual(sum(1 for c in self.cases if c.split == "legacy"), 72)
 
-    def test_eight_categories_twelve_each(self) -> None:
+    def test_eight_categories_fifteen_each(self) -> None:
         by_cat: dict[str, int] = {}
         for case in self.cases:
             by_cat[case.category] = by_cat.get(case.category, 0) + 1
         self.assertEqual(set(by_cat), set(CATEGORIES))
         for category in CATEGORIES:
-            self.assertEqual(by_cat[category], 12)
+            self.assertEqual(by_cat[category], 15)
 
     def test_deterministic_manifest(self) -> None:
         m1 = json.dumps(manifest(self.cases), sort_keys=True).encode("utf-8")
@@ -53,10 +53,10 @@ class CorpusMilestoneTest(unittest.TestCase):
                 self.assertFalse(score(case, bad_answer(case))["pass"])
 
     def test_frozen_config_thresholds_are_locked(self) -> None:
-        self.assertEqual(FROZEN["corpus_size"], 96)
+        self.assertEqual(FROZEN["corpus_size"], 120)
         self.assertEqual(FROZEN["dev_cases"], 24)
         self.assertEqual(FROZEN["heldout_cases"], 24)
-        self.assertEqual(FROZEN["legacy_cases"], 48)
+        self.assertEqual(FROZEN["legacy_cases"], 72)
         self.assertIn("promotion", FROZEN)
         self.assertIn("ceilings", FROZEN)
         self.assertLessEqual(FROZEN["thresholds"]["unsupported_claim_rate"], 0.05)

@@ -88,6 +88,7 @@ class LlamaServerAdapter:
         jinja: bool = False,
         chat_template_kwargs: dict | None = None,
         mmproj_offload: bool = True,
+        ctx_size: int | None = None,
         log_path: Path | None = None,
         transport: Callable[[str, dict, float], Iterable[str]] = _http_request,
         runner: object = subprocess.Popen,
@@ -104,6 +105,7 @@ class LlamaServerAdapter:
         self.jinja = jinja
         self.chat_template_kwargs = dict(chat_template_kwargs) if chat_template_kwargs else None
         self.mmproj_offload = mmproj_offload
+        self.ctx_size = ctx_size
         self.log_path = Path(log_path) if log_path is not None else None
         self._log_handle: object | None = None
         self._transport = transport
@@ -114,6 +116,11 @@ class LlamaServerAdapter:
     @property
     def base_url(self) -> str:
         return f"http://{self.host}:{self.port}"
+
+    @property
+    def pid(self) -> int | None:
+        """PID of the running server process, if started."""
+        return getattr(self._process, "pid", None)
 
     def _server_argv(self) -> list[str]:
         argv = [
@@ -128,6 +135,8 @@ class LlamaServerAdapter:
             argv.append("--jinja")
         if not self.mmproj_offload:
             argv.append("--no-mmproj-offload")
+        if self.ctx_size:
+            argv += ["--ctx-size", str(self.ctx_size)]
         return argv
 
     def _spawn_kwargs(self) -> dict:

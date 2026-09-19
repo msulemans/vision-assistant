@@ -63,6 +63,29 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertFalse(bad["quality_ok"])
         self.assertGreater(bad["forbidden_claims"], 0)
 
+    def test_resource_provider_values_flow_into_the_gate(self) -> None:
+        passing = run_candidate(
+            _fake("gold-mini", 1.0, 2000, 1200, 8000),
+            self.gold,
+            self.held,
+            resource_provider=lambda: {"rss_gib": 7.0, "swap_mib": 10.0},
+        )
+        self.assertEqual(passing["rss_gib"], 7.0)
+        self.assertEqual(passing["swap_mib"], 10.0)
+        self.assertEqual(passing["resource_measured"], 4)
+        self.assertTrue(passing["resource_ok"])
+        self.assertTrue(passing["pass_thresholds"])
+
+        over = run_candidate(
+            _fake("gold-mini", 1.0, 2000, 1200, 8000),
+            self.gold,
+            self.held,
+            resource_provider=lambda: {"rss_gib": 9.0, "swap_mib": 10.0},
+        )
+        self.assertEqual(over["resource_measured"], 4)
+        self.assertFalse(over["resource_ok"])
+        self.assertFalse(over["pass_thresholds"])
+
     def test_nearest_rank_p95(self) -> None:
         data = list(range(1, 21))  # 20 values, 95th percentile = 19
         self.assertEqual(_p95(data), 19.0)
@@ -278,6 +301,18 @@ class BakeoffHarnessTest(unittest.TestCase):
         self.assertNotIn("--no-mmproj-offload", plain._server_argv())
         cpu_vision = LlamaServerAdapter(Path("models/x"), Path("models/y"), mmproj_offload=False)
         self.assertIn("--no-mmproj-offload", cpu_vision._server_argv())
+
+    def test_server_argv_includes_ctx_size_only_when_bounded(self) -> None:
+        from pathlib import Path
+
+        from vision_assistant.runtime_llamaserver import LlamaServerAdapter
+
+        plain = LlamaServerAdapter(Path("models/x"), Path("models/y"))
+        self.assertNotIn("--ctx-size", plain._server_argv())
+        bounded = LlamaServerAdapter(Path("models/x"), Path("models/y"), ctx_size=4096)
+        argv = bounded._server_argv()
+        index = argv.index("--ctx-size")
+        self.assertEqual(argv[index + 1], "4096")
 
     def test_server_spawn_kwargs_use_log_file_when_provided(self) -> None:
         import subprocess
