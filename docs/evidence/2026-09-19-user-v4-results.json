@@ -1,0 +1,551 @@
+{
+  "provenance": "User-pasted Terminal output; not re-executed by assistant. Results retain original harness verdicts.",
+  "runs": [
+    {
+      "context_size": "default (not recorded explicitly)",
+      "result": {
+        "abstain_correct": 1.0,
+        "acquisition_gib": null,
+        "artifact_size_mib": 3255.2351989746094,
+        "candidate": "qwen3.5-4b",
+        "cold_readiness_ms": null,
+        "complete_answer_p95_ms": 1397.671,
+        "family": "qwen",
+        "first_token_p95_ms": 854.094708,
+        "forbidden_claims": 0,
+        "licence": "Apache-2.0",
+        "params_b": 4.0,
+        "pass_thresholds": false,
+        "passes": 23,
+        "per_case": [
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-13",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-14",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-15",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-13",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-14",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": false,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 0.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-15",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-13",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-14",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-15",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-13",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-14",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-15",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-13",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-14",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-15",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-13",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-14",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-15",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-13",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-14",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-15",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-13",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-14",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-15",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          }
+        ],
+        "quality_ok": false,
+        "quantization": "q4_K_M",
+        "required_fact_recall": 1.0,
+        "resource_measured": 2,
+        "resource_ok": false,
+        "resource_timing_ok": true,
+        "revision": "main",
+        "rss_gib": 11.554,
+        "runtime_kind": "llama.cpp",
+        "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+        "swap_mib": 0.0,
+        "ui_string_match": 0.9583,
+        "unsupported_claim_rate": 0.0
+      }
+    },
+    {
+      "context_size": 4096,
+      "result": {
+        "abstain_correct": 1.0,
+        "acquisition_gib": null,
+        "artifact_size_mib": 3255.2351989746094,
+        "candidate": "qwen3.5-4b",
+        "cold_readiness_ms": null,
+        "complete_answer_p95_ms": 1388.5465,
+        "family": "qwen",
+        "first_token_p95_ms": 838.983792,
+        "forbidden_claims": 0,
+        "licence": "Apache-2.0",
+        "params_b": 4.0,
+        "pass_thresholds": false,
+        "passes": 23,
+        "per_case": [
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-13",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-14",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-terminal-15",
+            "category": "terminal",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-13",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-14",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": false,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 0.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dialog-15",
+            "category": "dialog",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-13",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-14",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-form-15",
+            "category": "form",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-13",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-14",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-settings-15",
+            "category": "settings",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-13",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-14",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dashboard-15",
+            "category": "dashboard",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-13",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-14",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-small_text-15",
+            "category": "small_text",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-13",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-14",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-dark_mode-15",
+            "category": "dark_mode",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-13",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-14",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          },
+          {
+            "abstain_correct": true,
+            "case_id": "m004-insufficient_evidence-15",
+            "category": "insufficient_evidence",
+            "forbidden_claims": 0,
+            "pass": true,
+            "required_fact_recall": 1.0,
+            "ui_string_match": 1.0,
+            "unsupported_claim_rate": 0.0
+          }
+        ],
+        "quality_ok": false,
+        "quantization": "q4_K_M",
+        "required_fact_recall": 1.0,
+        "resource_measured": 2,
+        "resource_ok": true,
+        "resource_timing_ok": true,
+        "revision": "main",
+        "rss_gib": 3.792,
+        "runtime_kind": "llama.cpp",
+        "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+        "swap_mib": 0.0,
+        "ui_string_match": 0.9583,
+        "unsupported_claim_rate": 0.0
+      }
+    }
+  ]
+}

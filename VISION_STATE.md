@@ -1,10 +1,9 @@
 # Local Vision Assistant — State
 
-Last updated: 2026-09-13 (Australia/Sydney)
+Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 005 — a documented v4 evaluation revision (revised pass-rate
-threshold plus fresh corpus v4) is ready; a single validation run of
-Qwen3.5-4B on the fresh split decides promotion.
+Status: Milestone 005 — user-reported v4 run scored 23/24. Harness pass-rate
+mismatch corrected; complete resource/trial evidence remains pending. No promotion.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -770,3 +769,33 @@ Freeze the candidate/runtime revisions (mark the `"to-pin"` rows), then run the
 selected runtime against the 24 held-out cases, score with `scorer.py`, and
 record quality, first-token/complete p95, cold readiness, RSS, swap, and
 acquisition. Promote the smallest passing configuration.
+
+## Current next action — complete M005 evidence (2026-09-19)
+
+This section supersedes the older next-action recommendations above.
+User-pasted Terminal output is preserved in
+`docs/evidence/2026-09-19-user-v4-results.json`; no live inference was rerun
+for this diagnosis. The earlier syntax error, missing `--measure` option,
+and misplaced test assertion are already repaired in checkout `597869d`.
+
+The latest reported Qwen run used `--ctx-size 4096`: 23/24 passes, required
+recall 1.0, UI match 0.9583, unsupported 0, forbidden 0, abstention 1.0;
+first-token p95 838.984 ms, complete p95 1388.547 ms, sampled RSS 3.792 GiB,
+swap growth 0 MiB. The preceding default-context run reported RSS 11.554 GiB.
+These are user-reported measurements, not a controlled context-size comparison.
+The persistent failure is dialog-14's exact UI string; its failure is preserved.
+
+The v4 contract specified pass rate >=0.95, but `run_candidate` still required
+all cases to pass. It now uses the configured pass rate and reports numerator,
+denominator, and required rate. No prompt, corpus, per-case score, or threshold
+was changed. The supplied aggregate quality would pass that corrected gate.
+Missing resource values now explicitly block `resource_ok`/`pass_thresholds`
+and are listed as `missing_resources`; previously missing values were skipped.
+
+Do not promote yet: cold readiness and acquisition GiB are null, and the pasted
+24-case run does not establish the frozen 48-warm/3-cold trial protocol or the
+other M005 lifecycle/cancellation requirements. Pin the chosen 4096 context
+configuration and complete its missing measurements. Repeated v4 runs and the
+context change mean this set is exposed; do not describe another run on it as
+fresh held-out evidence or tune the prompt against dialog-14. A future quality
+tuning decision needs a new evaluation version and fresh held-out cases.

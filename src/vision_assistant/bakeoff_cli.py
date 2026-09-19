@@ -126,6 +126,8 @@ def main(argv: list[str] | None = None) -> int:
                 name=name, family="probe", params_b=params, licence="Apache-2.0", quantization="q4",
                 revision="fake", sha256="fake", runtime_kind="fake", artifact_size_mib=size,
                 first_token_ms=first, complete_ms=complete,
+                # Synthetic measurements for the deterministic self-test only.
+                cold_readiness_ms=30000, rss_gib=4, swap_mib=100, acquisition_gib=12,
             )
             results.append(run_candidate(cand, adapter, held_cases))
         winner = promote(results)

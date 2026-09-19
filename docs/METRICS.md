@@ -156,3 +156,10 @@ bake-off rules this is a new evaluation version: it is validated on a fourth
 fresh held-out set (corpus v4, three new cases per category) that no
 candidate has seen, and promotion still requires all aggregate thresholds
 plus the resource measurements.
+
+Implementation correction on 2026-09-19: the harness now reads the v4 pass-rate
+threshold instead of requiring every case to pass. All aggregate checks remain.
+Results expose `case_count`, `case_pass_rate`, and `required_case_pass_rate`.
+Missing cold-readiness, RSS, swap, or acquisition values are explicitly listed
+and block the overall resource verdict. A passing aggregate result alone does
+not certify the prescribed trial schedule, split integrity, or lifecycle gates.

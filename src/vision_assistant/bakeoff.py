@@ -154,22 +154,25 @@ def run_candidate(
     # Grade the cases actually run (the overall aggregates), not the *_heldout
     # variants: a dev-split or limited run must report its own numbers, and the
     # held-out keys fall back to empty-set defaults.
+    case_pass_rate = agg["passes"] / len(held_cases) if held_cases else 0.0
     quality = (
-        agg["passes"] == len(held_cases)
+        bool(held_cases)
+        and case_pass_rate >= thresholds["held_out_pass_rate"]
         and agg["required_fact_recall"] >= thresholds["required_fact_recall"]
         and agg["unsupported_claim_rate"] <= thresholds["unsupported_claim_rate"]
         and agg["forbidden_claims"] == thresholds["forbidden_claims"]
         and agg["ui_string_match"] >= thresholds["ui_string_match"]
         and agg["abstain_correct"] >= thresholds["abstain_heldout_correct"]
     )
-    measured = [
-        (cold_readiness_ms, ceilings["cold_readiness_ms"]),
-        (rss_gib, ceilings["balanced_active_rss_gib"]),
-        (swap_mib, ceilings["swap_growth_mib"]),
-        (acquisition_gib, ceilings["acquisition_gib"]),
-    ]
-    measured = [(value, ceil) for value, ceil in measured if value is not None]
-    resource_ok = all(value <= ceil for value, ceil in measured)
+    resource_values = {
+        "cold_readiness_ms": (cold_readiness_ms, ceilings["cold_readiness_ms"]),
+        "rss_gib": (rss_gib, ceilings["balanced_active_rss_gib"]),
+        "swap_mib": (swap_mib, ceilings["swap_growth_mib"]),
+        "acquisition_gib": (acquisition_gib, ceilings["acquisition_gib"]),
+    }
+    missing_resources = [name for name, (value, _) in resource_values.items() if value is None]
+    measured = [(value, ceil) for value, ceil in resource_values.values() if value is not None]
+    resource_ok = not missing_resources and all(0 <= value <= ceil for value, ceil in measured)
     resource_measured = len(measured)
     resource = first_p95 <= ceilings["first_token_p95_ms"] and complete_p95 <= ceilings["complete_answer_p95_ms"]
     pass_thresholds = quality and resource_ok and resource
@@ -190,6 +193,9 @@ def run_candidate(
         "ui_string_match": agg["ui_string_match"],
         "abstain_correct": agg["abstain_correct"],
         "passes": agg["passes"],
+        "case_count": len(held_cases),
+        "case_pass_rate": case_pass_rate,
+        "required_case_pass_rate": thresholds["held_out_pass_rate"],
         "first_token_p95_ms": first_p95,
         "complete_answer_p95_ms": complete_p95,
         "cold_readiness_ms": cold_readiness_ms,
@@ -197,6 +203,7 @@ def run_candidate(
         "swap_mib": swap_mib,
         "acquisition_gib": acquisition_gib,
         "resource_measured": resource_measured,
+        "missing_resources": missing_resources,
         "quality_ok": quality,
         "resource_ok": resource_ok,
         "resource_timing_ok": resource,

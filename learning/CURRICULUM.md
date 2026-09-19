@@ -124,3 +124,14 @@ private metrics, cancellation, and cleanup on every terminal path.
 Teach back: Why are three successful demos insufficient to estimate p95?
 What evidence would distinguish a decoder failure from insufficient image detail?
 Why should the read-only product be valuable even if actions are never added?
+
+## M005 lesson — a failed verdict can be a harness defect
+
+The v4 contract allowed 23/24, but the harness still required 24/24. Correcting
+that mismatch changes the aggregate quality verdict without hiding the one
+failed UI-string case. Quality passing also does not mean evidence is complete:
+missing cold-readiness or acquisition measurements must remain pending, not
+silently count as passing. The original user-reported results are preserved.
+
+Teach back: How would you test 23/24 versus 22/24 while ensuring forbidden
+claims still fail? Why is a 24-case run insufficient proof of 48 warm trials?

@@ -193,3 +193,12 @@ PYTHONPATH=src python -m vision_assistant.acquire check      # verify sizes + SH
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qwen3.5-4b
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --server --pin-dir models/qwen3.5-4b   # persistent, streaming
 ```
+
+### M005 v4 result interpretation (2026-09-19)
+
+The latest user-reported Qwen run scored 23/24 with 3.792 GiB sampled RSS at
+context size 4096. The harness now honors the already-documented 0.95 case
+pass-rate threshold; it also lists missing resources and blocks an overall
+pass until they are measured. Cold readiness, acquisition size, and the full
+trial protocol remain pending. No candidate is promoted; see `VISION_STATE.md`
+and `docs/evidence/2026-09-19-user-v4-results.json` for preserved original results.
