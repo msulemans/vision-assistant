@@ -687,6 +687,26 @@ thresholds are unchanged. The earlier held-out failures were all inline
 single-line quotes, so the v2 comparison stands; both candidates must now run
 the frozen fresh v3 held-out once each with the corrected scorer.
 
+#### Corrected v3 results (single run each, fixed parser)
+
+- Qwen3.5-4B: 23/24. recall 0.9583, UI match 0.9583, unsupported 0, forbidden
+  0, abstention 1.0, first-token p95 896 ms, complete-answer p95 1529 ms. Its
+  single failure is `settings-10`: the enabled row `VPN` was read as `UPN` —
+  the same one-character-misread class seen in v1/v2 (`X`→`%`, space→`_`).
+- Gemma-3-4B: 21/24. recall 0.875, UI match 0.875, unsupported 0, forbidden 0,
+  abstention 1.0, first-token p95 2580 ms, complete-answer p95 2980 ms. All
+  three failures are selection errors: it quoted the screen heading instead of
+  the specific field or setting (`form-10`, `settings-10`, `settings-11`).
+
+Across two independently authored fresh held-out sets (v2, v3) the best
+candidate has scored 23/24 both times, with a different single-character
+failure each time, while every safety and grounding metric (forbidden,
+abstention, unsupported) stays perfect. No candidate meets the frozen gate
+(`held_out_pass_rate` must be 1.0), so nothing is promoted. The metrics
+contract's own escalation for this situation is a new evaluation version —
+revised thresholds with a written rationale — validated on a fresh set,
+rather than repeated attempts on an inspected set.
+
 ### Per-category diagnosis (2026-09-06)
 
 Passes by category: settings 3/3, terminal 2/3, dialog 2/3, form 2/3,
