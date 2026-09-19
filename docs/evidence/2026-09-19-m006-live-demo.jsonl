@@ -1,0 +1,5 @@
+{"created_at_ms":43290231.364,"kind":"real","schema_version":"1.0","trace_id":"m006-20260919-224357-4abb6e","type":"meta"}
+{"event_id":"e1","payload":{"byte_size":2109,"height":300,"sha256":"68418ce2d97d62e217fee270d72735014a4eaded4917b6fa56672bf04ba9db9b","width":480},"schema_version":"1.0","state":"idle","trace_id":"m006-20260919-224357-4abb6e","ts_ms":43290231.408833005,"type":"preview"}
+{"event_id":"e2","payload":{"question":"What does this screen show, and what does it not establish?"},"schema_version":"1.0","state":"analysing","trace_id":"m006-20260919-224357-4abb6e","ts_ms":43290231.430166,"type":"model_started"}
+{"event_id":"e3","payload":{"inferred":[],"unknown":["Whether the pressure is currently high or was previously high is not established."],"visible":["STATUS DASHBOARD MEMORY 91% PRESSURE HIGH"]},"schema_version":"1.0","state":"answering","trace_id":"m006-20260919-224357-4abb6e","ts_ms":43291394.363375,"type":"answer"}
+{"event_id":"e4","payload":{"complete_ms":1145.206833,"first_token_ms":658.886375,"total_ms":1162.661},"schema_version":"1.0","state":"done","trace_id":"m006-20260919-224357-4abb6e","ts_ms":43291394.378791004,"type":"done"}

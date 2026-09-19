@@ -835,6 +835,15 @@ Evidence so far (deterministic): `tests/test_assistant.py` covers the answer
 flow (exact trace record order, timings, artifact deleted), the failure path
 (`failed` recorded, artifact deleted) and the retain path; the `--preview-only`
 smoke run on a corpus PNG reported 480x300, byte size, sha256, and released
-the artifact. Remaining for the M006 gate: a live demo run on a real
-screenshot with the pinned model, an interrupt (stop) check, and the capstone
-smoke checklist; retry = re-run with the same image, reset = artifact release.
+the artifact.
+
+Evidence (live, user machine, 2026-09-19): full-ask run on a real screenshot
+with the pinned model — first token 659 ms, complete 1145 ms, all quoted text
+verbatim, abstention sentence under `unknown`, trace `meta → preview →
+model_started → answer → done`, artifact released. Verbatim stdout and the
+trace are preserved in `docs/evidence/2026-09-19-m006-live-demo.md` and
+`docs/evidence/2026-09-19-m006-live-demo.jsonl`.
+
+Remaining for the M006 gate: an interrupt (Ctrl+C) check, and the capstone
+smoke checklist; retry = re-run with the same image, reset = artifact
+release.
