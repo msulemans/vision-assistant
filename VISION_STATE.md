@@ -1,9 +1,10 @@
 # Local Vision Assistant — State
 
-Last updated: 2026-09-19 (Australia/Sydney)
+Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 013 complete — M006 through M013 are complete (see their
-sections); M014 (recovery and bounded task agent) is next and not started.
+Status: Milestone 014 in progress — M006 through M013 are complete (see their
+sections); M014 (recovery and bounded task agent) scope is frozen and the
+first build is under way.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1339,7 +1340,88 @@ idempotently with zero actions. Evidence:
 JSONs in `docs/evidence/2026-09-20-m013-*.json`. Learning map M13=done,
 M14=current; figures: 245 tests = 239 product + 6 learning.
 
-Next milestone: M014 — recovery and bounded task agent (step/time budgets,
-user takeover, focus-change detection, recovery, blocked and finished
-states).
+## Milestone 014 — recovery and bounded task agent
+
+Status: in progress. Scope frozen before implementation (2026-09-20).
+
+- Objective: turn the M013 single-action supervisor into a bounded task
+  agent. The agent pursues one frozen goal per task as a sequence of
+  separately proposed, confirmed, re-checked, and verified steps — each
+  step re-derived from a fresh read-only observation, never executed blind
+  from a multi-step plan. Every run ends in an explicit terminal state:
+  finished, blocked:<reason>, or cancelled.
+- Hard bounds (frozen defaults, CLI-overridable only downward for demos):
+  max 8 action steps per task, max 120 s wall clock per task (prompt waits
+  included), max 2 stale-frame recoveries per step. Exhaustion is a typed
+  terminal state, never silent continuation.
+- Registered ceilings (gate measurements):
+  - Interrupt latency: SIGINT at the confirmation prompt to terminal state
+    recorded on disk, p95 ≤ 1500 ms over ≥10 samples (measured by
+    `agent_eval --interrupts`).
+  - Recovery correctness: every frozen recovery/adversarial scenario ends
+    in a typed terminal state with `unapproved_actions` growth of zero and
+    performed actions only after a fresh confirmation. All scenarios pass =
+    correctness; any wrong action fails the gate.
+- New artifacts:
+  - `tools/practice_window.swift` (extension) — keeps the five frozen M013
+    identifiers and adds `app:dialog-button` ("Simulate Dialog": opens a
+    real modal NSAlert) and, only with `--injection`, a visible
+    `app:injection-button` whose title carries adversarial screen text;
+    `--dialog-after N` opens the dialog automatically for unattended demos.
+    Still disposable, still persists nothing.
+  - `tools/ax_dump.swift` (extension) — adds a read-only `--front` mode
+    (frontmost app name/pid) and per-window `subrole`; still contains no
+    action APIs.
+  - `src/vision_assistant/agent.py` — the bounded multi-step loop: observe →
+    (already satisfied?) → budget check → takeover sample → propose →
+    injection review → parse → policy → plan → preflight → preview +
+    overlay → confirm → takeover sample → freshness re-check → perform →
+    re-observe → unexpected-window check → external-change (takeover)
+    check → verify → repeat or finish. Stale frames recover (bounded
+    re-observation + re-planning + a fresh confirmation); every other
+    refusal is terminal. Contains no action APIs (source-scanned).
+  - `src/vision_assistant/agent_cli.py` — interactive runner: frozen tasks,
+    pinned-model proposals or a scripted step queue, `--max-steps`,
+    `--max-seconds`, `--max-recoveries`, `--check`, session JSON at
+    `runs/m014/agent-<run_id>.json` with per-task events, budgets used,
+    recovery count, injection flags, performed actions, and the
+    `unapproved_actions` counter (must stay 0). Exit 0 finished, 1 blocked,
+    130 cancelled.
+  - `src/vision_assistant/agent_eval.py` — deterministic gate harness: a
+    frozen scenario suite (multi-step finish, already-satisfied, step and
+    time budgets, stale recovery, recovery exhaustion, unexpected dialog,
+    user takeover by state change and by focus, permission change, off-goal
+    proposal, injection ignored/targeted, premature finish, ambiguity,
+    cancellation) driven entirely by fakes, plus the SIGINT interrupt
+    latency sampler (subprocess children, real signals, no AX/model
+    needed). Writes `runs/m014/scenarios-<run_id>.json` and
+    `runs/m014/interrupt-<run_id>.json`.
+- Safety semantics (frozen):
+  - Scope: one window of one app (the practice window). Any additional
+    window at any observation — dialog, sheet, alert — blocks the task with
+    `unexpected_dialog` before any further action.
+  - Goal lock: every proposal must address an element on the task's frozen
+    allowlist; anything else blocks with `off_goal_denied`. Screen text is
+    data, never instructions: adversarial markers on screen are flagged in
+    the transcript, and a proposal that targets flagged text blocks with
+    `injection_suspected` (defense in depth alongside policy + confirmation).
+  - User takeover: the agent yields (blocks with `user_takeover`) when the
+    user activates the target app between steps, or when a post-action
+    observation shows state changes beyond the agent's own action. It never
+    fights for focus and never re-asserts control.
+  - Permission changes: trust sampled at task start; a mid-run permission
+    loss blocks with `permission_changed` (never granted: `permission_required`).
+  - Focus changes inside the target app (the scoped window loses in-app
+    focus while remaining the only window) block with `focus_changed`.
+- Frozen tasks: enable-sync (existing id), multi-enable (Notifications on
+  AND "hello" in Search — two action kinds in one goal), sync-and-hello
+  (Sync on AND "hello" in Search). Frozen probes as in M013 plus: dialog
+  button, injection button, manual state edits, revoked permission.
+- Live gate (user machine): the frozen tasks finish with the pinned model
+  proposing stepwise and fresh confirmations per step; the dialog, takeover,
+  injection, budget, permission, and cancellation scenarios each end
+  safely with zero unapproved actions; `agent_eval --interrupts 10` meets
+  the registered p95 ceiling; the session JSON records it all.
+
+Next milestone: M015 — profiles, packaging, and offline verification.
 

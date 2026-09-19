@@ -10,6 +10,7 @@
 // Modes:
 //   ax_dump --check
 //   ax_dump --request-permission
+//   ax_dump --front
 //   ax_dump --windows [--pid N | --app NAME | --frontmost]
 //   ax_dump --dump [--pid N | --app NAME | --frontmost] [--max-depth D]
 //
@@ -61,6 +62,21 @@ case "--request-permission":
     let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
     _ = AXIsProcessTrustedWithOptions(options)
     writeJSON(["prompted": true, "trusted": AXIsProcessTrusted()], code: 0)
+case "--front":
+    guard AXIsProcessTrusted() else {
+        writeJSON(["error": "permission", "trusted": false], code: 2)
+    }
+    guard let front = NSWorkspace.shared.frontmostApplication else {
+        fail("no frontmost application", code: 4)
+    }
+    writeJSON(
+        [
+            "app": front.localizedName ?? "Unknown",
+            "pid": Int(front.processIdentifier),
+            "trusted": true,
+        ],
+        code: 0
+    )
 default:
     break
 }
@@ -275,6 +291,9 @@ if mode == "--windows" || mode == "--dump" {
         if let title = stringAttribute(window, kAXTitleAttribute as CFString) {
             object["title"] = truncate(title, 200)
         }
+        if let subrole = stringAttribute(window, kAXSubroleAttribute as CFString) {
+            object["subrole"] = subrole
+        }
         let windowFrame = frameObject(window)
         if let windowFrame = windowFrame {
             object["frame"] = windowFrame
@@ -308,7 +327,7 @@ if mode == "--windows" || mode == "--dump" {
 }
 
 fail(
-    "usage: ax_dump --check | --request-permission | --windows | --dump "
+    "usage: ax_dump --check | --request-permission | --front | --windows | --dump "
         + "[--pid N | --app NAME | --frontmost] [--max-depth D]",
     code: 3
 )

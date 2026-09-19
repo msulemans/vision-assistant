@@ -80,6 +80,7 @@ class AxWindow:
     frame: tuple[float, float, float, float] | None
     focused: bool | None
     cg_window_id: int | None
+    subrole: str | None = None
     elements: tuple[AxElement, ...] = field(default_factory=tuple)
 
 
@@ -190,6 +191,7 @@ def _parse_snapshot(payload: object) -> AxSnapshot:
                 frame=_frame_from(raw.get("frame")),
                 focused=raw.get("focused") if isinstance(raw.get("focused"), bool) else None,
                 cg_window_id=cg_window_id if isinstance(cg_window_id, int) else None,
+                subrole=_optional_str(raw.get("subrole")),
                 elements=tuple(elements),
             )
         )
@@ -321,6 +323,21 @@ class AxVisionAdapter:
             raise AxUnavailable("helper", f"ax_dump --request-permission failed: {detail}")
         return {"trusted": bool(payload.get("trusted")), "prompted": True}
 
+    def frontmost_info(self) -> dict:
+        """Read-only frontmost app identity (name + pid). Never prompts."""
+        code, stdout, stderr = self._run(["--front"])
+        if code == 2:
+            raise AxUnavailable("permission", "Accessibility access is not granted")
+        payload = self._decode(stdout)
+        if code != 0 or not isinstance(payload, dict):
+            detail = stderr.decode("utf-8", "replace").strip()[-200:]
+            raise AxUnavailable("helper", f"ax_dump --front failed: {detail}")
+        pid = payload.get("pid")
+        return {
+            "app": _optional_str(payload.get("app")),
+            "pid": pid if isinstance(pid, int) else None,
+        }
+
     def snapshot(
         self,
         *,
@@ -390,6 +407,7 @@ class AxVisionAdapter:
                     "frame": list(window.frame) if window.frame else None,
                     "focused": window.focused,
                     "cg_window_id": window.cg_window_id,
+                    "subrole": window.subrole,
                     "elements": [element_dict(element) for element in window.elements],
                 }
                 for window in snapshot.windows
