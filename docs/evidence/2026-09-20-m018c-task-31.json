@@ -1,0 +1,71 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 14559.2,
+  "goal": "Set default query \u201crobotics\u201d, category \u201cstories\u201d, sort \u201cnewest\u201d, tick hide-seen, and save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "31"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "prompt_version": "m018c-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 951.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:52625/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 5424.4,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 1
+    },
+    {
+      "at_ms": 9935.9,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 2
+    },
+    {
+      "at_ms": 14559.1,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 3
+    },
+    {
+      "at_ms": 14559.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "refused_focus"
+    }
+  ],
+  "task": "31",
+  "visited": [
+    "/prefs/"
+  ]
+}

@@ -429,5 +429,9 @@ checks, and a bounded Hacker News pilot. M018A (frozen task manifest, oracles,
 and fixture/reset contracts) is complete and reproducible without a model:
 `PYTHONPATH=src python -m vision_assistant.browser_cli verify`. M018B (disposable
 browser helper + typed adapter) is complete and live-verified:
-`PYTHONPATH=src python -m vision_assistant.browser_cli smoke`. Next stage:
-M018C — the five frozen smoke tasks with the pinned model.
+`PYTHONPATH=src python -m vision_assistant.browser_cli smoke`. M018C (the
+screenshot-driven loop with the pinned model) is complete as a measured
+smoke: 1/5 productive, failure classes on the record:
+`PYTHONPATH=src python -m vision_assistant.browser_cli task --ids 01,11,21,41,31`.
+Next stage: M018D — development iteration on the 30 development tasks, then
+one frozen held-out run.

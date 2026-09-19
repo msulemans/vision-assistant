@@ -1,0 +1,65 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 12638.2,
+  "goal": "Dismiss the welcome overlay, then open the rank-3 story.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/d03/, got /welcome/"
+    ],
+    "ok": false,
+    "task": "41"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018c-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 187,\n  \"y\": 300\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 187,\n  \"y\": 300\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 973.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:52625/welcome/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6788.0,
+      "executed": "click 374,600",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:52625/welcome/"
+    },
+    {
+      "at_ms": 12638.2,
+      "executed": "click 374,600",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:52625/welcome/"
+    },
+    {
+      "at_ms": 12638.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 374,600 -> http://127.0.0.1:52625/welcome/"
+    }
+  ],
+  "task": "41",
+  "visited": [
+    "/welcome/"
+  ]
+}

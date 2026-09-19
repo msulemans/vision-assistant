@@ -1,0 +1,43 @@
+{
+  "actions": 0,
+  "calls": 0,
+  "elapsed_ms": 871.5,
+  "goal": "Open the fixture news home page.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "01"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 871.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:52625/news/",
+      "width": 2560
+    },
+    {
+      "already_satisfied": true,
+      "at_ms": 871.5,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "01",
+  "visited": [
+    "/news/"
+  ]
+}

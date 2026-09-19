@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -207,6 +208,98 @@ def cmd_smoke(args) -> int:
     return 0 if report["ok"] and report["orphans"] == 0 else 1
 
 
+def cmd_task(args) -> int:
+    """Run frozen browser tasks once each with the pinned model in the loop."""
+
+    from .browser_agent import LoopLimits, model_proposer, run_task
+    from .browser_session import BrowserSession, compile_helper
+    from .fixture_server import FixtureServer
+    from .runtime_llamaserver import LlamaServerAdapter
+
+    ids = [item.strip() for item in args.ids.split(",") if item.strip()]
+    missing = [item for item in ids if item not in tasks.TASKS_BY_ID]
+    if missing:
+        print("unknown tasks:", ",".join(missing))
+        return 1
+    specs = [tasks.TASKS_BY_ID[item] for item in ids]
+    instance = args.instance
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = Path(args.out_dir) if args.out_dir else RUNS_DIR / ("loop-" + stamp)
+    root.mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    fixtures.build_site(instance, site)
+    server = FixtureServer(instance, site)
+    port = server.start()
+    helper_bin = compile_helper()
+
+    pin_dir = Path(args.pin_dir)
+    pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+    model = next(f for f in pin["files"] if f["role"] == "model")
+    mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+    adapter = LlamaServerAdapter(
+        pin_dir / model["name"], pin_dir / mmproj["name"],
+        ctx_size=args.ctx_size, jinja=True,
+        chat_template_kwargs={"enable_thinking": False},
+        log_path=root / "server.log",
+    )
+    raw_answers: list = []
+    proposer = model_proposer(adapter, record=raw_answers)
+    limits = LoopLimits()
+    if args.max_steps:
+        limits.max_steps = args.max_steps
+    if args.max_calls:
+        limits.max_calls = args.max_calls
+    if args.max_seconds:
+        limits.max_seconds = args.max_seconds
+
+    reports = []
+    try:
+        print("starting llama-server with the pinned model " + model["name"])
+        adapter.start()
+        for spec in specs:
+            server.reset(seed=spec.id)
+            print("=== task {} [{}] {}".format(spec.id, spec.split, spec.goal))
+            session = BrowserSession(port=port, helper_bin=helper_bin,
+                                     snapshot_dir=root / ("shots-" + spec.id))
+            raw_before = len(raw_answers)
+            try:
+                session.launch()
+                report = run_task(
+                    spec, session=session, proposer=proposer,
+                    server_state_provider=server.snapshot, limits=limits)
+            finally:
+                kept = root / ("shots-kept-" + spec.id)
+                if session.snapshot_dir.exists():
+                    shutil.copytree(session.snapshot_dir, kept)
+                session.stop()
+            raw_slice = raw_answers[raw_before:]
+            report["raw_answers"] = raw_slice
+            reports.append(report)
+            (root / ("task-" + spec.id + ".json")).write_text(
+                json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+            print("--> task {}: {} (actions {}, calls {}, {} ms)".format(
+                spec.id, report["outcome"], report["actions"], report["calls"],
+                report["elapsed_ms"]))
+    finally:
+        adapter.stop()
+        server.stop()
+
+    finished = [r for r in reports if r["outcome"] == "finished"]
+    summary = {
+        "stage": "M018C", "instance": instance, "ids": ids,
+        "finished": len(finished), "total": len(reports),
+        "outcomes": {r["task"]: r["outcome"] for r in reports},
+    }
+    (root / "loop-summary.json").write_text(
+        json.dumps(summary, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    print("summary: {}/{} finished -> {}".format(
+        summary["finished"], summary["total"],
+        ", ".join("{}:{}".format(k, v) for k, v in sorted(summary["outcomes"].items()))))
+    print("reports:", root)
+    return 0
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="browser_cli", description="M018A fixture/browser-task stage tooling")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -239,6 +332,17 @@ def main(argv=None) -> int:
     p_smoke.add_argument("--snapshot-dir", default="")
     p_smoke.add_argument("--out", default="")
     p_smoke.set_defaults(func=cmd_smoke)
+
+    p_task = sub.add_parser("task", help="run frozen tasks once each with the pinned model")
+    p_task.add_argument("--ids", required=True, help="comma-separated task ids")
+    p_task.add_argument("--instance", choices=fixtures.instances(), default="dev")
+    p_task.add_argument("--pin-dir", default=str(REPO_ROOT / "models" / "qwen3.5-4b"))
+    p_task.add_argument("--ctx-size", type=int, default=4096)
+    p_task.add_argument("--max-steps", type=int, default=0)
+    p_task.add_argument("--max-calls", type=int, default=0)
+    p_task.add_argument("--max-seconds", type=float, default=0)
+    p_task.add_argument("--out-dir", default="")
+    p_task.set_defaults(func=cmd_task)
 
     args = parser.parse_args(argv)
     return args.func(args)

@@ -317,5 +317,12 @@ Evidence: `docs/evidence/2026-09-20-m018a-manifest-oracles.md`.
 with fail-closed guards (stale frames, origin escapes, password/uncfocus
 typing, budgets, cleanup); live scripted smoke passed (click → `/story/d03/`,
 typing verified 2/2, zero orphans). Evidence:
-`docs/evidence/2026-09-20-m018b-browser-adapter.md`. Next: M018C five-task
-smoke (01, 11, 21, 31, 41), one initial run each.
+`docs/evidence/2026-09-20-m018b-browser-adapter.md`.
+
+**M018C delivered (2026-09-20):** screenshot-driven loop + `browser_cli task`;
+five smoke tasks run once each with the pinned model — productive completion
+**1/5** (only the already-satisfied case); failure classes recorded (type-
+without-focus; same-point clicks; premature finish), one prompt revision
+after the single inspected class, vision pipeline verified by probe.
+Evidence: `docs/evidence/2026-09-20-m018c-smoke.md`. Next: M018D
+development on the 30 development tasks, then one frozen held-out run.

@@ -1,0 +1,58 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 6317.3,
+  "goal": "Report the highest-ranked AI story: title, rank, and story code.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "answer: does not match the expected fields"
+    ],
+    "ok": false,
+    "task": "21"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018c-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Show HN: A tiny toolchain for retro game ports\",\n    \"rank\": 1,\n    \"story_code\": \"Show HN: A tiny toolchain for retro game ports\"\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 875.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:52625/news/",
+      "width": 2560
+    },
+    {
+      "answer_fields": [
+        "rank",
+        "story_code",
+        "title"
+      ],
+      "at_ms": 6317.2,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 6317.3,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "21",
+  "visited": [
+    "/news/"
+  ]
+}

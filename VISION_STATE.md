@@ -4,10 +4,11 @@ Last updated: 2026-09-20 (Australia/Sydney)
 
 Status: Original roadmap records M001 through M017 as complete (see their
 sections). M018 browser computer-use extension is in progress: M018A (frozen
-50-task manifest, independent oracles, fixture/reset contracts) and M018B
-(disposable browser helper + typed adapter, live-verified) are complete with
-zero model runs; next is M018C (five-task smoke with the pinned model) under
-the same freeze–evidence discipline.
+50-task manifest, independent oracles, fixture/reset contracts), M018B
+(disposable browser helper + typed adapter, live-verified) and M018C (five-
+task smoke — honest 1/5 result, failure classes recorded) are complete; next
+is M018D (development iteration on the 30 development tasks, then one frozen
+held-out run) under the same freeze–evidence discipline.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1753,3 +1754,24 @@ key events coalesced (typing now sends the whole string as one key event).
 Evidence: `docs/evidence/2026-09-20-m018b-browser-adapter.md` + smoke JSON +
 three snapshots. Next: M018C — five-task smoke (01, 11, 21, 31, 41), one
 initial run each, inspect one failure class before any change.
+
+## M018C complete — five-task smoke measured — 2026-09-20
+
+`browser_agent.py` (screenshot-driven loop: one screenshot plus a short
+history per step, schema-constrained action JSON, fail-closed execution via
+the M018B adapter, oracle after every observation, budgets from the frozen
+limits), the `browser_cli task` runner, and 15 new deterministic tests. The
+five initial smoke runs (01, 11, 21, 41, 31) plus one recorded
+post-inspection iteration of 11 were executed with the pinned model:
+**productive completion 1/5** — task 01 only (already satisfied; zero model
+calls). 11 and 31 blocked on the type-without-focus class (after inspecting
+exactly that one class, one prompt revision was applied and recorded; the
+class persisted); 41 blocked on no-progress (identical clicks at the same
+point); 21 failed finish-unverified (answered without reading the story
+code). A one-call diagnostic probe confirmed the model receives and
+understands the loop's screenshot (“Search” / “query”), attributing the
+failures to 4B planning/grounding rather than the image pipeline. Every
+guard behaved fail-closed; nothing beyond the single allowed change was
+tuned. Evidence: `docs/evidence/2026-09-20-m018c-smoke.md` plus six task
+JSONs and the summary. Next: M018D — development on the 30 development
+tasks (iteration permitted there), freeze, then the 20 held-out tasks once.

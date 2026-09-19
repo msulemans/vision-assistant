@@ -373,4 +373,8 @@ complete: the frozen manifest and its oracles are checked by
 states fail, no model involved). M018B is complete too: a disposable browser
 helper clicks and types at screenshot coordinates with typed refusals for
 stale frames, origin escapes, and password fields — demonstrated live against
-the frozen fixture.
+the frozen fixture. M018C adds the measured honesty: the pinned 4B model
+managed 1/5 smoke tasks (only the already-satisfied one); it types without
+clicking first, clicks the same spot twice, and answers before gathering
+evidence — all recorded, none tuned away. Development on the 30 development
+tasks is the next stage.

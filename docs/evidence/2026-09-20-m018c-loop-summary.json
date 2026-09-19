@@ -1,0 +1,18 @@
+{
+  "finished": 1,
+  "ids": [
+    "01",
+    "21",
+    "41",
+    "31"
+  ],
+  "instance": "dev",
+  "outcomes": {
+    "01": "finished",
+    "21": "failed:finish_unverified",
+    "31": "blocked:recovery_exhausted",
+    "41": "blocked:no_progress"
+  },
+  "stage": "M018C",
+  "total": 4
+}
