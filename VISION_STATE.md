@@ -1013,5 +1013,16 @@ Status: in progress. Scope frozen 2026-09-19:
 - Gate: a new user (the author) completes all five capstones in the UI
   without terminal help.
 
-Next: the UI server and page.
+First build: `ui_server.py` (loopback-only `ThreadingHTTPServer`; routes
+`/`, `/api/capture` [raw PNG bytes], `/api/ask`, `/api/reset`, `/api/stop`,
+`/api/status`; foreign origins rejected, request sizes capped,
+Content-Length required, no body logging; lazy model start; `stop` kills the
+model child and releases the capture) and `ui_page.html` (dependency-free:
+picker + reuse-last, canvas preview with drag-to-redact before submit,
+transcript of labelled answers and timings, stop/reset/copy, status polling,
+failure banner with typed hints). Tests: `tests/test_ui_server.py` — HTTP-level
+plumbing with a fake adapter (capture→ask→follow-up→reset, stop, origins,
+typed failures, status).
+
+Next: the user runs the five capstones in the browser on Metal.
 

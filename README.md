@@ -254,3 +254,15 @@ transcript budget, stale warning after 15 minutes); `:status`, `:reset`,
 `:quit`; reset releases the artifact. Measured 2026-09-19: 6/6 frozen
 reference/correction tasks passed, all artifacts released, prompts ≤ 333
 characters.
+
+### Local UI (M009)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.ui_server --open
+```
+
+Serves a dependency-free page on **127.0.0.1 only**: pick a PNG, drag on the
+preview to black out a region before sending, capture, then ask bounded
+follow-ups. Stop shuts the model down and releases the capture; reset
+releases between sessions; the server rejects foreign origins, caps request
+sizes, and never logs request bodies.

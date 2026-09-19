@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vision Assistant · local</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: light; --ink:#1f2430; --muted:#68707f; --line:#d9dde5; --panel:#fff; --bg:#f4f6fa; --accent:#2f6db4; --good:#2f8a5f; --bad:#b4432f; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; align-items:center; gap:12px; padding:14px 20px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header h1 { font-size:15px; margin:0; }
+  .pill { margin-left:auto; font-size:12px; padding:3px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); }
+  .pill.on { color:var(--good); border-color:var(--good); }
+  main { max-width:860px; margin:20px auto; padding:0 16px; display:grid; gap:16px; }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  button { font:inherit; padding:7px 14px; border-radius:8px; border:1px solid var(--line); background:var(--panel); cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button:disabled { opacity:.5; cursor:default; }
+  input[type=text] { flex:1; font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; }
+  canvas { max-width:100%; border:1px solid var(--line); border-radius:8px; cursor:crosshair; background:#fafbfd; }
+  .hint, .meta, small { color:var(--muted); font-size:12px; }
+  #banner { display:none; border:1px solid var(--bad); background:#fdf1ee; color:var(--bad); border-radius:8px; padding:10px 14px; }
+  .turn { border-top:1px dashed var(--line); padding:10px 0; }
+  .turn:first-child { border-top:0; }
+  .turn .q { font-weight:600; }
+  .turn ul { margin:4px 0 4px 18px; padding:0; }
+  .turn .t { color:var(--muted); font-size:12px; }
+  .stale { color:var(--bad); font-size:12px; }
+  #transcript { max-height:340px; overflow:auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vision Assistant · local demo</h1>
+  <span class="pill" id="pill">checking…</span>
+</header>
+<main>
+  <div id="banner" role="alert"></div>
+
+  <section>
+    <h2>1 · Capture (nothing leaves this Mac)</h2>
+    <div class="row">
+      <input type="file" id="picker" accept="image/png">
+      <button id="reuseBtn" disabled>Reuse last file</button>
+    </div>
+    <p class="hint">Preview below — drag on the image to black out a region before sending.</p>
+    <canvas id="canvas" width="0" height="0"></canvas>
+    <div class="row" style="margin-top:10px">
+      <button class="primary" id="sendBtn">Send capture to the assistant</button>
+      <span class="meta" id="captureInfo"></span>
+    </div>
+  </section>
+
+  <section id="askPanel" hidden>
+    <h2>2 · Ask (follow-ups stay on this capture)</h2>
+    <div class="row">
+      <input type="text" id="question" placeholder="e.g. What does this screen show, and what does it not establish?">
+      <button class="primary" id="askBtn">Ask</button>
+    </div>
+    <div id="transcript"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="copyBtn" disabled>Copy last answer</button>
+      <button id="resetBtn">Reset (release capture)</button>
+      <button id="stopBtn">Stop everything</button>
+      <span class="meta" id="sessionInfo"></span>
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const HINTS = {
+  invalid_image: "Pick a valid PNG screenshot.",
+  model_unavailable: "The pinned model did not start — check models/qwen3.5-4b on this Mac.",
+  turn_limit: "Turn limit reached — reset and send the image again to continue.",
+  stale_capture: "That capture was replaced — send the current image again.",
+  no_capture: "Send a capture first.",
+  too_large: "That image is larger than the accepted limit.",
+  forbidden_origin: "Open the page via its own 127.0.0.1 address.",
+};
+
+let token = null, lastFile = null, sourceImage = null, lastAnswerText = "";
+let selecting = null;
+
+function showBanner(code, message) {
+  const hint = HINTS[code] ? " " + HINTS[code] : "";
+  const el = $("banner");
+  el.textContent = (message || code || "Something went wrong.") + hint;
+  el.style.display = "block";
+}
+function hideBanner() { $("banner").style.display = "none"; }
+
+async function post(path, body, isJson) {
+  const options = { method: "POST" };
+  if (body !== undefined) {
+    options.body = body;
+    options.headers = isJson ? { "Content-Type": "application/json" } : { "Content-Type": "image/png" };
+  }
+  const resp = await fetch(path, options);
+  let data = {};
+  try { data = await resp.json(); } catch { data = { message: resp.statusText }; }
+  return { ok: resp.ok, data };
+}
+
+function loadFile(file) {
+  if (file.type !== "image/png") { showBanner("invalid_image", "Only PNG screenshots are accepted."); return; }
+  lastFile = file;
+  $("reuseBtn").disabled = false;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    const canvas = $("canvas");
+    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    canvas.getContext("2d").drawImage(img, 0, 0);
+    sourceImage = img;
+    URL.revokeObjectURL(url);
+    hideBanner();
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); showBanner("invalid_image", "That file is not a readable image."); };
+  img.src = url;
+}
+
+$("picker").onchange = (event) => { const f = event.target.files[0]; if (f) loadFile(f); };
+$("reuseBtn").onclick = () => { if (lastFile) loadFile(lastFile); };
+
+function canvasPos(event) {
+  const canvas = $("canvas"), rect = canvas.getBoundingClientRect();
+  return {
+    x: Math.round((event.clientX - rect.left) * canvas.width / rect.width),
+    y: Math.round((event.clientY - rect.top) * canvas.height / rect.height),
+  };
+}
+$("canvas").addEventListener("mousedown", (e) => { if (sourceImage) selecting = canvasPos(e); });
+$("canvas").addEventListener("mouseup", (e) => {
+  if (!selecting) return;
+  const p = canvasPos(e);
+  const ctx = $("canvas").getContext("2d");
+  ctx.fillStyle = "#000";
+  ctx.fillRect(Math.min(selecting.x, p.x), Math.min(selecting.y, p.y),
+               Math.abs(p.x - selecting.x), Math.abs(p.y - selecting.y));
+  selecting = null;
+});
+
+$("sendBtn").onclick = () => {
+  if (!sourceImage) { showBanner("no_capture", "Pick an image first."); return; }
+  $("sendBtn").disabled = true;
+  $("canvas").toBlob(async (blob) => {
+    const { ok, data } = await post("/api/capture", blob, false);
+    $("sendBtn").disabled = false;
+    if (!ok) { showBanner(data.code, data.message); return; }
+    hideBanner();
+    token = data.token;
+    $("captureInfo").textContent =
+      `${data.width}x${data.height} · sha ${data.sha256.slice(0, 12)}… · ingest ${data.ingest_ms.toFixed(0)} ms`;
+    $("askPanel").hidden = false;
+    $("transcript").replaceChildren();
+    lastAnswerText = ""; $("copyBtn").disabled = true;
+    refreshStatus();
+  }, "image/png");
+};
+
+function addTurn(question) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "turn";
+  const q = document.createElement("div"); q.className = "q"; q.textContent = question;
+  const body = document.createElement("div"); body.className = "body"; body.textContent = "…";
+  const t = document.createElement("div"); t.className = "t";
+  wrapper.append(q, body, t);
+  $("transcript").append(wrapper);
+  wrapper.scrollIntoView({ block: "end" });
+  return { wrapper, body, t };
+}
+function renderAnswer(entry, data) {
+  entry.body.replaceChildren();
+  for (const label of ["visible", "inferred", "unknown"]) {
+    const items = data.answer[label] || [];
+    const heading = document.createElement("small"); heading.textContent = `[${label}]`;
+    entry.body.append(heading);
+    const list = document.createElement("ul");
+    for (const item of items.length ? items : ["(none)"]) {
+      const li = document.createElement("li"); li.textContent = item; list.append(li);
+    }
+    entry.body.append(list);
+  }
+  const timing = data.timing_ms;
+  entry.t.textContent = `turn ${data.turn} · first ${Math.round(timing.first_token)} ms · complete ${Math.round(timing.complete)} ms`;
+  if (data.stale_warning) {
+    const s = document.createElement("div"); s.className = "stale";
+    s.textContent = "This capture is older than the freshness window — re-capture soon.";
+    entry.wrapper.append(s);
+  }
+}
+
+async function ask() {
+  const question = $("question").value.trim();
+  if (!question || !token) return;
+  $("askBtn").disabled = true;
+  const entry = addTurn(question);
+  const { ok, data } = await post("/api/ask", JSON.stringify({ token, question }), true);
+  $("askBtn").disabled = false;
+  if (!ok) {
+    entry.body.textContent = "";
+    entry.t.textContent = "";
+    showBanner(data.code, data.message);
+    refreshStatus();
+    return;
+  }
+  hideBanner();
+  renderAnswer(entry, data);
+  lastAnswerText = ["visible", "inferred", "unknown"]
+    .map((label) => `[${label}] ` + (data.answer[label] || []).join(" | ")).join("\n");
+  $("copyBtn").disabled = false;
+  refreshStatus();
+}
+$("askBtn").onclick = ask;
+$("question").addEventListener("keydown", (e) => { if (e.key === "Enter") ask(); });
+
+$("copyBtn").onclick = async () => {
+  if (!lastAnswerText) return;
+  try { await navigator.clipboard.writeText(lastAnswerText); }
+  catch { showBanner("copy_failed", "Clipboard permission was denied."); }
+};
+
+$("resetBtn").onclick = async () => {
+  if (!token) return;
+  const { ok, data } = await post("/api/reset", JSON.stringify({ token }), true);
+  if (ok) {
+    hideBanner();
+    token = null; $("askPanel").hidden = true; refreshStatus();
+  } else showBanner(data.code, data.message);
+};
+
+$("stopBtn").onclick = async () => {
+  const { ok, data } = await post("/api/stop");
+  if (ok) {
+    token = null; $("askPanel").hidden = true;
+    showBanner("stopped", data.released ? "Stopped; the model was shut down and the capture released." : "Stopped; model was shut down.");
+    setTimeout(hideBanner, 6000);
+    refreshStatus();
+  } else showBanner(data.code, data.message);
+};
+
+async function refreshStatus() {
+  try {
+    const resp = await fetch("/api/status");
+    const s = await resp.json();
+    const pill = $("pill");
+    pill.textContent = s.model_running ? (s.busy ? "model: answering…" : "model: warm") : "model: idle";
+    pill.className = "pill" + (s.model_running ? " on" : "");
+    $("sessionInfo").textContent = s.capture
+      ? `turns ${s.turns}${s.stale ? " · stale" : ""} · capture ${s.capture.sha256.slice(0, 12)}…`
+      : "";
+  } catch { /* server is gone; leave the pill as-is */ }
+}
+setInterval(refreshStatus, 2000);
+refreshStatus();
+</script>
+</body>
+</html>
