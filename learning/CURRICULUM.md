@@ -142,12 +142,18 @@ Qwen3.5-4B (Q4_K_M, llama.cpp, thinking off, context 4096) is the selected
 Phase-1 configuration: 23/24 on the frozen v4 held-out (0.95 pass-rate gate),
 all safety metrics perfect, RSS 3.792 GiB, swap 0, acquisition 6.29 GiB.
 Cold-readiness and cancellation certification trials remain open for
-packaging. Next milestone: M006 — one-shot local Vision Assistant.
+packaging. The next milestone was M006 — one-shot local Vision Assistant
+(complete; see below).
 
-## M006 first build — the one-shot assistant
+## M006 outcome — the one-shot assistant
 
 `assistant_cli` previews (normalize, hash, report), then asks one question and
 prints a labelled answer with real timings; the JSONL trace records
 preview/model_started/answer/done, and the private artifact is deleted on exit
-(retain is explicit). Deterministic tests cover success, failure, and retain
-paths. Remaining: a live screenshot demo, interrupt check, capstone smoke list.
+(retain is explicit). Live demo: first token 651–659 ms, complete
+1130–1145 ms, quotes verbatim, unknowns honest, artifact released. The stop
+check ran twice (Ctrl+C during model load): clean cancel — one JSON line,
+`cancelled` trace, artifact purged, exit 130, no orphaned server. That check
+found and fixed a real bug: a startup interrupt used to crash with a traceback
+and leak the artifact; regression tests now protect every stage. Next
+milestone: M007 — evidence augmentation and focused re-observation.

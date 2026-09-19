@@ -73,6 +73,13 @@ Gate: all frozen capstone categories pass three consecutive warm trials;
 cold/warm and p50/p95 evidence are recorded; deterministic and real-local runs
 remain visibly distinct.
 
+Delivered as the one-shot CLI (`assistant_cli`): live runs answer with real
+timing (first token 651–659 ms, complete 1130–1145 ms) and honest labels;
+stop/retry/reset verified live (clean `cancelled` at every stage, artifact
+purged, zero leftovers); fully offline. Capstone smoke passes; warm-trial and
+certification schedules remain in the M005/M015 measurement records. The
+browser-UI treatment of this flow arrives with M009. **Complete.**
+
 ## Phase 2 — Understand a live UI
 
 ### 007 — Evidence augmentation and focused re-observation

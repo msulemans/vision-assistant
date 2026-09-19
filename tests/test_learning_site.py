@@ -60,9 +60,9 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M005 · complete — Qwen3.5-4B selected",
-            "73 passing · 67 product + 6 learning",
-            "None acquired",
+            "M006 · complete",
+            "76 passing · 70 product + 6 learning",
+            "pinned, local",
             "Intentionally absent",
             "selection_timed_out",
             "User-selected capture: passed twice",
@@ -75,7 +75,8 @@ class LearningSiteContractTest(unittest.TestCase):
         self.assertEqual(ids, list(range(1, 18)))
         self.assertIn('status: "done", title: "Frozen screen-understanding corpus"', self.js)
         self.assertIn('status: "done", title: "Local VLM and runtime bake-off"', self.js)
-        self.assertIn('status: "current", title: "One-shot local Vision Assistant"', self.js)
+        self.assertIn('status: "done", title: "One-shot local Vision Assistant"', self.js)
+        self.assertIn('status: "current", title: "Evidence augmentation and focused re-observation"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)

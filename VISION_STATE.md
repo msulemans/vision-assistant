@@ -815,7 +815,7 @@ Next milestone: M006 — one-shot local Vision Assistant on this configuration.
 
 ## Milestone 006 — one-shot local Vision Assistant
 
-Status: in progress. First build complete:
+Status: complete (2026-09-19). Delivered:
 
 - `assistant.py` — one explicit flow: preview (normalize + private artifact) →
   submit one question → labelled answer → artifact release. Steps are timed
@@ -855,6 +855,16 @@ prints one JSON line (`{"status": "cancelled", "stage": ...}`) with exit 130.
 Regression tests: `test_runtime_interrupt.py`, `CliStartupInterruptTest`,
 `PreviewInterruptTest`.
 
-Remaining for the M006 gate: a successful stop-check re-run on the user's
-machine (clean cancel from any stage), and the capstone smoke checklist;
-retry = re-run with the same image, reset = artifact release.
+Stop check round 2 (user, 2026-09-19): both live Ctrl+C runs (during model
+load) exited cleanly — one JSON line with `stage: model_start` and the trace
+path, `cancelled` trace written, artifact purged, exit 130, no traceback, no
+orphaned `llama-server`, zero leftovers in `runs/m006-artifacts/`. Evidence:
+`docs/evidence/2026-09-19-m006-stop-check.md` and
+`docs/evidence/2026-09-19-m006-cancel-model-start.jsonl`.
+
+Capstone checklist: preview (live smoke, released), ask (two live runs:
+651–659 ms first token, 1130–1145 ms complete, released), stop (above),
+retry = re-run the same image (multiple), reset = artifact release (zero
+leftovers), offline operation (no network in the run path).
+
+Next milestone: M007 — evidence augmentation and focused re-observation.

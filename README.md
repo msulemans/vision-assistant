@@ -215,3 +215,10 @@ Previews and normalizes a screenshot you selected, asks one question with the
 pinned Qwen3.5-4B configuration (context 4096, thinking off), prints
 `[visible]`/`[inferred]`/`[unknown]` labels with real timings, writes a JSONL
 trace under `runs/m006/`, and deletes the private artifact before exit.
+
+Interrupting any stage (Ctrl+C) exits cleanly: one JSON line with the stage and
+trace path, a `cancelled` trace record, the artifact purged, exit code 130, and
+no orphaned server process. Retry is re-running with the same image; reset is
+artifact release. Live evidence is preserved in
+`docs/evidence/2026-09-19-m006-live-demo.md` and
+`docs/evidence/2026-09-19-m006-stop-check.md`.

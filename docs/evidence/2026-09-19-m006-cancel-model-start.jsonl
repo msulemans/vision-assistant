@@ -1,0 +1,2 @@
+{"created_at_ms":43542673.655,"kind":"real","schema_version":"1.0","trace_id":"m006-20260919-224810-eff9a9","type":"meta"}
+{"event_id":"e1","payload":{"reason":"user_interrupt","stage":"model_start"},"schema_version":"1.0","state":"cancelled","trace_id":"m006-20260919-224810-eff9a9","ts_ms":43542673.664208,"type":"cancelled"}
