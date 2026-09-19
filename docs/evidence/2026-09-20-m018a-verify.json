@@ -1,0 +1,38 @@
+{
+  "fixture_builds": {
+    "dev": {
+      "byte_identical": true,
+      "files": 78,
+      "tree_sha256": "39032e47d0f89ef3e32f42d865bf0f4725bf3bf2f314f0bf23ef19e6cccdc00c"
+    },
+    "heldout": {
+      "byte_identical": true,
+      "files": 79,
+      "tree_sha256": "14cc9d485507013cd880f896c1aee19e85b2fa2899b0307472231e8e45c492f6"
+    }
+  },
+  "manifest_checks": {
+    "adversarial_rejected": 22,
+    "adversarial_total": 22,
+    "manifest_sha256": "df630b21d9a0330214bb5cf01e0892ad82f589e5cb4206e81ff38af54f43d510",
+    "mutations_rejected": 157,
+    "mutations_total": 157,
+    "ok": true,
+    "positive_pass": 50,
+    "positive_total": 50,
+    "problems": [],
+    "smoke_tasks": [
+      "01",
+      "11",
+      "21",
+      "31",
+      "41"
+    ],
+    "split_dev": 30,
+    "split_heldout": 20,
+    "tasks": 50
+  },
+  "model_runs": 0,
+  "ok": true,
+  "stage": "M018A"
+}

@@ -425,5 +425,7 @@ artifacts (no Apple notarization in this lab) are documented in
 
 [M018: computer-use agent](docs/COMPUTER_USE_AGENT_PLAN.md) adds a planned
 screenshot-driven browser loop, 50 evaluation tasks, independent completion
-checks, and a bounded Hacker News pilot. Planning only; start with the task
-manifest and oracles before running models.
+checks, and a bounded Hacker News pilot. M018A (frozen task manifest, oracles,
+and fixture/reset contracts) is complete and reproducible without a model:
+`PYTHONPATH=src python -m vision_assistant.browser_cli verify`. Next stage:
+M018B (browser adapter); no model runs until the five-task smoke stage.

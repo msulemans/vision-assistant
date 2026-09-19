@@ -3,8 +3,10 @@
 Last updated: 2026-09-20 (Australia/Sydney)
 
 Status: Original roadmap records M001 through M017 as complete (see their
-sections). M018 browser computer-use extension is planned, not implemented;
-M018A is the proposed next stage under the same freeze–evidence discipline.
+sections). M018 browser computer-use extension is in progress: M018A (frozen
+50-task manifest, independent oracles, fixture/reset contracts) is complete
+and evidenced with zero model runs; next is M018B (browser adapter and
+coordinate mapping) under the same freeze–evidence discipline.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1680,3 +1682,23 @@ a five-task smoke stage, and a separate live HN pilot. This is planned only:
 no new model runs, downloads, or browser actions were performed. The existing
 M001–M017 completion records were consulted, not re-audited. M018A is proposed
 next; implementation has not started.
+
+## M018A complete — 2026-09-20
+
+The M018A stage gate passed deterministically with zero model runs:
+50 task specs (30 development / 20 held-out) with independent oracles
+(50/50 correct final states accepted, 157/157 wrong states rejected),
+22/22 adversarial action payloads rejected, a byte-stable manifest, and both
+fixture instances rebuilding byte-identical (`browser_cli verify`, `ok: true`).
+Artefacts: `browser_fixtures.py` (dev/heldout content, search semantics, page
+generator), `fixture_server.py` (loopback site, `/__state`/`/__reset` with
+per-task seeds), `browser_tasks.py` (frozen limits, typed action schema,
+50 tasks, oracles with positive/negative state generators), `browser_cli.py`
+(manifest/verify/site/serve). The stage teeth caught four real issues during
+the build and each was fixed: a mutation compared normalised against
+non-normalised paths (wrong state wrongly accepted), a stale-screenshot probe
+lacked its context, `reset()` deadlocked on a non-reentrant lock, and a
+`base_url` template literal tripped the frozen offline audit. Evidence:
+`docs/evidence/2026-09-20-m018a-manifest-oracles.md` plus the verify and
+manifest JSONs. Smoke tasks 01/11/21/31/41 are frozen for M018C. No task
+completion rate or refusal accuracy is claimed yet; those require M018B–D.

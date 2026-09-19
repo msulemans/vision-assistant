@@ -367,4 +367,7 @@ Read [the computer-use plan](../docs/COMPUTER_USE_AGENT_PLAN.md). Learn why
 a model's finish message is not a success oracle, why screenshot-only and
 DOM-assisted observations need separate results, and why correct refusals
 must not inflate productive completion rate. The 50 tasks and M018A–E gates
-are proposals; no browser-agent benchmark result is claimed.
+are proposals; no browser-agent benchmark result is claimed. M018A itself is
+complete: the frozen manifest and its oracles are checked by
+`python -m vision_assistant.browser_cli verify` (correct states pass, wrong
+states fail, no model involved).

@@ -306,4 +306,10 @@ M017 are complete and evidenced.
 Planning only; M001–M017 completion records remain unchanged.
 See [COMPUTER_USE_AGENT_PLAN.md](COMPUTER_USE_AGENT_PLAN.md) for the screenshot
 loop, browser scope, 50 tasks, held-out evaluation, and staged cost limits.
-The next proposed stage is M018A (manifest and oracles), not a model run.
+
+**M018A delivered (2026-09-20):** frozen 50-task manifest (30 development /
+20 held-out), independent oracles validated against correct and wrong final
+states, deterministic fixture site with reset/seed contract; stage gate
+`python -m vision_assistant.browser_cli verify` = PASS with zero model runs.
+Evidence: `docs/evidence/2026-09-20-m018a-manifest-oracles.md`. Next: M018B
+browser adapter and coordinate mapping.
