@@ -215,7 +215,21 @@ detection, changed-screen recovery, and explicit blocked/finished states.
 Gate: the agent stops safely on ambiguity, unexpected dialogs, permission
 changes, and prompt injection; interrupt p95 and recovery correctness meet the
 registered ceilings.
-
+Delivered: the first bounded task agent, closed 2026-09-20. `agent.py`
+(stepwise goal loop: budgets 8 steps / 120 s / 2 recoveries; bounded
+stale-frame recovery with re-observation, re-planning, and a fresh
+confirmation; takeover detection by focus transition and by post-action
+state diff; single-window scope with `unexpected_dialog` blocks; goal-lock
+allowlists with `off_goal_denied`; injection markers flagged and never
+followed; explicit finished/blocked/cancelled terminals), `agent_cli.py`,
+`agent_eval.py` (22-scenario deterministic gate plus a real-SIGINT
+interrupt sampler), practice window `app:dialog-button` and
+`app:nudge-button` and `--injection`, `ax_dump --front`. Live gate: all
+three frozen goals finished stepwise with the pinned model (3 performed,
+0 unapproved); stale recovery, dialog, takeover, permission change, budget
+exhaustion, injection-targeted and off-goal proposals each blocked safely
+with zero unapproved actions; interrupt p95 18.1 ms over ten samples.
+**Complete.**
 ## Phase 4 — Finish the local product and learning lab
 
 ### 015 — Profiles, packaging, and offline verification

@@ -1,0 +1,568 @@
+{
+  "run_id": "m014-20260920-002909-658b30",
+  "window_title": "Practice App",
+  "trusted_at_start": true,
+  "tasks": {
+    "enable-sync": {
+      "task_id": "enable-sync",
+      "goal": "Turn on the Sync checkbox.",
+      "status": "finished",
+      "reason": "goal verified after 1 step(s)",
+      "terminal": "finished",
+      "steps_used": 1,
+      "max_steps": 8,
+      "elapsed_ms": 4668.6,
+      "max_seconds": 120.0,
+      "recoveries_used": 0,
+      "max_recoveries": 2,
+      "performed": [
+        {
+          "kind": "click_element",
+          "identifier": "app:sync-toggle",
+          "action": "press",
+          "method": null
+        }
+      ],
+      "injection_flags": [],
+      "events": [
+        {
+          "type": "observe",
+          "at_ms": 104.1,
+          "tag": "start",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "0",
+            "app:notify-toggle": "0",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "propose",
+          "at_ms": 2825.2,
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:sync-toggle"
+          },
+          "capture": "ok"
+        },
+        {
+          "type": "intent",
+          "at_ms": 2825.2,
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:sync-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "at_ms": 2825.3,
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "at_ms": 2825.3,
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Sync",
+            "identifier": "app:sync-toggle",
+            "frame": [
+              353.0,
+              359.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:sync-toggle"
+            },
+            "expect_window_frame": [
+              314.0,
+              278.0,
+              480.0,
+              332.0
+            ]
+          },
+          "recovery_attempt": 0
+        },
+        {
+          "type": "preflight",
+          "at_ms": 2889.5,
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "at_ms": 2889.5,
+          "text": "press AXCheckBox 'Sync' (id app:sync-toggle) in 'Practice App' | region (353, 359, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "at_ms": 4236.3,
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "at_ms": 4236.6,
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "at_ms": 4389.5,
+          "ok": true
+        },
+        {
+          "type": "perform",
+          "at_ms": 4556.8,
+          "action": "press",
+          "method": null,
+          "key_events": 0,
+          "identifier": "app:sync-toggle"
+        },
+        {
+          "type": "observe",
+          "at_ms": 4668.6,
+          "tag": "post-perform",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "1",
+            "app:notify-toggle": "0",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "state_diff",
+          "at_ms": 4668.6,
+          "acted_identifier": "app:sync-toggle",
+          "unexplained": []
+        },
+        {
+          "type": "verify",
+          "at_ms": 4668.6,
+          "passed": true,
+          "steps_used": 1
+        },
+        {
+          "type": "finished",
+          "at_ms": 4668.6,
+          "detail": "goal verified after 1 step(s)"
+        }
+      ]
+    },
+    "multi-enable": {
+      "task_id": "multi-enable",
+      "goal": "Turn on the Notifications checkbox AND type the word hello into the Search field.",
+      "status": "finished",
+      "reason": "goal verified after 2 step(s)",
+      "terminal": "finished",
+      "steps_used": 2,
+      "max_steps": 8,
+      "elapsed_ms": 9376.1,
+      "max_seconds": 120.0,
+      "recoveries_used": 0,
+      "max_recoveries": 2,
+      "performed": [
+        {
+          "kind": "click_element",
+          "identifier": "app:notify-toggle",
+          "action": "press",
+          "method": null
+        },
+        {
+          "kind": "type_text",
+          "identifier": "app:search",
+          "action": "type",
+          "method": "ax_value"
+        }
+      ],
+      "injection_flags": [],
+      "events": [
+        {
+          "type": "observe",
+          "at_ms": 103.3,
+          "tag": "start",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "1",
+            "app:notify-toggle": "0",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "propose",
+          "at_ms": 2864.6,
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:notify-toggle"
+          },
+          "capture": "ok"
+        },
+        {
+          "type": "intent",
+          "at_ms": 2864.6,
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:notify-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "at_ms": 2864.7,
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "at_ms": 2864.7,
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Notifications",
+            "identifier": "app:notify-toggle",
+            "frame": [
+              353.0,
+              391.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:notify-toggle"
+            },
+            "expect_window_frame": [
+              314.0,
+              278.0,
+              480.0,
+              332.0
+            ]
+          },
+          "recovery_attempt": 0
+        },
+        {
+          "type": "preflight",
+          "at_ms": 2932.0,
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "at_ms": 2932.1,
+          "text": "press AXCheckBox 'Notifications' (id app:notify-toggle) in 'Practice App' | region (353, 391, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "at_ms": 4267.3,
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "at_ms": 4267.5,
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "at_ms": 4426.0,
+          "ok": true
+        },
+        {
+          "type": "perform",
+          "at_ms": 4595.0,
+          "action": "press",
+          "method": null,
+          "key_events": 0,
+          "identifier": "app:notify-toggle"
+        },
+        {
+          "type": "observe",
+          "at_ms": 4709.0,
+          "tag": "post-perform",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "1",
+            "app:notify-toggle": "1",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "state_diff",
+          "at_ms": 4709.0,
+          "acted_identifier": "app:notify-toggle",
+          "unexplained": []
+        },
+        {
+          "type": "verify",
+          "at_ms": 4709.0,
+          "passed": false,
+          "steps_used": 1
+        },
+        {
+          "type": "propose",
+          "at_ms": 7607.8,
+          "payload": {
+            "kind": "type_text",
+            "element_id": "app:search",
+            "text": "hello"
+          },
+          "capture": "ok"
+        },
+        {
+          "type": "intent",
+          "at_ms": 7607.9,
+          "kind": "type_text",
+          "description": "type_text: type 5 characters into \u201cthe focused field\u201d"
+        },
+        {
+          "type": "policy",
+          "at_ms": 7607.9,
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "at_ms": 7608.1,
+          "identity": {
+            "role": "AXTextField",
+            "name": "Search",
+            "identifier": "app:search",
+            "frame": [
+              423.0,
+              437.0,
+              332.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "type",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:search"
+            },
+            "text": "hello",
+            "expect_window_frame": [
+              314.0,
+              278.0,
+              480.0,
+              332.0
+            ]
+          },
+          "recovery_attempt": 0
+        },
+        {
+          "type": "preflight",
+          "at_ms": 7692.7,
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "at_ms": 7692.7,
+          "text": "type 5 characters into AXTextField 'Search' (id app:search) in 'Practice App' | region (423, 437, 332, 26)"
+        },
+        {
+          "type": "overlay",
+          "at_ms": 9040.5,
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "at_ms": 9040.6,
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "at_ms": 9188.0,
+          "ok": true
+        },
+        {
+          "type": "perform",
+          "at_ms": 9267.7,
+          "action": "type",
+          "method": "ax_value",
+          "key_events": 0,
+          "identifier": "app:search"
+        },
+        {
+          "type": "observe",
+          "at_ms": 9376.1,
+          "tag": "post-perform",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "1",
+            "app:notify-toggle": "1",
+            "app:search": "hello",
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "state_diff",
+          "at_ms": 9376.1,
+          "acted_identifier": "app:search",
+          "unexplained": []
+        },
+        {
+          "type": "verify",
+          "at_ms": 9376.1,
+          "passed": true,
+          "steps_used": 2
+        },
+        {
+          "type": "finished",
+          "at_ms": 9376.1,
+          "detail": "goal verified after 2 step(s)"
+        }
+      ]
+    },
+    "sync-and-hello": {
+      "task_id": "sync-and-hello",
+      "goal": "Turn on the Sync checkbox AND type the word hello into the Search field.",
+      "status": "finished",
+      "reason": "state already satisfies the goal",
+      "terminal": "finished",
+      "steps_used": 0,
+      "max_steps": 8,
+      "elapsed_ms": 125.5,
+      "max_seconds": 120.0,
+      "recoveries_used": 0,
+      "max_recoveries": 2,
+      "performed": [],
+      "injection_flags": [],
+      "events": [
+        {
+          "type": "observe",
+          "at_ms": 102.5,
+          "tag": "start",
+          "window_frame": [
+            314.0,
+            278.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "1",
+            "app:notify-toggle": "1",
+            "app:search": "hello",
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "finished",
+          "at_ms": 125.5,
+          "detail": "state already satisfies the goal"
+        }
+      ]
+    }
+  },
+  "terminals": {
+    "enable-sync": "finished",
+    "multi-enable": "finished",
+    "sync-and-hello": "finished"
+  },
+  "all_finished": true,
+  "performed_actions": 3,
+  "unapproved_actions": 0,
+  "total_ms": 16345.012,
+  "raw_answers": [
+    "[\n  {\n    \"kind\": \"click_element\",\n    \"element_id\": \"app:sync-toggle\"\n  }\n]",
+    "[\n  {\n    \"kind\": \"click_element\",\n    \"element_id\": \"app:notify-toggle\"\n  }\n]",
+    "[\n  {\n    \"kind\": \"type_text\",\n    \"element_id\": \"app:search\",\n    \"text\": \"hello\"\n  }\n]"
+  ]
+}

@@ -129,8 +129,15 @@ input events posted). Milestone 013 adds the first supervised executor:
 three frozen tasks performed and verified against the disposable practice
 window with zero unapproved actions, and every refusal path (unknown
 element, coordinates, secret target, declined, stale frame, cancellation)
-demonstrated live with nothing posted. Current focus: M014 — recovery and
-bounded task agent.
+demonstrated live with nothing posted. Milestone 014 adds the bounded task
+agent: step/time budgets, bounded stale-frame recovery, user-takeover
+detection, unexpected-dialog and injection blocks, goal-lock allowlists,
+and explicit finished/blocked/cancelled terminals. Measured 2026-09-20:
+22/22 frozen deterministic scenarios; all three frozen goals finished
+stepwise with the pinned model (zero unapproved); stale recovery, dialog,
+takeover, permission change, budget, injection-targeted, and off-goal all
+demonstrated live with zero unapproved actions; interrupt p95 18.1 ms.
+Current focus: M015 — profiles, packaging, and offline verification.
 
 ## Run the Milestone 002 lab
 
@@ -332,3 +339,20 @@ confirmed interactively, re-checked for freshness, performed through the
 single writer helper, and verified by re-observing the window. Measured
 2026-09-20: 3/3 frozen tasks performed and verified, zero unapproved
 actions; refusal paths all demonstrated with nothing posted.
+
+### Bounded task agent (M014)
+
+```bash
+(runs/m013-tools/practice_window >/dev/null 2>&1 &)          # disposable practice window
+PYTHONPATH=src python -m vision_assistant.agent_cli           # pinned model, stepwise
+PYTHONPATH=src python -m vision_assistant.agent_eval          # 22-scenario deterministic gate
+PYTHONPATH=src python -m vision_assistant.agent_eval --interrupts 10 --skip-scenarios
+```
+
+One frozen goal per task, pursued as separately confirmed steps under hard
+budgets (`--max-steps`, `--max-seconds`, `--max-recoveries`); scripted
+demos via repeatable `--step`. Measured 2026-09-20: three frozen goals
+finished stepwise (zero unapproved); stale-frame recovery and
+external-change takeover demonstrated live; unexpected dialog, permission
+loss, budget exhaustion, injection-targeted, and off-goal proposals each
+blocked safely; interruption p95 18.1 ms over ten real SIGINT samples.

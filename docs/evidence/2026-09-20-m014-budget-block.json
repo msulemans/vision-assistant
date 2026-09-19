@@ -1,0 +1,197 @@
+{
+  "run_id": "m014-20260920-002745-765c7d",
+  "window_title": "Practice App",
+  "trusted_at_start": true,
+  "tasks": {
+    "multi-enable": {
+      "task_id": "multi-enable",
+      "goal": "Turn on the Notifications checkbox AND type the word hello into the Search field.",
+      "status": "budget_exceeded",
+      "reason": "step budget exhausted (1/1 actions)",
+      "terminal": "blocked:budget_exceeded",
+      "steps_used": 1,
+      "max_steps": 1,
+      "elapsed_ms": 1974.3,
+      "max_seconds": 120.0,
+      "recoveries_used": 0,
+      "max_recoveries": 2,
+      "performed": [
+        {
+          "kind": "click_element",
+          "identifier": "app:notify-toggle",
+          "action": "press",
+          "method": null
+        }
+      ],
+      "injection_flags": [],
+      "events": [
+        {
+          "type": "observe",
+          "at_ms": 104.0,
+          "tag": "start",
+          "window_frame": [
+            -1200.0,
+            134.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "0",
+            "app:notify-toggle": "0",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "propose",
+          "at_ms": 144.2,
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:notify-toggle"
+          }
+        },
+        {
+          "type": "intent",
+          "at_ms": 144.3,
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:notify-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "at_ms": 144.3,
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "at_ms": 144.4,
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Notifications",
+            "identifier": "app:notify-toggle",
+            "frame": [
+              -1161.0,
+              247.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:notify-toggle"
+            },
+            "expect_window_frame": [
+              -1200.0,
+              134.0,
+              480.0,
+              332.0
+            ]
+          },
+          "recovery_attempt": 0
+        },
+        {
+          "type": "preflight",
+          "at_ms": 206.0,
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "at_ms": 206.1,
+          "text": "press AXCheckBox 'Notifications' (id app:notify-toggle) in 'Practice App' | region (-1161, 247, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "at_ms": 1535.9,
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "at_ms": 1536.1,
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "at_ms": 1695.5,
+          "ok": true
+        },
+        {
+          "type": "perform",
+          "at_ms": 1861.0,
+          "action": "press",
+          "method": null,
+          "key_events": 0,
+          "identifier": "app:notify-toggle"
+        },
+        {
+          "type": "observe",
+          "at_ms": 1974.3,
+          "tag": "post-perform",
+          "window_frame": [
+            -1200.0,
+            134.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "0",
+            "app:notify-toggle": "1",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "state_diff",
+          "at_ms": 1974.3,
+          "acted_identifier": "app:notify-toggle",
+          "unexplained": []
+        },
+        {
+          "type": "verify",
+          "at_ms": 1974.3,
+          "passed": false,
+          "steps_used": 1
+        },
+        {
+          "type": "blocked",
+          "at_ms": 1974.3,
+          "status": "budget_exceeded",
+          "detail": "step budget exhausted (1/1 actions)"
+        }
+      ]
+    }
+  },
+  "terminals": {
+    "multi-enable": "blocked:budget_exceeded"
+  },
+  "all_finished": false,
+  "performed_actions": 1,
+  "unapproved_actions": 0,
+  "total_ms": 1996.976,
+  "raw_answers": []
+}

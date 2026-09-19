@@ -37,8 +37,8 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M013 · complete — 3/3 supervised actions performed, verified, zero unapproved</dd></div>
-          <div><dt>Tests</dt><dd>245 passing · 239 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M014 · complete — bounded agent: budgets, recovery, takeover, dialog and injection stops, zero unapproved</dd></div>
+          <div><dt>Tests</dt><dd>266 passing · 260 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>Qwen3.5-4B · Q4_K_M — pinned, local</dd></div>
           <div><dt>Action access</dt><dd>None</dd></div>
         </dl>
@@ -140,13 +140,14 @@
         <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
 
-      <p><strong>Plan checkpoint:</strong> M013 is complete — the first
-        supervised executor performed all three frozen tasks against the
-        disposable window, each previewed, overlaid, confirmed, re-checked, and
-        verified, with zero unapproved actions. The live runs found and fixed a
-        blind-toggle hazard, a black-capture quirk, and macOS's ban on cross-app
-        activation. M014 adds budgets, takeover, and recovery. These are planned
-        gates.</p>
+      <p><strong>Plan checkpoint:</strong> M014 is complete — the bounded
+        agent finished all three frozen goals stepwise (each step freshly
+        proposed, previewed, confirmed, and verified), recovered from a window
+        moved mid-confirmation, yielded when the screen changed outside its own
+        action, and stopped safely on an unexpected dialog, a revoked
+        permission, an exhausted budget, and adversarial screen text. The
+        interrupt gate measured p95 18.1 ms. M015 packages the measured
+        read-only profile. These are planned gates.</p>
 
       <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
         <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
@@ -285,6 +286,13 @@
         events require the target app to be frontmost. Every refusal path (unknown
         element, coordinates, secrets, declined, stale frame, cancellation) was
         demonstrated live with nothing posted.</p>
+      <p>M014 bounded agent: each task is one frozen goal pursued as separately
+        confirmed steps under hard budgets. The deterministic gate runs 22
+        adversarial scenarios; live demos show a stale-frame recovery
+        re-planning at the new position, an unexpected dialog and a revoked
+        permission both stopping with zero actions, an external state change
+        read as user takeover, and adversarial screen text flagged — and never
+        followed.</p>
       <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
       <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
     </section>

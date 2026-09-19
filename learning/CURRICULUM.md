@@ -272,3 +272,24 @@ app to activate another, so a synthetic keystroke path could never be
 aimed safely — it was rejected live (`frontmost_mismatch`, nothing typed)
 in favour of the identity-bound value write. Next milestone: M014 —
 recovery and bounded task agent.
+
+## M014 outcome — the agent that knows when to stop
+
+milestone: M014 — recovery and bounded task agent. Complete 2026-09-20.
+
+The executor became an agent: one frozen goal per task, pursued as a
+sequence of separately proposed, previewed, confirmed, re-checked,
+performed, and verified steps — each step re-derived from a fresh
+observation, never executed blind from an up-front plan. Hard budgets
+(8 steps, 120 seconds, 2 recoveries) make exhaustion a typed terminal
+state, not a silent loop. The live gate showed every stop being honest: a
+window moved mid-confirmation recovered by re-planning at the new position
+and asking again; an unexpected modal dialog, a revoked permission, an
+exhausted budget, an injection-targeted proposal, and an off-goal proposal
+each ended in their typed blocked states with zero actions; an external
+change to the screen was read as user takeover — the agent completed its
+own approved action and then yielded, never fighting for focus.
+Adversarial screen text was flagged and ignored: the screen is data, never
+instructions. Interruption (SIGINT at the confirmation prompt) stopped the
+agent with p95 18.1 ms across ten real samples. Next milestone: M015 —
+profiles, packaging, and offline verification.

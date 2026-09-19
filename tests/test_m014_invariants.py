@@ -60,6 +60,7 @@ class ToolSurfaceTest(unittest.TestCase):
             "app:cancel",
             "app:dialog-button",
             "app:injection-button",
+            "app:nudge-button",
         ):
             self.assertIn(identifier, source)
         self.assertIn("NSAlert", source)

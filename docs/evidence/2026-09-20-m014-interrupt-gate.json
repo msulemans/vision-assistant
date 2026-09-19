@@ -1,0 +1,83 @@
+{
+  "run_id": "m014-interrupt-20260920-002614-bf20fe",
+  "delay_ms": 150,
+  "samples": [
+    {
+      "index": 0,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.9
+    },
+    {
+      "index": 1,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.9
+    },
+    {
+      "index": 2,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.7
+    },
+    {
+      "index": 3,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.2
+    },
+    {
+      "index": 4,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 9.0
+    },
+    {
+      "index": 5,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.8
+    },
+    {
+      "index": 6,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.9
+    },
+    {
+      "index": 7,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 8.9
+    },
+    {
+      "index": 8,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 18.1
+    },
+    {
+      "index": 9,
+      "ok": true,
+      "exit_code": 130,
+      "cancelled_line": true,
+      "interrupt_ms": 9.2
+    }
+  ],
+  "gate": {
+    "samples": 10,
+    "samples_ok": 10,
+    "p95_ms": 18.1,
+    "ceiling_ms": 1500.0,
+    "pass": true
+  }
+}

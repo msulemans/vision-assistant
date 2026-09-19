@@ -1,0 +1,143 @@
+{
+  "run_id": "m014-20260920-002715-a06a9d",
+  "window_title": "Practice App",
+  "trusted_at_start": true,
+  "tasks": {
+    "enable-sync": {
+      "task_id": "enable-sync",
+      "goal": "Turn on the Sync checkbox.",
+      "status": "unexpected_dialog",
+      "reason": "extra window(s) present: [{\"subrole\": \"AXDialog\", \"title\": null}]",
+      "terminal": "blocked:unexpected_dialog",
+      "steps_used": 0,
+      "max_steps": 8,
+      "elapsed_ms": 5129.2,
+      "max_seconds": 120.0,
+      "recoveries_used": 0,
+      "max_recoveries": 2,
+      "performed": [],
+      "injection_flags": [],
+      "events": [
+        {
+          "type": "observe",
+          "at_ms": 111.8,
+          "tag": "start",
+          "window_frame": [
+            -1200.0,
+            134.0,
+            480.0,
+            332.0
+          ],
+          "windows": [
+            {
+              "title": "Practice App",
+              "subrole": "AXStandardWindow",
+              "focused": true
+            }
+          ],
+          "values": {
+            "app:sync-toggle": "0",
+            "app:notify-toggle": "0",
+            "app:search": null,
+            "app:save": null,
+            "app:cancel": null,
+            "app:dialog-button": null
+          },
+          "injection_flags": []
+        },
+        {
+          "type": "propose",
+          "at_ms": 152.7,
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:sync-toggle"
+          }
+        },
+        {
+          "type": "intent",
+          "at_ms": 152.8,
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:sync-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "at_ms": 152.8,
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "at_ms": 152.9,
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Sync",
+            "identifier": "app:sync-toggle",
+            "frame": [
+              -1161.0,
+              215.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:sync-toggle"
+            },
+            "expect_window_frame": [
+              -1200.0,
+              134.0,
+              480.0,
+              332.0
+            ]
+          },
+          "recovery_attempt": 0
+        },
+        {
+          "type": "preflight",
+          "at_ms": 215.3,
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "at_ms": 215.3,
+          "text": "press AXCheckBox 'Sync' (id app:sync-toggle) in 'Practice App' | region (-1161, 215, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "at_ms": 1550.6,
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "at_ms": 4939.9,
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "at_ms": 5129.2,
+          "ok": true
+        },
+        {
+          "type": "blocked",
+          "at_ms": 5129.2,
+          "status": "unexpected_dialog",
+          "detail": "extra window(s) present: [{\"subrole\": \"AXDialog\", \"title\": null}]"
+        }
+      ]
+    }
+  },
+  "terminals": {
+    "enable-sync": "blocked:unexpected_dialog"
+  },
+  "all_finished": false,
+  "performed_actions": 0,
+  "unapproved_actions": 0,
+  "total_ms": 5151.242,
+  "raw_answers": []
+}
