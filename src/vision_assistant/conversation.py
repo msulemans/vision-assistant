@@ -261,6 +261,7 @@ class ConversationSession:
             },
             "stale_warning": stale_warning,
             "turns_used": turn_index,
+            "prompt_chars": len(prompt),
             "evidence": self._evidence_report.summary() if self._evidence_report else None,
         }
 

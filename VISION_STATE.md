@@ -969,5 +969,17 @@ composition, typed errors, session trace) and `assistant_cli --chat` (REPL
 with `:status`, `:reset`, `:quit`, stale warnings, clean Ctrl+C). Tests:
 `tests/test_conversation.py`.
 
-Next: the frozen reference/correction task set and its measurement run.
+Frozen task set + harness landed: `conversation_eval.py` (3 reference + 3
+correction tasks over held-out fixtures with deterministic checks:
+`contains_all`; `corrects` = true value stated and every wrong-premise
+sentence negated) and `conversation_cli.py` (fresh session per task: seed
+question, then the scored follow-up; records prompt sizes, timings, and
+artifact release). Commands for the user's machine:
+
+```bash
+PYTHONPATH=src python -m vision_assistant.conversation_cli
+PYTHONPATH=src python -m vision_assistant.conversation_cli --evidence-ocr
+```
+
+Pending: the measurement run and its result record.
 
