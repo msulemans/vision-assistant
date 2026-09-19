@@ -71,19 +71,18 @@ if [ ! -x "$PREFIX/venv/bin/python" ]; then
 fi
 export PYTHONPATH="$PREFIX/current/src"
 case "${1:-}" in
-  doctor|smoke|forecast|verify|versions|rollback|uninstall|build|install) module=vision_assistant.package_cli ;;
-  ask) module=vision_assistant.assistant_cli ;;
-  ui) module=vision_assistant.ui_server ;;
-  grounding) module=vision_assistant.grounding_cli ;;
-  agent) module=vision_assistant.agent_cli ;;
-  capture) module=vision_assistant.capture_cli ;;
+  doctor|smoke|forecast|verify|versions|rollback|uninstall|build|install)
+    exec "$PREFIX/venv/bin/python" -u -m vision_assistant.package_cli "$@" ;;
+  ask) shift; exec "$PREFIX/venv/bin/python" -u -m vision_assistant.assistant_cli "$@" ;;
+  ui) shift; exec "$PREFIX/venv/bin/python" -u -m vision_assistant.ui_server "$@" ;;
+  grounding) shift; exec "$PREFIX/venv/bin/python" -u -m vision_assistant.grounding_cli "$@" ;;
+  agent) shift; exec "$PREFIX/venv/bin/python" -u -m vision_assistant.agent_cli "$@" ;;
+  capture) shift; exec "$PREFIX/venv/bin/python" -u -m vision_assistant.capture_cli "$@" ;;
   *)
     echo "usage: vision <doctor|ask|ui|grounding|agent|capture|smoke|forecast|verify|versions|rollback|uninstall>" >&2
     exit 2
     ;;
 esac
-shift
-exec "$PREFIX/venv/bin/python" -u -m "$module" "$@"
 """
 
 PERMISSION_EDUCATION: tuple[dict, ...] = (

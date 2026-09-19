@@ -10,7 +10,11 @@ import unittest
 from pathlib import Path
 
 from vision_assistant import package_cli
-from vision_assistant.package_cli import audit_offline, doctor_report
+from vision_assistant.package_cli import (
+    VISION_WRAPPER,
+    audit_offline,
+    doctor_report,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -299,6 +303,51 @@ class SmokeDeterministicTest(TempWorkspaceTest):
         self.assertEqual(code, 0)
         payload = json.loads(output)
         self.assertGreater(payload["download"]["bytes"], 0)
+
+
+class WrapperBehaviorTest(TempWorkspaceTest):
+    """Execute the installed dispatcher for real (regression: argv handling)."""
+
+    def _make_fake_install(self) -> Path:
+        import subprocess
+        import sys
+
+        prefix = self.root / "prefix"
+        (prefix / "bin").mkdir(parents=True)
+        wrapper = prefix / "bin" / "vision"
+        wrapper.write_text(VISION_WRAPPER, encoding="utf-8")
+        os.chmod(wrapper, 0o755)
+        (prefix / "current").mkdir()
+        os.symlink(REPO_ROOT / "src", prefix / "current" / "src", target_is_directory=True)
+        (prefix / "venv" / "bin").mkdir(parents=True)
+        os.symlink(sys.executable, prefix / "venv" / "bin" / "python")
+        return prefix
+
+    def test_dispatcher_passes_subcommands_and_args_through(self) -> None:
+        import subprocess
+
+        prefix = self._make_fake_install()
+        done = subprocess.run(
+            [str(prefix / "bin" / "vision"), "forecast", "--pin-dir", str(self.pin_dir), "--json"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(done.returncode, 0, done.stderr)
+        payload = json.loads(done.stdout)
+        self.assertGreater(payload["download"]["bytes"], 0)
+
+    def test_dispatcher_without_venv_reports_clearly(self) -> None:
+        import subprocess
+
+        prefix = self.root / "bare"
+        (prefix / "bin").mkdir(parents=True)
+        wrapper = prefix / "bin" / "vision"
+        wrapper.write_text(VISION_WRAPPER, encoding="utf-8")
+        os.chmod(wrapper, 0o755)
+        done = subprocess.run([str(wrapper), "doctor"], capture_output=True, text=True, timeout=60)
+        self.assertEqual(done.returncode, 2)
+        self.assertIn("install.sh", done.stderr)
 
 
 if __name__ == "__main__":
