@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 006 in progress — the one-shot assistant CLI is built and
-covered by fast deterministic tests; a live screenshot demo and the
-interrupt/capstone checks remain.
+Status: Milestone 012 in progress — M006 through M011 are complete (see their
+sections); the read-only macOS UI grounding layer is being built (Accessibility
+alignment, stable element identity, zero posted input).
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1126,5 +1126,61 @@ propose → validate (`needs_confirmation`) → approve (simulation) → execute
 
 Next milestone: M012 — read-only macOS UI grounding (no posted input).
 
-Next: the user's live run on the pinned model.
+## Milestone 012 — read-only macOS UI grounding
+
+Status: in progress. Scope was frozen before implementation (2026-09-19):
+
+- Objective: given a window screenshot and a read-only Accessibility (AX)
+  snapshot of the same window, align AX element frames (global screen
+  coordinates, points) with image pixels, and resolve human-readable targets
+  — labels such as "search field", "save button", or "SYNC" — to a stable
+  element identity (role, name, identifier, tree path) plus its state.
+  Stable identities are preferred over raw coordinates; coordinates are used
+  only to locate the element in the image, never to address it.
+- Read-only, enforced three ways: the Swift helper (`tools/ax_dump.swift`)
+  reads AX attributes only — no `AXUIElementPerformAction`, no attribute
+  writes, no `CGEvent`, no pasteboard, no focus changes; the Python layer has
+  no executor; and a source-scan test fails if any action-capable API appears
+  in either artifact.
+- Permission is opt-in and explicit: `--check` reports the AX trust state
+  without prompting; `--request-permission` runs only when the user asks,
+  first printing what macOS will show and which app receives the grant (the
+  terminal that owns the helper process). Denial is a typed, non-fatal
+  `AxUnavailable("permission")`: grounding reports itself unavailable and no
+  other capability is affected. No silent prompts, ever.
+- Secure values never surface: elements whose subrole marks a secure text
+  field are parsed with their value replaced by a redaction marker before any
+  downstream use.
+- Fail-closed resolution: an absent target resolves `not_found`; two equally
+  good candidates resolve `ambiguous`. The resolver never guesses, and a
+  target is only accepted when its score clears a frozen threshold.
+- Frozen deterministic gate (no model, no permission, runs locally):
+  synthetic UI states are rendered from the same element geometry that also
+  produces the snapshot (single source of truth), across scale (1x / 2x) ×
+  layout (two layouts) variants — 4 variants total. Each variant renders a
+  520×340 pt window with checkboxes (one duplicated name for ambiguity), a
+  text field with an identifier, buttons, a link, and static text.
+- Frozen tasks (10, each run on all 4 variants): resolve "search field",
+  "save button", "discard", "learn more", "preferences" heading, and the
+  state of the "notifications" checkbox; resolve "SYNC" only via its stable
+  identifier `prefs.sync.primary` (disambiguates the duplicate); negatives
+  "DELETE" and "SAVE ALL" must be `not_found`; bare "SYNC" without the
+  identifier must be `ambiguous`. Positives must resolve the exact expected
+  element id and state with an image region within ±2 px of the independently
+  computed expected rect; negatives and ambiguity must fail closed. 100%
+  required.
+- Live gate (user machine): permission status observed and reported honestly;
+  on a real window, dump + alignment + resolution of at least three targets,
+  with each region cross-checked by cropping the screenshot and reading the
+  crop with the existing Vision OCR helper; zero input events posted; the
+  denial path is shown when access is not granted.
+- The grounding layer feeds no model and posts no input in this milestone;
+  M013 (supervised execution) is where grounded targets may acquire a
+  confirmation-gated executor.
+
+Deliverables: `tools/ax_dump.swift` (read-only AX/window JSON helper),
+`ax_vision.py` (compile/run/permission/parse), `grounding.py` (alignment +
+resolution), `grounding_fixture.py` + `grounding_eval.py` (frozen gate),
+`grounding_cli.py` (`--verify`, `--check`, `--request-permission`, `--dump`,
+`--ground`), and fast deterministic tests including the no-input source scan.
 
