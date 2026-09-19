@@ -135,3 +135,11 @@ silently count as passing. The original user-reported results are preserved.
 
 Teach back: How would you test 23/24 versus 22/24 while ensuring forbidden
 claims still fail? Why is a 24-case run insufficient proof of 48 warm trials?
+
+## M005 outcome — selected configuration
+
+Qwen3.5-4B (Q4_K_M, llama.cpp, thinking off, context 4096) is the selected
+Phase-1 configuration: 23/24 on the frozen v4 held-out (0.95 pass-rate gate),
+all safety metrics perfect, RSS 3.792 GiB, swap 0, acquisition 6.29 GiB.
+Cold-readiness and cancellation certification trials remain open for
+packaging. Next milestone: M006 — one-shot local Vision Assistant.

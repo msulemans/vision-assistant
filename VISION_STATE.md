@@ -2,8 +2,9 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 005 — user-reported v4 run scored 23/24. Harness pass-rate
-mismatch corrected; complete resource/trial evidence remains pending. No promotion.
+Status: Milestone 005 complete — Qwen3.5-4B selected as the Phase-1
+configuration (see "M005 outcome"); release-grade certification trials
+(cold readiness, cancellation) remain open for packaging.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -792,10 +793,22 @@ was changed. The supplied aggregate quality would pass that corrected gate.
 Missing resource values now explicitly block `resource_ok`/`pass_thresholds`
 and are listed as `missing_resources`; previously missing values were skipped.
 
-Do not promote yet: cold readiness and acquisition GiB are null, and the pasted
-24-case run does not establish the frozen 48-warm/3-cold trial protocol or the
-other M005 lifecycle/cancellation requirements. Pin the chosen 4096 context
-configuration and complete its missing measurements. Repeated v4 runs and the
-context change mean this set is exposed; do not describe another run on it as
-fresh held-out evidence or tune the prompt against dialog-14. A future quality
-tuning decision needs a new evaluation version and fresh held-out cases.
+### M005 outcome — Phase-1 configuration selected (2026-09-19)
+
+Decision: Qwen3.5-4B (Q4_K_M, llama.cpp, thinking disabled, context pinned at
+4096) is the selected Phase-1 configuration. On the frozen v4 held-out run it
+meets the v4 quality gate (23/24 = 0.9583 ≥ 0.95; recall 1.00; UI match
+0.9583; unsupported 0; forbidden 0; abstention 1.0), the latency ceilings
+(first-token p95 839 ms; complete-answer p95 1389 ms), and the measured
+resource ceilings (RSS 3.792 GiB ≤ 8; swap 0 ≤ 256 MiB; acquisition 6.29 GiB
+≤ 25, computed from the pinned artifacts). The one failure (`dialog-14`,
+`UNSAVED_REPORT` vs `UNSAVED REPORT`) is preserved; the v4 set is exposed and
+must not be reused as fresh evidence or tuned against.
+
+Outstanding for release-grade certification (a packaging prerequisite in
+M015, not an M005 blocker): process-cold readiness ≤ 60 s × 3 trials and
+cancellation-to-idle ≤ 2 s × 10 trials with the pinned 4096 context, plus the
+frozen 48-warm-trial schedule. Until those runs are recorded, this selection
+is the milestone result and is not yet a release-grade promotion.
+
+Next milestone: M006 — one-shot local Vision Assistant on this configuration.

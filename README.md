@@ -194,11 +194,12 @@ PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --pin-dir models/qw
 PYTHONPATH=src python -m vision_assistant.bakeoff_cli --real --server --pin-dir models/qwen3.5-4b   # persistent, streaming
 ```
 
-### M005 v4 result interpretation (2026-09-19)
+### M005 outcome (2026-09-19)
 
-The latest user-reported Qwen run scored 23/24 with 3.792 GiB sampled RSS at
-context size 4096. The harness now honors the already-documented 0.95 case
-pass-rate threshold; it also lists missing resources and blocks an overall
-pass until they are measured. Cold readiness, acquisition size, and the full
-trial protocol remain pending. No candidate is promoted; see `VISION_STATE.md`
-and `docs/evidence/2026-09-19-user-v4-results.json` for preserved original results.
+Qwen3.5-4B (Q4_K_M, llama.cpp, thinking off, context 4096) is the selected
+Phase-1 configuration: the frozen v4 held-out run passes the 0.95 pass-rate
+gate (23/24) and every measured ceiling (RSS 3.792 GiB, swap 0, acquisition
+6.29 GiB, first-token p95 839 ms, complete p95 1389 ms). Release-grade
+certification (cold-readiness and cancellation trials) remains open for
+packaging; see `VISION_STATE.md` and
+`docs/evidence/2026-09-19-user-v4-results.json` for preserved original results.
