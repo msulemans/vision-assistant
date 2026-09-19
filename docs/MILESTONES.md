@@ -265,7 +265,20 @@ toggles, glossary, quizzes, teach-back tasks, and exact reproduction commands.
 Gate: a new learner can trace a visual turn, explain image encoding versus text
 generation, diagnose one hallucination, add a frozen fixture, and explain why
 the model cannot directly own an action.
-
+Delivered: the evaluation and reciprocal learning field manual, closed
+2026-09-20. `evaluation.py` (canonical-turn waterfall; 12-entry failure
+catalog with component tags and evidence links; measured model comparison;
+13 reproduction commands; the five gate teach-back tasks) plus
+`evaluation_cli.py` and the byte-stable generated `learning/eval_data.js`;
+a new field-manual chapter in the learning site: waterfall bars, searchable
+failure explorer with component toggles, teach-back cards with checklists,
+copyable commands, and the quiz extended to trust boundaries (network
+surface, stale-frame recovery). Verified live in the browser on both quiz
+paths; the fixture procedure executed as a worked example (freeze →
+verify 121/121 → revert to baseline). Honest caveat: the human learner
+walkthrough is recorded as a standing verification item — the milestone
+closed on the reference key, the worked example, and the fully verified
+manual surfaces. **Complete.**
 ### 017 — Public beta hardening
 
 Audit: capture privacy, trace redaction, malicious screen text, action policy,

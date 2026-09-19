@@ -178,5 +178,21 @@ class CliTest(unittest.TestCase):
             self.assertEqual(payload["status"], "ok")
 
 
+class SurfaceTest(unittest.TestCase):
+    def test_evaluation_modules_have_no_action_apis(self) -> None:
+        for name in ("evaluation.py", "evaluation_cli.py"):
+            source = (ROOT / "src" / "vision_assistant" / name).read_text(encoding="utf-8")
+            for token in (
+                "AXUIElementPerformAction",
+                "AXUIElementSetAttributeValue",
+                "CGEvent",
+                "osascript",
+                "pyautogui",
+                "pynput",
+                "Quartz",
+            ):
+                self.assertNotIn(token, source, f"{token!r} in {name}")
+
+
 if __name__ == "__main__":
     unittest.main()

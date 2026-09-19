@@ -381,3 +381,19 @@ doctor education; smokes 44/44 with verified asks in 3.1–4.7 s; a
 Seatbelt-sandboxed run denying all non-loopback networking reproduced the
 read-only profile; upgrade/rollback kept both versions; uninstall removed
 code and kept models unless explicitly asked.
+
+### Evaluation and field manual (M016)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.evaluation_cli trace        # waterfall for the canonical real turn
+PYTHONPATH=src python -m vision_assistant.evaluation_cli failures     # the honest failure catalog
+PYTHONPATH=src python -m vision_assistant.evaluation_cli commands     # exact reproduction commands
+PYTHONPATH=src python -m vision_assistant.evaluation_cli teachback    # the five gate teach-back tasks
+.venv/bin/python scripts/serve_learning_lab.py                        # the field manual at http://127.0.0.1:4173/
+```
+
+Measured 2026-09-20: canonical turn 1547.2 ms total (model stage 99.94%,
+first token 723 ms); the field manual's waterfall, failure explorer
+(12 entries with component chips), teach-back cards, copyable commands,
+and the 5/5 quiz grader were verified in a live browser; the fixture
+procedure ran as a worked example (freeze 121/121 PASS, then reverted).

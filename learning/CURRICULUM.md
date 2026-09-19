@@ -315,3 +315,20 @@ read-only path. Upgrade keeps the previous version and rollback restores
 it; uninstall removes code while models and captures survive unless the
 user explicitly asks. Next milestone: M016 — evaluation and reciprocal
 learning field manual.
+
+## M016 outcome — the measurement becomes teachable
+
+milestone: M016 — evaluation and reciprocal learning field manual. Complete 2026-09-20.
+
+The lab now measures itself and teaches it back. One real recorded turn
+runs through a latency waterfall that makes the honest point unmistakable:
+99.94% of the time is the model, and everything else is measurement you
+can trust. Twelve failures from the project's own history — including two
+limitations that remain open — are browsable with components, causes,
+fixes, and evidence links; the losing model run stays beside the
+selection. Five teach-back tasks map one-to-one to the gate, each with a
+checklist; the quiz now tests the network surface and stale-frame
+recovery. The fixture-adding procedure was demonstrated end-to-end
+(freeze → verify 121/121 → revert). The human learner walkthrough is
+recorded as a standing item; the answer key and the worked example show
+the expected depth. Next milestone: M017 — public beta hardening.

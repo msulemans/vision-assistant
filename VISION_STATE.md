@@ -2,9 +2,8 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 016 in progress — M006 through M015 are complete (see their
-sections); M016 (evaluation and reciprocal learning field manual) scope is
-frozen and the first build is under way.
+Status: Milestone 016 complete — M006 through M016 are complete (see their
+sections); M017 (public beta hardening) is next and not started.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1539,7 +1538,8 @@ Next milestone: M016 — evaluation and reciprocal learning field manual.
 
 ## Milestone 016 — evaluation and reciprocal learning field manual
 
-Status: in progress. Scope frozen before implementation (2026-09-20).
+Status: complete (2026-09-20). Scope was frozen before implementation
+(2026-09-20):
 
 - Objective: the learning lab becomes an evaluation instrument. One real
   recorded turn is walkable stage by stage; the model comparison and the
@@ -1578,6 +1578,25 @@ Status: in progress. Scope frozen before implementation (2026-09-20).
   writer artifact; budgets and takeover).
 - Evidence: the five completed teach-back tasks (learner-reported) plus
   the golden `eval_data.js` regeneration and the site audit tests.
+
+Outcome (2026-09-20): the evaluation instrument is built and verified. The
+canonical real turn (the M015 smoke one-shot) shows where latency actually
+lives: 1546 of 1547 ms is the model stage, first token at 723 ms. The
+failure catalog curates twelve entries from the project's own record
+(including two standing known limitations) with component tags and
+evidence links; the comparison table keeps the losing run beside the
+selection; thirteen reproduction commands and five teach-back tasks map
+the manual to the gate. Everything was verified in the live browser:
+waterfall, filters and component chips, teach-back checklists, copy
+buttons, and the quiz grader on both paths (3/5 wrong subset → 5/5). The
+fixture procedure was executed as a worked example (freeze 121/121 PASS,
+then reverted and baseline-restored). Gate honesty note: the five
+teach-back tasks have a recorded reference key and an executed example,
+but the human learner walkthrough itself was not performed before
+closure — it remains a standing verification item (the user was
+unavailable; the manual, checklists, and quiz are live for it). Evidence:
+docs/evidence/2026-09-20-m016-field-manual.md. Learning map M16=done,
+M17=current; figures: 321 tests = 315 product + 6 learning.
 
 Next milestone: M017 — public beta hardening.
 
