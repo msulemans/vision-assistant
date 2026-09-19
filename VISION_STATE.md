@@ -1045,3 +1045,33 @@ startup abort on stop (`2972c7c`). Evidence:
 
 Next milestone: M010 — typed action intents and policy, no execution.
 
+## Milestone 010 — typed action intents and policy (no execution)
+
+Status: in progress. Scope frozen 2026-09-19:
+
+- Intent schema (strict JSON; unknown kinds, smuggled fields, and raw
+  coordinates are rejected at parse time): `observe`, `click_element`
+  (element addressing only), `type_text`, `press_key`, `scroll`, `cancel`,
+  `finish`.
+- Bounds: at most 12 intents per task; at most 200 typed characters, no
+  control characters; keys restricted to a small allowlist (no modifier
+  combos); scroll ≤ 10 steps.
+- Consequence policy: `observe`/`cancel`/`finish` are preview-only; every
+  mutating intent is `needs_confirmation` (still not executable in this
+  milestone); typing into secret-like targets (password/passcode/secret/
+  token/pin/cvv/card number/ssn) is denied outright; intents targeting a
+  window outside the captured scope are denied; the task budget denies
+  beyond 12.
+- No execution: there is no executor in the codebase, and a test scans
+  `intents.py` for execution-capable imports/APIs.
+- Frozen adversarial set (tests): unknown kinds, smuggled fields, raw
+  coordinates, oversized/control-character text, modifier-combo keys,
+  scroll abuse, budget overruns, secret targets, window-scope escapes, and
+  injection-style text kept inert.
+
+First build: `intents.py` (schema + `ActionPolicy` + preview rendering) and
+`tests/test_intents.py` (frozen adversarial suite).
+
+Next: a proposal demo that asks the model to propose intents from a capture,
+parses them, and renders previews — still nothing executed.
+
