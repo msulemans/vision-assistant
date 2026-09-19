@@ -241,3 +241,21 @@ def scale_png(data: bytes, *, max_pixels: int) -> bytes:
 def fit_for_model(data: bytes, *, max_pixels: int = MODEL_IMAGE_MAX_PIXELS) -> bytes:
     """The bounded model view: byte-identical when within budget, scaled otherwise."""
     return scale_png(data, max_pixels=max_pixels)
+
+
+def mostly_black(data: bytes, *, threshold_mean: float = 16.0, black_fraction: float = 0.98) -> bool:
+    """True when a PNG is (nearly) uniformly dark.
+
+    Window captures of occluded or secondary-display windows can come back
+    black; callers use this to fall back to a placeholder instead of showing
+    the model an empty image. Raises for undecodable input (callers guard).
+    """
+    pixels = decode_png(data)
+    data_bytes = b"".join(pixels.rows)
+    if not data_bytes:
+        return True
+    stride = max(1, len(data_bytes) // 256)
+    samples = data_bytes[::stride]
+    mean = sum(samples) / len(samples)
+    dark = sum(1 for value in samples if value < 16)
+    return mean <= threshold_mean and dark / len(samples) >= black_fraction

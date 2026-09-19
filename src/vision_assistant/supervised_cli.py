@@ -43,6 +43,9 @@ ELEMENT_LINE = "- {identifier} | {role} | {name} | value={value}"
 PROPOSE_PROMPT = (
     "You supervise one macOS window, {window!r}. TASK: {instruction}\n"
     "Available elements (identifier | role | name | value):\n{elements}\n"
+    "The element list above is authoritative; base your action on it — the "
+    "screenshot may be blank and can be ignored if so. If the task's desired "
+    "state already holds, propose finish.\n"
     "Propose exactly ONE next action as a JSON array containing one object. "
     "Allowed kinds: click_element (element_id), type_text (text, field or "
     "element_id), press_key (key), cancel, finish (summary). Address elements "
@@ -175,13 +178,14 @@ class SupervisedRunner:
         for task in tasks:
             outcomes[task.task_id] = self.run_task(task, proposer)
         refusals: dict[str, int] = {}
+        completed = ("done", "already_done")
         for outcome in outcomes.values():
-            if outcome["status"] != "done":
+            if outcome["status"] not in completed:
                 refusals[outcome["status"]] = refusals.get(outcome["status"], 0) + 1
         return {
             "run_id": run_id,
             "window_title": self.window_title,
-            "all_done": all(outcome["status"] == "done" for outcome in outcomes.values()),
+            "all_done": all(outcome["status"] in completed for outcome in outcomes.values()),
             "tasks": outcomes,
             "performed_actions": self.performed_actions,
             "unapproved_actions": self.unapproved_actions,
@@ -220,7 +224,20 @@ class SupervisedRunner:
             "observe",
             window_frame=list(window.frame) if window.frame else None,
             elements=len(window.elements),
+            values={
+                element.identifier: element.value
+                for element in window.elements
+                if element.identifier
+            },
         )
+
+        # Honest pre-check: a task whose state already holds needs no action
+        # (and a blind click could toggle the state the wrong way).
+        if task.verify(window.elements):
+            outcome["status"] = "already_done"
+            outcome["reason"] = "state already satisfies the task"
+            record("satisfied", detail="no action required")
+            return outcome
 
         try:
             payload = proposer(task, window)
@@ -228,7 +245,11 @@ class SupervisedRunner:
             return refuse("no_actionable_proposal", f"proposer failed: {exc}")
         if payload is None:
             return refuse("no_actionable_proposal", "no parseable proposal")
-        record("propose", payload=payload)
+        meta = getattr(proposer, "last_meta", None)
+        if isinstance(meta, dict):
+            record("propose", payload=payload, **meta)
+        else:
+            record("propose", payload=payload)
 
         try:
             intent = parse_intent(payload)
@@ -373,14 +394,28 @@ def main(argv: list[str] | None = None) -> int:
         base_proposer = model_proposer(adapter, record=record)
 
         def propose(task: PracticeTask, window: AxWindow):
+            from .pixels import mostly_black
+
             png_bytes = None
+            capture_state = "placeholder"
             if window.cg_window_id is not None:
                 try:
-                    png_bytes = capture_window_png(window.cg_window_id)
+                    candidate = capture_window_png(window.cg_window_id)
                 except AxUnavailable:
-                    png_bytes = None
+                    candidate = None
+                if candidate is not None:
+                    try:
+                        if mostly_black(candidate):
+                            capture_state = "black"
+                        else:
+                            capture_state = "ok"
+                            png_bytes = candidate
+                    except Exception:  # noqa: BLE001 - undecodable capture
+                        capture_state = "unreadable"
+            propose.last_meta = {"capture": capture_state}
             return base_proposer(task.instruction, window, png_bytes or _placeholder_png())
 
+        propose.last_meta = None
         proposer = propose
         tasks = tuple(
             task

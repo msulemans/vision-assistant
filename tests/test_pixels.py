@@ -5,7 +5,7 @@ import unittest
 import zlib
 
 from vision_assistant.capture import PNG_SIGNATURE, ImageValidationError, _png_chunk, normalize_png
-from vision_assistant.pixels import crop_png, decode_png, scale_png, zoom_png
+from vision_assistant.pixels import crop_png, decode_png, mostly_black, scale_png, zoom_png
 
 
 def _pixels(width: int, height: int) -> list[bytes]:
@@ -62,6 +62,31 @@ def _make_png(width: int, height: int, *, filter_cycle: bool = False) -> bytes:
         + _png_chunk(b"IDAT", zlib.compress(bytes(raw), 9))
         + _png_chunk(b"IEND", b"")
     )
+
+
+def _solid_png(width: int, height: int, value: int) -> bytes:
+    row = bytes([value] * (width * 3))
+    raw = bytearray()
+    for _ in range(height):
+        raw.append(0)
+        raw += row
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    return (
+        PNG_SIGNATURE
+        + _png_chunk(b"IHDR", ihdr)
+        + _png_chunk(b"IDAT", zlib.compress(bytes(raw), 9))
+        + _png_chunk(b"IEND", b"")
+    )
+
+
+class MostlyBlackTest(unittest.TestCase):
+    def test_uniform_black_captures_are_detected(self) -> None:
+        self.assertTrue(mostly_black(_solid_png(16, 16, 0)))
+        self.assertTrue(mostly_black(_solid_png(16, 16, 8)))
+
+    def test_real_content_is_not_flagged(self) -> None:
+        self.assertFalse(mostly_black(_make_png(16, 16)))
+        self.assertFalse(mostly_black(_solid_png(16, 16, 200)))
 
 
 class DecodePngTest(unittest.TestCase):

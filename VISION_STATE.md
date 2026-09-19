@@ -1298,3 +1298,19 @@ Status: in progress. Scope was frozen before implementation (2026-09-19):
   is the only file allowed to contain AXUIElementPerformAction / CGEvent
   (keyboard-only); executor.py and supervised_cli.py contain none.
 
+Amendment (2026-09-20, after the first gate attempt): three findings from the
+first live model run shaped the second build. (1) A task whose state already
+holds is now reported `already_done` before any proposal — the first run's
+window carried prior state, so a toggle task clicked a checkbox that was
+already on and the verification correctly failed; the honest result was
+"nothing to do", and a blind toggle can even flip the state the wrong way.
+(2) The observe event now records the window's element values, so every
+action's starting state is visible in the transcript. (3) Window captures
+can come back black (observed for a window on a secondary display); the
+model is told the element list is authoritative, and a near-uniformly-dark
+capture is replaced by a placeholder and recorded as `capture: black` in the
+transcript instead of being shown. The four refusal probes from the same run
+(unknown element, raw coordinates, secret target, declined confirmation) all
+behaved correctly with zero performed actions, and `AXPress` on a checkbox
+was verified working live both before and after the finding.
+

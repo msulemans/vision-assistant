@@ -205,6 +205,29 @@ class SupervisedRunnerTest(unittest.TestCase):
         self.assertEqual(outcome["status"], "window_missing")
         self.assertEqual(port.performs, [])
 
+    def test_already_satisfied_task_skips_proposal_and_action(self) -> None:
+        snapshot = _snapshot((_element("app:sync-toggle", "1"),))
+
+        def exploding_proposer(task, window):
+            raise AssertionError("proposer must not run when the task is already satisfied")
+
+        provider = _Provider([snapshot])
+        port = _Port()
+        runner = SupervisedRunner(
+            snapshot_provider=provider,
+            port=port,
+            confirmer=lambda preview: True,
+        )
+        result = runner.run((SYNC_TASK,), exploding_proposer)
+        outcome = result["tasks"]["enable-sync"]
+        self.assertEqual(outcome["status"], "already_done")
+        self.assertTrue(result["all_done"])
+        self.assertEqual(port.performs, [])
+        self.assertEqual(port.plans, [])
+        self.assertIn("satisfied", [event["type"] for event in outcome["events"]])
+        observe = next(event for event in outcome["events"] if event["type"] == "observe")
+        self.assertEqual(observe["values"].get("app:sync-toggle"), "1")
+
     def test_no_proposal_blocks_the_task(self) -> None:
         snapshot = _snapshot((_element("app:sync-toggle", "0"),))
         _, outcome, _, port, _, _ = self._run([snapshot], None)
