@@ -1,0 +1,46 @@
+{
+  "run_id": "m013-20260920-000225-ccfa11",
+  "window_title": "Practice App",
+  "all_done": false,
+  "tasks": {
+    "scripted": {
+      "task_id": "scripted",
+      "status": "schema_rejected",
+      "reason": "raw coordinates ['x', 'y'] are not accepted; use element addressing",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            368.0,
+            286.0,
+            480.0,
+            332.0
+          ],
+          "elements": 12
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "click_element",
+            "x": 100,
+            "y": 100
+          }
+        },
+        {
+          "type": "refused",
+          "status": "schema_rejected",
+          "detail": "raw coordinates ['x', 'y'] are not accepted; use element addressing"
+        }
+      ]
+    }
+  },
+  "performed_actions": 0,
+  "unapproved_actions": 0,
+  "refusals": {
+    "schema_rejected": 1
+  },
+  "total_ms": 111.807,
+  "raw_answers": []
+}

@@ -341,6 +341,17 @@ class SupervisedRunner:
         return outcome
 
 
+def interactive_confirmer(preview_text: str) -> bool:
+    """Ask the user; EOF declines, Ctrl+C propagates as a cancellation."""
+    print(f"  preview: {preview_text}")
+    try:
+        answer = input("  execute? [y/N] ")
+    except EOFError:
+        print("  (no input available; treating as a decline)")
+        return False
+    return answer.strip().lower() in ("y", "yes")
+
+
 def _print_task_outcome(outcome: dict) -> None:
     print(f"\n=== {outcome['task_id']}: {outcome['status'].upper()} ({outcome['reason']})")
     for index, event in enumerate(outcome["events"]):
@@ -461,15 +472,10 @@ def main(argv: list[str] | None = None) -> int:
     if not args.no_overlay:
         overlay = lambda region: port.overlay(region, ms=args.overlay_ms)  # noqa: E731
 
-    def confirmer(preview_text: str) -> bool:
-        print(f"  preview: {preview_text}")
-        answer = input("  execute? [y/N] ")
-        return answer.strip().lower() in ("y", "yes")
-
     runner = SupervisedRunner(
         snapshot_provider=lambda: vision.snapshot(app_name=args.app),
         port=port,
-        confirmer=confirmer,
+        confirmer=interactive_confirmer,
         overlay=overlay,
         window_title=args.window,
     )

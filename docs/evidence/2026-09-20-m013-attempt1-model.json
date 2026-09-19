@@ -1,0 +1,206 @@
+{
+  "run_id": "m013-20260920-000207-1a9fe7",
+  "window_title": "Practice App",
+  "all_done": false,
+  "tasks": {
+    "enable-sync": {
+      "task_id": "enable-sync",
+      "status": "no_actionable_proposal",
+      "reason": "finish requires no host action",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            -1430.0,
+            137.0,
+            480.0,
+            332.0
+          ],
+          "elements": 11
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "finish",
+            "summary": "The screenshot is completely black and contains no visible text, buttons, or UI elements. Therefore, no task-relevant strings are visible, and the screenshot does not establish whether the 'Sync' checkbox is present or accessible."
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "finish",
+          "description": "finish: The screenshot is completely black and contains no visible text, buttons, or UI elements. Therefore, no task-relevant strings are visible, and the screenshot does not establish whether the 'Sync' checkbox is present or accessible."
+        },
+        {
+          "type": "policy",
+          "verdict": "preview_only",
+          "reasons": [
+            "read-only or terminal intent"
+          ]
+        },
+        {
+          "type": "refused",
+          "status": "no_actionable_proposal",
+          "detail": "finish requires no host action"
+        }
+      ]
+    },
+    "type-search": {
+      "task_id": "type-search",
+      "status": "no_actionable_proposal",
+      "reason": "finish requires no host action",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            368.0,
+            286.0,
+            480.0,
+            332.0
+          ],
+          "elements": 12
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "finish",
+            "summary": "The word 'hello' is already typed in the Search field."
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "finish",
+          "description": "finish: The word 'hello' is already typed in the Search field."
+        },
+        {
+          "type": "policy",
+          "verdict": "preview_only",
+          "reasons": [
+            "read-only or terminal intent"
+          ]
+        },
+        {
+          "type": "refused",
+          "status": "no_actionable_proposal",
+          "detail": "finish requires no host action"
+        }
+      ]
+    },
+    "enable-notifications": {
+      "task_id": "enable-notifications",
+      "status": "verify_failed",
+      "reason": "state predicate not satisfied after the action",
+      "verified": false,
+      "performed": true,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            368.0,
+            286.0,
+            480.0,
+            332.0
+          ],
+          "elements": 12
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:notify-toggle"
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:notify-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Notifications",
+            "identifier": "app:notify-toggle",
+            "frame": [
+              407.0,
+              399.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:notify-toggle"
+            },
+            "expect_window_frame": [
+              368.0,
+              286.0,
+              480.0,
+              332.0
+            ]
+          }
+        },
+        {
+          "type": "preflight",
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "text": "press AXCheckBox 'Notifications' (id app:notify-toggle) in 'Practice App' | region (407, 399, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "approved": true
+        },
+        {
+          "type": "recheck",
+          "ok": true
+        },
+        {
+          "type": "perform",
+          "action": "press",
+          "key_events": 0
+        },
+        {
+          "type": "verify",
+          "passed": false
+        },
+        {
+          "type": "refused",
+          "status": "verify_failed",
+          "detail": "state predicate not satisfied after the action"
+        }
+      ]
+    }
+  },
+  "performed_actions": 1,
+  "unapproved_actions": 0,
+  "refusals": {
+    "no_actionable_proposal": 2,
+    "verify_failed": 1
+  },
+  "total_ms": 15564.913,
+  "raw_answers": [
+    "[\n  {\"kind\": \"finish\", \"summary\": \"The screenshot is completely black and contains no visible text, buttons, or UI elements. Therefore, no task-relevant strings are visible, and the screenshot does not establish whether the 'Sync' checkbox is present or accessible.\"}\n]",
+    "[\n  {\"kind\": \"finish\", \"summary\": \"The word 'hello' is already typed in the Search field.\"}\n]",
+    "[\n  {\"kind\": \"click_element\", \"element_id\": \"app:notify-toggle\"}\n]"
+  ]
+}

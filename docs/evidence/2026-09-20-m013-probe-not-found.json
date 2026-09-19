@@ -1,0 +1,58 @@
+{
+  "run_id": "m013-20260920-000225-8be5e8",
+  "window_title": "Practice App",
+  "all_done": false,
+  "tasks": {
+    "scripted": {
+      "task_id": "scripted",
+      "status": "not_found",
+      "reason": "no element matched target 'app:ghost' above 0.5",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            368.0,
+            286.0,
+            480.0,
+            332.0
+          ],
+          "elements": 11
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:ghost"
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:ghost\u201d"
+        },
+        {
+          "type": "policy",
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "refused",
+          "status": "not_found",
+          "detail": "no element matched target 'app:ghost' above 0.5"
+        }
+      ]
+    }
+  },
+  "performed_actions": 0,
+  "unapproved_actions": 0,
+  "refusals": {
+    "not_found": 1
+  },
+  "total_ms": 113.733,
+  "raw_answers": []
+}

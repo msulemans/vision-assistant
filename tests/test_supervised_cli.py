@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
 from vision_assistant.ax_vision import AxElement, AxSnapshot, AxWindow
 from vision_assistant.executor import ExecutionRefusal
-from vision_assistant.supervised_cli import PracticeTask, SupervisedRunner
+from vision_assistant.supervised_cli import (
+    PracticeTask,
+    SupervisedRunner,
+    interactive_confirmer,
+)
 
 
 def _element(
@@ -233,6 +238,25 @@ class SupervisedRunnerTest(unittest.TestCase):
         _, outcome, _, port, _, _ = self._run([snapshot], None)
         self.assertEqual(outcome["status"], "no_actionable_proposal")
         self.assertEqual(port.performs, [])
+
+
+class ConfirmerTest(unittest.TestCase):
+    def test_eof_is_a_decline_not_a_crash(self) -> None:
+        with mock.patch("builtins.input", side_effect=EOFError):
+            self.assertFalse(interactive_confirmer("do the thing"))
+
+    def test_yes_and_no_answers(self) -> None:
+        with mock.patch("builtins.input", return_value="y"):
+            self.assertTrue(interactive_confirmer("do the thing"))
+        with mock.patch("builtins.input", return_value="YES"):
+            self.assertTrue(interactive_confirmer("do the thing"))
+        with mock.patch("builtins.input", return_value="n"):
+            self.assertFalse(interactive_confirmer("do the thing"))
+
+    def test_keyboard_interrupt_propagates_for_cancellation(self) -> None:
+        with mock.patch("builtins.input", side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                interactive_confirmer("do the thing")
 
 
 if __name__ == "__main__":
