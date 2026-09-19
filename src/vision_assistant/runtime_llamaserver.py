@@ -156,6 +156,9 @@ class LlamaServerAdapter:
         deadline = time.monotonic() + wait_s
         try:
             while time.monotonic() < deadline:
+                if self._process is None:
+                    # stop() landed while the model was still loading.
+                    raise RuntimeError("llama-server startup was cancelled")
                 try:
                     with urllib.request.urlopen(f"{self.base_url}{HEALTH}", timeout=2) as response:
                         if response.status == 200:

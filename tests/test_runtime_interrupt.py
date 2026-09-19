@@ -48,6 +48,28 @@ class StartInterruptTest(unittest.TestCase):
         self.assertTrue(process.terminated)
         self.assertIsNone(adapter._process)
 
+    def test_stop_during_load_aborts_start_promptly(self) -> None:
+        process = _FakeProcess()
+        adapter = LlamaServerAdapter(
+            Path("model.gguf"),
+            Path("mmproj.gguf"),
+            port=61999,
+            runner=lambda argv, **kwargs: process,
+        )
+
+        def fake_urlopen(*args, **kwargs):
+            adapter._process = None  # simulate stop() landing mid-load
+            raise OSError("connection refused")
+
+        with mock.patch(
+            "vision_assistant.runtime_llamaserver.urllib.request.urlopen",
+            side_effect=fake_urlopen,
+        ), mock.patch("vision_assistant.runtime_llamaserver.time.sleep"):
+            with self.assertRaises(RuntimeError) as caught:
+                adapter.start(wait_s=60.0)
+        self.assertIn("cancelled", str(caught.exception))
+        self.assertIsNone(adapter._process)
+
 
 if __name__ == "__main__":
     unittest.main()
