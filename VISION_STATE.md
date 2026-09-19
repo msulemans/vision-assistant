@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 012 complete — M006 through M012 are complete (see their
-sections); M013 (supervised mouse and keyboard execution) is next and not
-started.
+Status: Milestone 013 in progress — M006 through M012 are complete (see their
+sections); the supervised executor (the first host actions, disposable
+practice window only) is being built.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1217,4 +1217,84 @@ M13=current; figures: 198 tests = 192 product + 6 learning.
 
 Next milestone: M013 — supervised mouse and keyboard execution (first
 executor; opt-in, previewed, confirmed, stoppable, disposable targets only).
+
+## Milestone 013 — supervised mouse and keyboard execution
+
+Status: in progress. Scope was frozen before implementation (2026-09-19):
+
+- Objective: the first host-side executor. Every executed action is (1) an
+  approved typed intent (M010 schema + policy), (2) addressed by a stable
+  element identity resolved from a fresh read-only AX snapshot (M012),
+  (3) previewed with a visible screen-space overlay, (4) explicitly confirmed
+  by the user, (5) re-checked for staleness immediately before posting, and
+  (6) followed by re-observation that verifies the expected state change —
+  all of this against a disposable practice window only.
+- New artifacts:
+  - `tools/practice_window.swift` — a real disposable AppKit window with
+    stable AX identifiers (Sync `app:sync-toggle`, Notifications
+    `app:notify-toggle`, Search `app:search`, Save `app:save`, Cancel
+    `app:cancel`); process name `practice_window`, window title
+    `Practice App`; closing the window exits the app; nothing is persisted.
+  - `tools/ax_action.swift` — the only action-capable artifact in the
+    project: `--check`, `--plan` (evaluate every guard, post nothing), and
+    `--perform` (press / focus+type / key). It re-walks the AX tree by
+    identity and refuses missing/ambiguous/disabled/secure elements, a
+    window that disappeared, a window frame that moved (stale frame), and —
+    for key events — a frontmost app that is not the target. Typing first
+    activates the target app, waits for frontmost, and refuses if it never
+    arrives, then sets and re-reads AX focus (refusing on failure) before any
+    key event is posted. Keyboard events use Unicode CGEvent posting; there
+    are no synthetic mouse events anywhere — clicks are AXPress actions on an
+    identified element, and coordinates are used only to draw the preview
+    overlay, never to address anything.
+  - `tools/ax_overlay.swift` — a click-through borderless highlight over the
+    target's screen region, shown before confirmation; it cannot become key,
+    ignores mouse events, and auto-expires.
+  - `src/vision_assistant/executor.py` — Python orchestration: action specs,
+    typed refusals, plan/perform port, freshness re-check, attribution
+    records. This module contains no action APIs itself (source-scanned).
+  - `src/vision_assistant/supervised_cli.py` — interactive session runner:
+    observe → propose (pinned model with the M011 JSON schema, or a
+    scripted intent) → validate (M010 policy) → ground (M012 identity
+    resolution) → preview + overlay → confirm `[y/N]` → freshness re-check
+    → perform → re-observe → verify. Final states: done, policy_denied,
+    schema_rejected, no_actionable_proposal, approval_denied, not_found,
+    ambiguous, role_mismatch, secure_element, disabled_element,
+    no_stable_identifier, window_missing, stale_frame, frontmost_mismatch,
+    focus_failed, perform_failed, verify_failed, cancelled (Ctrl+C, exit
+    130).
+- Guard invariants (frozen, tested):
+  - Attribution: no action without an approved intent; the executed element
+    identifier must equal the grounded identifier from the fresh snapshot;
+    plan and perform use the same JSON spec; the result records an
+    `unapproved_actions` counter that must stay 0.
+  - Secret fields: policy denial for secret-like targets plus a hard
+    executor refusal for any element whose subrole is AXSecureTextField.
+  - Wrong target: identity resolution must be unique, the element role must
+    match the action kind (click → button-like roles; type → text roles),
+    the element must be enabled and carry a stable identifier, and the
+    window frame must be unchanged between grounding and posting.
+  - Hidden window: execution refuses when the scoped window disappears from
+    the on-screen AX snapshot.
+  - Approval bypass: the perform call is unreachable without a `True`
+    confirmation; tests assert a fake port sees zero calls otherwise.
+  - Stop: Ctrl+C between steps is final and posts nothing further; exit 130
+    with clean JSON.
+- Frozen live tasks (practice window): enable Sync (`app:sync-toggle`,
+  verify value "1"); type "hello" into Search (`app:search`, verify value
+  contains "hello"); enable Notifications (`app:notify-toggle`, verify value
+  "1"). Frozen probes: unknown element `app:ghost` (not_found); secret
+  target `app:password` (policy_denied); raw coordinates (schema rejected);
+  declined confirmation (nothing performed, state unchanged); window moved
+  between preview and confirmation (stale_frame); window closed
+  (window_missing); Ctrl+C at the confirmation prompt (cancelled).
+- Live gate (user machine): the three frozen tasks complete with the pinned
+  model proposing, visible overlays, interactive confirmations, and passing
+  post-action verification; the probes show each refusal with zero side
+  effects; the transcript (`runs/m013/session-<run_id>.json`) records
+  per-action attribution and `unapproved_actions: 0`.
+- Source-scan inversion: the read-only surface (ax_dump.swift, ax_vision,
+  grounding, grounding_cli) must still contain no action APIs; ax_action.swift
+  is the only file allowed to contain AXUIElementPerformAction / CGEvent
+  (keyboard-only); executor.py and supervised_cli.py contain none.
 

@@ -177,6 +177,21 @@ func elementObject(_ element: AXUIElement, depth: Int) -> [String: Any] {
 
 // MARK: - Window matching (read-only CG window list)
 
+func pidForAppName(_ name: String) -> pid_t? {
+    let wanted = name.lowercased()
+    for app in NSWorkspace.shared.runningApplications {
+        let candidates = [
+            app.localizedName,
+            app.executableURL?.lastPathComponent,
+            app.bundleURL?.deletingPathExtension().lastPathComponent,
+        ]
+        if candidates.compactMap({ $0?.lowercased() }).contains(wanted) {
+            return app.processIdentifier
+        }
+    }
+    return nil
+}
+
 struct WindowEntry {
     let number: Int
     let x: Double
@@ -237,13 +252,10 @@ if mode == "--windows" || mode == "--dump" {
         guard let parsed = Int32(raw), parsed > 0 else { fail("--pid must be a positive integer", code: 3) }
         pid = parsed
     } else if let wanted = argumentValue("--app") {
-        let target = wanted.lowercased()
-        guard let app = NSWorkspace.shared.runningApplications.first(where: {
-            ($0.localizedName ?? "").lowercased() == target
-        }) else {
+        guard let resolved = pidForAppName(wanted) else {
             fail("no running application named \(wanted)", code: 4)
         }
-        pid = app.processIdentifier
+        pid = resolved
     } else {
         guard let front = NSWorkspace.shared.frontmostApplication else {
             fail("no frontmost application", code: 4)

@@ -20,6 +20,7 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -200,6 +201,32 @@ def _parse_snapshot(payload: object) -> AxSnapshot:
     )
 
 
+def capture_window_png(cg_window_id: int, *, workdir: Path | None = None) -> bytes:
+    """Read-only screenshot of one on-screen window (no shadow).
+
+    Used by the M013 runner to show the model the supervised window; the
+    capture never influences addressing (identifiers do). Raises
+    ``AxUnavailable`` when screencapture fails.
+    """
+    directory = Path(workdir) if workdir is not None else (REPO_ROOT / "runs" / "m013-tmp")
+    directory.mkdir(parents=True, exist_ok=True)
+    handle, name = tempfile.mkstemp(suffix=".png", dir=directory)
+    os.close(handle)
+    path = Path(name)
+    try:
+        result = subprocess.run(
+            ["screencapture", "-o", "-x", "-l", str(int(cg_window_id)), str(path)],
+            capture_output=True,
+            timeout=20,
+        )
+        if result.returncode != 0 or not path.is_file():
+            detail = result.stderr.decode("utf-8", "replace").strip()[-200:]
+            raise AxUnavailable("helper", f"screencapture failed: {detail or result.returncode}")
+        return path.read_bytes()
+    finally:
+        path.unlink(missing_ok=True)
+
+
 class AxVisionAdapter:
     """Runs the read-only AX helper; never requests permission by itself."""
 
@@ -322,6 +349,9 @@ class AxVisionAdapter:
                 "Accessibility access is not granted to the host terminal "
                 "(run the explicit --request-permission flow to opt in)",
             )
+        if code != 0 and not stdout.strip():
+            detail = stderr.decode("utf-8", "replace").strip()[-200:]
+            raise AxUnavailable("helper", f"ax_dump exited {code}: {detail}")
         payload = self._decode(stdout)
         if code != 0:
             detail = stderr.decode("utf-8", "replace").strip()[-200:]
