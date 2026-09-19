@@ -868,3 +868,33 @@ retry = re-run the same image (multiple), reset = artifact release (zero
 leftovers), offline operation (no network in the run path).
 
 Next milestone: M007 — evidence augmentation and focused re-observation.
+
+## Milestone 007 — evidence augmentation and focused re-observation
+
+Status: in progress. Scope frozen 2026-09-19, before any augmentation output
+was inspected:
+
+- Predeclared difficult subset (from the v4 held-out records): `m004-dialog-14`,
+  the single held-out failure (`ui_string_match` 0.0 with required-fact recall
+  1.0 — a missed task-critical string; see
+  `docs/evidence/2026-09-19-user-v4-results.json`). Guard set:
+  `m004-small_text-13..15` (exact-text stress; all 1.0 — no regression
+  allowed). The full held-out set must stay ≥ 0.95 with unsupported 0 and
+  forbidden 0.
+- Augmentations, all optional and off by default, on the same artifact
+  lifecycle: deterministic crop/zoom owned by trusted code; OCR evidence
+  (local macOS Vision, no TCC permission, no new package); Accessibility
+  snapshot (explicit opt-in); at most one bounded second-look model request.
+- Provenance rules: facts carry kind, region, source adapter, and stable ids;
+  fact text may enter the model prompt but never traces or logs — traces get
+  counts and kinds only (`EvidenceReport.summary`).
+- Ceilings: augmented turns stay within the M005 latency ceilings; no new
+  permissions; no persistent artifacts.
+
+First build: `pixels.py` (stdlib PNG decode/crop/integer-zoom; every output
+re-validates through `normalize_png`; all five PNG row filters round-trip) and
+`evidence.py` (fact/provenance types, `EvidencePort` with null/static
+adapters, trace-safe summaries, bounded prompt rendering), with deterministic
+tests. Next: the Vision OCR adapter, assistant-CLI wiring, then the frozen
+subset measurement.
+
