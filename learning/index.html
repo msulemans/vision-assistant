@@ -22,6 +22,7 @@
       <a href="#capture">Capture lab</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#practice">Practice</a>
+      <a href="#manual">Field manual</a>
     </nav>
     <button class="notes-toggle" id="notesToggle" type="button" aria-pressed="false">Deeper notes</button>
   </header>
@@ -239,9 +240,55 @@
           <fieldset><legend>Who decides capture scope?</legend><label><input type="radio" name="q1" value="model"> The model</label><label><input type="radio" name="q1" value="user"> The user</label></fieldset>
           <fieldset><legend>Does “local model” guarantee screenshot privacy?</legend><label><input type="radio" name="q2" value="yes"> Yes</label><label><input type="radio" name="q2" value="no"> No—retention and traces matter too</label></fieldset>
           <fieldset><legend>When can mouse control begin?</legend><label><input type="radio" name="q3" value="now"> After capture works</label><label><input type="radio" name="q3" value="m013"> After typed policy, simulation, and grounding gates</label></fieldset>
+          <fieldset><legend>Where may outbound network clients exist in this product?</legend><label><input type="radio" name="q4" value="anywhere"> Anywhere, if it speeds things up</label><label><input type="radio" name="q4" value="downloader"> Only in the explicit one-time model downloader</label></fieldset>
+          <fieldset><legend>A window moves while the agent waits for your confirmation. What happens?</legend><label><input type="radio" name="q5" value="post"> It posts anyway — the coordinates were fine</label><label><input type="radio" name="q5" value="recover"> It re-observes, re-plans, and asks again at the new position</label></fieldset>
           <button class="primary-action" type="submit">Check my model</button>
           <output id="quizResult" aria-live="polite"></output>
         </form>
+      </div>
+    </section>
+
+    <section class="chapter" id="manual" data-track="manual">
+      <header class="chapter-head">
+        <p class="chapter-number">06 / Field manual</p>
+        <div><h2>Measure it, then teach it back</h2><p>One real recorded turn, measured honestly; a browsable failure catalog; and five teach-back tasks that prove you can reproduce the system — not just run it.</p></div>
+      </header>
+
+      <div class="manual-grid">
+        <article class="practice-tool waterfall-tool">
+          <h3>Latency waterfall — one real turn</h3>
+          <p class="manual-note" id="waterfallSource"></p>
+          <div id="waterfall" class="waterfall" aria-label="Latency waterfall of one recorded turn"></div>
+          <dl class="waterfall-stats" id="waterfallStats"></dl>
+          <p class="manual-note">The model stage is the latency. Everything else is measurement you can trust.</p>
+        </article>
+
+        <article class="practice-tool compare-tool">
+          <h3>Model comparison — measured, not assumed</h3>
+          <table class="compare-table">
+            <thead><tr><th>Candidate</th><th>Status</th><th>Held-out</th><th>Warm RSS</th></tr></thead>
+            <tbody id="compareBody"></tbody>
+          </table>
+        </article>
+
+        <article class="practice-tool failures-tool">
+          <h3>Failure explorer</h3>
+          <label for="failureSearch">Search the honest record</label>
+          <input id="failureSearch" type="search" placeholder="Try: capture, context, artifact">
+          <ul id="failureList" class="failure-list"></ul>
+          <p class="manual-note" id="failureCount" aria-live="polite"></p>
+        </article>
+
+        <article class="practice-tool teachback-tool">
+          <h3>Teach-back tasks — all five</h3>
+          <ol id="teachBackList" class="teachback-list"></ol>
+        </article>
+
+        <article class="practice-tool commands-tool">
+          <h3>Exact reproduction commands</h3>
+          <ul id="commandList" class="command-list"></ul>
+          <p class="manual-note" id="commandStatus" aria-live="polite"></p>
+        </article>
       </div>
     </section>
 
@@ -308,6 +355,7 @@
   </main>
 
   <footer><span>Vision Lab · local-first learning project</span><span>No analytics · no network · browser progress stays local</span></footer>
+  <script src="eval_data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

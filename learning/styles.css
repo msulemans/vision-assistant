@@ -259,3 +259,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* M016 · field manual */
+.manual-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }
+.manual-grid .teachback-tool { grid-column: 1 / -1; }
+.manual-note { color: var(--muted); font-size: .78rem; margin: .45rem 0 0; }
+.waterfall { display: grid; gap: .4rem; margin-top: .6rem; }
+.waterfall-row { display: grid; grid-template-columns: 96px 1fr 76px; align-items: center; gap: .5rem; font-size: .72rem; }
+.waterfall-track { position: relative; height: 14px; background: var(--blue-soft); border-radius: 4px; overflow: hidden; }
+.waterfall-bar { position: absolute; top: 0; bottom: 0; background: var(--blue); border-radius: 4px; }
+.waterfall-bar.stage-before-model { background: var(--amber); }
+.waterfall-bar.stage-record { background: var(--green); }
+.waterfall-row span:last-child { text-align: right; font-family: var(--mono); font-size: .66rem; color: var(--muted); }
+.waterfall-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: .7rem 0 0; }
+.waterfall-stats div { border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem; background: var(--surface); }
+.waterfall-stats dt { color: var(--muted); font-size: .62rem; text-transform: uppercase; letter-spacing: .04em; }
+.waterfall-stats dd { margin: .15rem 0 0; font-family: var(--mono); font-size: .8rem; }
+.compare-table { width: 100%; border-collapse: collapse; margin-top: .6rem; font-size: .72rem; }
+.compare-table th, .compare-table td { text-align: left; padding: .42rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.compare-table th { font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.status-chip { display: inline-block; padding: .1rem .45rem; border-radius: 999px; font-size: .62rem; background: var(--green-soft); color: var(--green); }
+.status-chip.losing { background: var(--coral-soft); color: var(--coral); }
+.status-chip.unpinned { background: var(--amber-soft); color: var(--amber); }
+.failure-list { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .55rem; max-height: 340px; overflow-y: auto; }
+.failure-list li { border: 1px solid var(--line); border-left: 3px solid var(--coral); border-radius: 8px; padding: .5rem .6rem; background: var(--surface); }
+.failure-list li.fixed { border-left-color: var(--green); }
+.failure-list h4 { margin: 0 0 .2rem; font: 700 .82rem var(--display); }
+.failure-list p { margin: .15rem 0; font-size: .72rem; }
+.failure-list small { color: var(--muted); font-size: .64rem; }
+.teachback-list { margin: .6rem 0 0; padding-left: 1.2rem; display: grid; gap: .55rem; }
+.teachback-list li { font-size: .78rem; }
+.teachback-list details { margin-top: .3rem; }
+.teachback-list summary { cursor: pointer; color: var(--blue); font-size: .72rem; }
+.teachback-list ul { margin: .35rem 0 0; font-size: .72rem; color: var(--muted); }
+.command-list { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .45rem; max-height: 340px; overflow-y: auto; }
+.command-list li { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem; background: var(--surface); }
+.command-list code { font-size: .68rem; word-break: break-all; display: block; }
+.command-list small { color: var(--muted); font-size: .62rem; }
+.command-list button { border: 1px solid var(--line); background: white; border-radius: 6px; padding: .3rem .55rem; cursor: pointer; font-size: .66rem; }
+@media (max-width: 960px) { .manual-grid { grid-template-columns: 1fr; } }

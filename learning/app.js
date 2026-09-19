@@ -180,11 +180,17 @@ $("#glossarySearch").addEventListener("input", (event) => {
 $("#quiz").addEventListener("submit", (event) => {
   event.preventDefault();
   const data = new FormData(event.currentTarget);
-  const answers = [data.get("q1") === "user", data.get("q2") === "no", data.get("q3") === "m013"];
+  const answers = [
+    data.get("q1") === "user",
+    data.get("q2") === "no",
+    data.get("q3") === "m013",
+    data.get("q4") === "downloader",
+    data.get("q5") === "recover",
+  ];
   const score = answers.filter(Boolean).length;
   const output = $("#quizResult");
-  output.textContent = score === 3 ? "3 / 3 — you can explain the trust boundary." : `${score} / 3 — revisit capture scope, retention, and the action roadmap.`;
-  output.style.color = score === 3 ? "var(--green)" : "var(--coral)";
+  output.textContent = score === 5 ? "5 / 5 — you can explain the trust boundary." : `${score} / 5 — revisit capture scope, retention, network surfaces, and the action roadmap.`;
+  output.style.color = score === 5 ? "var(--green)" : "var(--coral)";
 });
 
 $("#copyCommand").addEventListener("click", async () => {
@@ -214,3 +220,155 @@ window.addEventListener("scroll", () => {
   trackedSections.forEach((section) => { if (section.getBoundingClientRect().top <= 130) current = section.id || section.dataset.track; });
   localStorage.setItem("visionLab.lastSection", current);
 }, { passive: true });
+
+/* M016 · field manual */
+const evalData = window.VISION_EVAL || null;
+
+function waterfallRow(stage, total) {
+  const row = document.createElement("div");
+  row.className = "waterfall-row";
+  const label = document.createElement("span");
+  label.textContent = stage.name;
+  const track = document.createElement("span");
+  track.className = "waterfall-track";
+  const bar = document.createElement("i");
+  bar.className = `waterfall-bar stage-${stage.name}`;
+  bar.style.left = `${(stage.start_ms / total) * 100}%`;
+  bar.style.width = `${Math.max(stage.share * 100, 0.6)}%`;
+  track.appendChild(bar);
+  const ms = document.createElement("span");
+  ms.textContent = `${stage.duration_ms} ms`;
+  row.append(label, track, ms);
+  return row;
+}
+
+function renderWaterfall() {
+  const waterfall = evalData.waterfall;
+  $("#waterfallSource").textContent = `Recorded turn ${waterfall.trace_id} · ${waterfall.event_count} events · from ${evalData.generated_from}`;
+  const root = $("#waterfall");
+  waterfall.stages.forEach((stage) => root.appendChild(waterfallRow(stage, waterfall.total_ms || 1)));
+  const stats = $("#waterfallStats");
+  const model = waterfall.model;
+  [
+    ["Total", `${waterfall.total_ms} ms`],
+    ["First token", `${Math.round(model.first_token_ms)} ms`],
+    ["Complete", `${Math.round(model.complete_ms)} ms`],
+  ].forEach(([term, value]) => {
+    const cell = document.createElement("div");
+    const dt = document.createElement("dt");
+    dt.textContent = term;
+    const dd = document.createElement("dd");
+    dd.textContent = value;
+    cell.append(dt, dd);
+    stats.appendChild(cell);
+  });
+}
+
+function statusClass(status) {
+  if (status.includes("losing")) return "losing";
+  if (status.includes("unpinned")) return "unpinned";
+  return "";
+}
+
+function renderComparisons() {
+  const body = $("#compareBody");
+  evalData.comparisons.forEach((entry) => {
+    const row = document.createElement("tr");
+    const name = document.createElement("td");
+    name.textContent = entry.name;
+    const status = document.createElement("td");
+    const chip = document.createElement("span");
+    chip.className = `status-chip ${statusClass(entry.status)}`.trim();
+    chip.textContent = entry.status;
+    status.appendChild(chip);
+    const held = document.createElement("td");
+    held.textContent = entry.held_out || "—";
+    const rss = document.createElement("td");
+    rss.textContent = entry.rss_gib ? `${entry.rss_gib} GiB` : "—";
+    row.append(name, status, held, rss);
+    body.appendChild(row);
+  });
+}
+
+function renderFailures(query) {
+  const list = $("#failureList");
+  list.innerHTML = "";
+  const needle = (query || "").trim().toLowerCase();
+  const matches = evalData.failures.filter((entry) => !needle || JSON.stringify(entry).toLowerCase().includes(needle));
+  matches.forEach((entry) => {
+    const item = document.createElement("li");
+    if (entry.status === "fixed") item.classList.add("fixed");
+    const title = document.createElement("h4");
+    title.textContent = `${entry.title} · ${entry.milestone}`;
+    const symptom = document.createElement("p");
+    symptom.textContent = `Symptom: ${entry.symptom}`;
+    const fix = document.createElement("p");
+    fix.textContent = `Fix: ${entry.fix}`;
+    const meta = document.createElement("small");
+    meta.textContent = `${entry.id} · ${entry.status} · evidence: docs/evidence/${entry.evidence}`;
+    item.append(title, symptom, fix, meta);
+    list.appendChild(item);
+  });
+  $("#failureCount").textContent = `${matches.length} of ${evalData.failures.length} entries shown`;
+}
+
+function renderTeachBack() {
+  const list = $("#teachBackList");
+  evalData.teach_back.forEach((task) => {
+    const item = document.createElement("li");
+    const title = document.createElement("strong");
+    title.textContent = `${task.title} — gate: ${task.gate_item}`;
+    const prompt = document.createElement("p");
+    prompt.textContent = task.prompt;
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = `Checklist · ${task.where}`;
+    const points = document.createElement("ul");
+    task.checklist.forEach((point) => {
+      const li = document.createElement("li");
+      li.textContent = point;
+      points.appendChild(li);
+    });
+    details.append(summary, points);
+    item.append(title, prompt, details);
+    list.appendChild(item);
+  });
+}
+
+function renderCommands() {
+  const list = $("#commandList");
+  evalData.commands.forEach((entry) => {
+    const item = document.createElement("li");
+    const info = document.createElement("div");
+    const code = document.createElement("code");
+    code.textContent = entry.command;
+    const meta = document.createElement("small");
+    meta.textContent = `${entry.milestone} · ${entry.what} · ${entry.speed}${entry.needs_model ? " · needs model" : ""}`;
+    info.append(code, meta);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Copy";
+    button.dataset.command = entry.command;
+    item.append(info, button);
+    list.appendChild(item);
+  });
+  $("#commandList").addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-command]");
+    if (!button) return;
+    try {
+      await navigator.clipboard.writeText(button.dataset.command);
+      $("#commandStatus").textContent = "Copied. Run from the project root (dots in <angle brackets> need replacing).";
+    } catch (_) {
+      $("#commandStatus").textContent = "Copy was unavailable. Select the command text manually.";
+    }
+  });
+}
+
+if (evalData) {
+  renderWaterfall();
+  renderComparisons();
+  renderFailures("");
+  renderTeachBack();
+  renderCommands();
+  $("#failureSearch").addEventListener("input", (event) => renderFailures(event.target.value));
+}

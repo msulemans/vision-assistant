@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 015 complete — M006 through M015 are complete (see their
-sections); M016 (evaluation and reciprocal learning field manual) is next
-and not started.
+Status: Milestone 016 in progress — M006 through M015 are complete (see their
+sections); M016 (evaluation and reciprocal learning field manual) scope is
+frozen and the first build is under way.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1536,4 +1536,48 @@ smoke JSONs. Learning map M15=done, M16=current; figures: 302 tests =
 296 product + 6 learning.
 
 Next milestone: M016 — evaluation and reciprocal learning field manual.
+
+## Milestone 016 — evaluation and reciprocal learning field manual
+
+Status: in progress. Scope frozen before implementation (2026-09-20).
+
+- Objective: the learning lab becomes an evaluation instrument. One real
+  recorded turn is walkable stage by stage; the model comparison and the
+  honest failure record are browsable data; five teach-back tasks map
+  one-to-one to the gate so a new learner can prove understanding by
+  reproducing it.
+- New artifacts:
+  - `learning/data/canonical-turn.jsonl` — one real recorded visual turn
+    (the M015 smoke one-shot: preview → model_started → answer → done with
+    real timings), committed as the canonical specimen.
+  - `evaluation.py` — pure data and logic: trace loading, the latency
+    waterfall (stage offsets, shares, first-token/complete times), the
+    frozen failure catalog (curated from the project's own honest record:
+    symptom, cause, fix, status, evidence path), the measured model
+    comparison, exact reproduction commands per milestone, and the five
+    teach-back tasks with checklists; `generate_site_data()` renders
+    `learning/eval_data.js` deterministically.
+  - `evaluation_cli.py` — `trace` (ASCII waterfall for any trace),
+    `failures`, `commands`, `teachback`, and `generate` (the committed
+    eval_data.js is the golden output).
+- Learning site additions (dependency-free, still audited):
+  latency-waterfall bars for the canonical turn, a model-comparison
+  table, a searchable failure explorer, teach-back task cards with
+  checklists, reproduction commands with copy buttons, and two new quiz
+  questions (where outbound network clients may exist; what happens when
+  a window moves mid-confirmation).
+- Gate (learner-driven, in the field manual): the learner can
+  (1) trace a visual turn on the waterfall and name each stage's honest
+  limits, (2) explain image encoding vs text generation and what
+  first_token_ms and complete_ms actually measure, (3) diagnose one
+  hallucination from the failure catalog — cause, the guard that now
+  catches it, and its evidence file, (4) add a frozen fixture by the
+  documented procedure (deliberate re-freeze; gate re-verifies), and
+  (5) explain why the model cannot directly own an action (schema →
+  policy → plan → preflight → confirm → recheck → perform → verify; one
+  writer artifact; budgets and takeover).
+- Evidence: the five completed teach-back tasks (learner-reported) plus
+  the golden `eval_data.js` regeneration and the site audit tests.
+
+Next milestone: M017 — public beta hardening.
 
