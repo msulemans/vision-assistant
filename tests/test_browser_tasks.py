@@ -194,12 +194,19 @@ class DeterminismAndInertnessTest(unittest.TestCase):
         self.assertEqual(report["mutations_rejected"], report["mutations_total"])
 
     def test_task_modules_are_inert(self) -> None:
-        for name in ("browser_tasks.py", "browser_fixtures.py", "browser_cli.py"):
+        for name in ("browser_tasks.py", "browser_fixtures.py"):
             source = (SRC / name).read_text(encoding="utf-8")
             for token in ("subprocess", "osascript", "CGEvent", "pyautogui", "pynput",
                           "ctypes", "socket", "urllib", "http.client", "requests"):
                 self.assertNotIn(token, source, "{} in {}".format(token, name))
             self.assertNotIn("0.0.0.0", source, name)
+        # browser_cli is a developer harness: subprocess is allowed for the
+        # post-smoke orphan check; everything else stays banned.
+        cli_source = (SRC / "browser_cli.py").read_text(encoding="utf-8")
+        for token in ("osascript", "CGEvent", "pyautogui", "pynput",
+                      "ctypes", "socket", "urllib", "http.client", "requests"):
+            self.assertNotIn(token, cli_source, "{} in browser_cli.py".format(token))
+        self.assertNotIn("0.0.0.0", cli_source)
 
     def test_fixture_server_uses_only_loopback_server_modules(self) -> None:
         source = (SRC / "fixture_server.py").read_text(encoding="utf-8")

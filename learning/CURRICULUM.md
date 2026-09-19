@@ -370,4 +370,7 @@ must not inflate productive completion rate. The 50 tasks and M018A–E gates
 are proposals; no browser-agent benchmark result is claimed. M018A itself is
 complete: the frozen manifest and its oracles are checked by
 `python -m vision_assistant.browser_cli verify` (correct states pass, wrong
-states fail, no model involved).
+states fail, no model involved). M018B is complete too: a disposable browser
+helper clicks and types at screenshot coordinates with typed refusals for
+stale frames, origin escapes, and password fields — demonstrated live against
+the frozen fixture.

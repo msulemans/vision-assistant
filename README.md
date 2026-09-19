@@ -427,5 +427,7 @@ artifacts (no Apple notarization in this lab) are documented in
 screenshot-driven browser loop, 50 evaluation tasks, independent completion
 checks, and a bounded Hacker News pilot. M018A (frozen task manifest, oracles,
 and fixture/reset contracts) is complete and reproducible without a model:
-`PYTHONPATH=src python -m vision_assistant.browser_cli verify`. Next stage:
-M018B (browser adapter); no model runs until the five-task smoke stage.
+`PYTHONPATH=src python -m vision_assistant.browser_cli verify`. M018B (disposable
+browser helper + typed adapter) is complete and live-verified:
+`PYTHONPATH=src python -m vision_assistant.browser_cli smoke`. Next stage:
+M018C — the five frozen smoke tasks with the pinned model.

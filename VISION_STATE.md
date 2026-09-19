@@ -4,9 +4,10 @@ Last updated: 2026-09-20 (Australia/Sydney)
 
 Status: Original roadmap records M001 through M017 as complete (see their
 sections). M018 browser computer-use extension is in progress: M018A (frozen
-50-task manifest, independent oracles, fixture/reset contracts) is complete
-and evidenced with zero model runs; next is M018B (browser adapter and
-coordinate mapping) under the same freeze–evidence discipline.
+50-task manifest, independent oracles, fixture/reset contracts) and M018B
+(disposable browser helper + typed adapter, live-verified) are complete with
+zero model runs; next is M018C (five-task smoke with the pinned model) under
+the same freeze–evidence discipline.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1702,3 +1703,53 @@ lacked its context, `reset()` deadlocked on a non-reentrant lock, and a
 `docs/evidence/2026-09-20-m018a-manifest-oracles.md` plus the verify and
 manifest JSONs. Smoke tasks 01/11/21/31/41 are frozen for M018C. No task
 completion rate or refusal accuracy is claimed yet; those require M018B–D.
+
+## M018B scope frozen — 2026-09-20
+
+Stage: browser adapter and coordinate mapping (deterministic first; no model
+runs). Frozen decisions:
+
+- The browser is a disposable helper we own: `tools/browser_window.swift` —
+  one WKWebView, fixed 1280×720 CSS viewport, non-persistent website data
+  (no session, no profile), no tabs, no downloads. Navigation is allowed only
+  to the configured loopback fixture port; every other navigation is cancelled
+  and counted by the helper and refused before reaching the helper by the
+  adapter.
+- Observation is a WebKit self-snapshot of the web view (no screen recording,
+  no occlusion sensitivity, deterministic pixels): the PNG, its pixel
+  dimensions, the scale, and a sequence number leave the helper; the adapter
+  owns the temporary file lifecycle and deletes snapshots on stop.
+- Input is synthesized as in-app NSEvents delivered straight to the web
+  view's window: mouse down/up for clicks (CSS points), key events for typing
+  and page keys; `scroll` maps to page-up/page-down key presses in this stage.
+  No CGEvent or OS-level posting exists anywhere, so the M013 invariant
+  ("no mouse-event APIs") holds unchanged and no new input permission is
+  required. Only `browser_window.swift` may contain NSEvent/sendEvent tokens;
+  all Python modules stay inert (source-scanned).
+- Guards frozen: stale screenshot ids refused (adapter compares the sequence;
+  the helper re-checks), out-of-viewport clicks refused, typing refused unless
+  the page reports a focused editable non-password element, password typing
+  refused, navigation refused outside the allowed origin/port, budgets
+  enforced per `browser_tasks.LIMITS` (steps and seconds), stop = quit +
+  bounded wait + hard kill fallback + temporary-file cleanup.
+- Coordinates: the model proposes screenshot pixels; the adapter maps
+  screenshot pixels → CSS points via the reported scale (`map_screenshot_point`,
+  pure and unit-tested) and the helper maps CSS points → window coordinates
+  (y-flip). Live smoke verifies real clicks, typing, and URL changes end to end.
+
+**M018B implemented and live-verified — 2026-09-20.** `tools/browser_window.swift`
+(disposable WKWebView helper, JSON-lines protocol, compiled clean) and
+`browser_session.py` (typed guards, coordinate mapping, budgets, snapshot
+lifecycle) are built; 20 new tests (12 adapter + 8 invariants) keep the full
+affected sweep at 118 green. The scripted live smoke passed end to end twice:
+navigate → snapshot (2560×1440 at scale 2.0) → click at screenshot-derived
+coordinates landed on the rank-3 story (`/story/d03/`, code `SC-dev-d03-de55`,
+see the committed post-click snapshot) → click the search input → type “ai” →
+focused value length 2 → clean stop with **zero orphan processes** and the
+temporary snapshot directory removed. Two live findings were fixed the same
+day: synthesized clicks navigate one runloop tick after the reply (settle
+waits required; “click → observe again” is the loop contract) and per-character
+key events coalesced (typing now sends the whole string as one key event).
+Evidence: `docs/evidence/2026-09-20-m018b-browser-adapter.md` + smoke JSON +
+three snapshots. Next: M018C — five-task smoke (01, 11, 21, 31, 41), one
+initial run each, inspect one failure class before any change.

@@ -311,5 +311,11 @@ loop, browser scope, 50 tasks, held-out evaluation, and staged cost limits.
 20 held-out), independent oracles validated against correct and wrong final
 states, deterministic fixture site with reset/seed contract; stage gate
 `python -m vision_assistant.browser_cli verify` = PASS with zero model runs.
-Evidence: `docs/evidence/2026-09-20-m018a-manifest-oracles.md`. Next: M018B
-browser adapter and coordinate mapping.
+Evidence: `docs/evidence/2026-09-20-m018a-manifest-oracles.md`.
+
+**M018B delivered (2026-09-20):** disposable WKWebView helper + typed adapter
+with fail-closed guards (stale frames, origin escapes, password/uncfocus
+typing, budgets, cleanup); live scripted smoke passed (click → `/story/d03/`,
+typing verified 2/2, zero orphans). Evidence:
+`docs/evidence/2026-09-20-m018b-browser-adapter.md`. Next: M018C five-task
+smoke (01, 11, 21, 31, 41), one initial run each.

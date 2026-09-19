@@ -1,0 +1,79 @@
+{
+  "instance": "dev",
+  "model_runs": 0,
+  "ok": true,
+  "orphans": 0,
+  "port": 52197,
+  "stage": "M018B",
+  "steps": [
+    {
+      "helper": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018-tools/browser_window",
+      "name": "launch",
+      "ready": true
+    },
+    {
+      "name": "navigate",
+      "to": "/news/",
+      "url": "http://127.0.0.1:52197/news/"
+    },
+    {
+      "height": 1440,
+      "name": "snapshot",
+      "page": "news",
+      "path": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018/smoke-20260920-015240/shots/news.png",
+      "scale": 2.0,
+      "seq": 1,
+      "width": 2560
+    },
+    {
+      "blocked": 0,
+      "name": "state",
+      "page": "news",
+      "url": "http://127.0.0.1:52197/news/"
+    },
+    {
+      "name": "click-story",
+      "x": 900,
+      "y": 445
+    },
+    {
+      "name": "state",
+      "page": "after-story-click",
+      "settle_s": 0.8,
+      "url": "http://127.0.0.1:52197/story/d03/"
+    },
+    {
+      "name": "snapshot",
+      "page": "story-after-click",
+      "seq": 2,
+      "url": "http://127.0.0.1:52197/story/d03/"
+    },
+    {
+      "name": "navigate",
+      "to": "/search/",
+      "url": "http://127.0.0.1:52197/search/"
+    },
+    {
+      "height": 1440,
+      "name": "snapshot",
+      "page": "search",
+      "path": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018/smoke-20260920-015240/shots/search.png",
+      "scale": 2.0,
+      "seq": 3,
+      "width": 2560
+    },
+    {
+      "name": "click-input",
+      "x": 700,
+      "y": 240
+    },
+    {
+      "name": "type",
+      "text": "ai",
+      "typed": 2,
+      "value_length": 2
+    }
+  ],
+  "temp_snapshots_cleaned": true,
+  "typed_ok": true
+}

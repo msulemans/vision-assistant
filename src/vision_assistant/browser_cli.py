@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import tempfile
 import time
@@ -115,6 +116,97 @@ def cmd_serve(args) -> int:
     return 0
 
 
+def cmd_smoke(args) -> int:
+    """Live scripted smoke: fixture server + real helper, typed steps, no model."""
+
+    from .browser_session import BrowserError, BrowserSession, compile_helper
+    from .fixture_server import FixtureServer
+
+    instance = args.instance
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = Path(args.snapshot_dir) if args.snapshot_dir else RUNS_DIR / ("smoke-" + stamp)
+    shots = root / "shots"
+    shots.mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    fixtures.build_site(instance, site)
+    server = FixtureServer(instance, site)
+    port = server.start()
+    server.reset()
+    helper_bin = compile_helper()
+    session = BrowserSession(port=port, helper_bin=helper_bin, snapshot_dir=root / "tmp-shots")
+    report = {"stage": "M018B", "instance": instance, "port": port, "model_runs": 0,
+              "steps": [], "ok": False}
+
+    def step(name: str, **data) -> None:
+        row = dict(name=name)
+        row.update(data)
+        report["steps"].append(row)
+        print("  ".join([name] + ["{}={}".format(k, v) for k, v in sorted(data.items())]))
+
+    SETTLE_S = 0.8
+
+    def navigate_with_retry(target: str) -> str:
+        try:
+            return session.navigate(target)
+        except BrowserError as exc:
+            if exc.reason == "navigation_failed" and "-999" in exc.detail:
+                time.sleep(0.4)
+                return session.navigate(target)
+            raise
+
+    try:
+        session.launch()
+        step("launch", ready=True, helper=str(helper_bin))
+        step("navigate", to="/news/", url=navigate_with_retry("/news/"))
+        news = session.snapshot(path=str(shots / "news.png"))
+        step("snapshot", page="news", seq=news.seq, width=news.width, height=news.height,
+             scale=news.scale, path=str(news.path))
+        state = session.state()
+        step("state", page="news", url=state.get("url"), blocked=state.get("blocked"))
+        if args.story_click:
+            x, y = args.story_click
+            session.click(x, y)
+            step("click-story", x=x, y=y)
+            time.sleep(SETTLE_S)
+            after = session.state()
+            step("state", page="after-story-click", url=after.get("url"), settle_s=SETTLE_S)
+            story = session.snapshot(path=str(shots / "story-after-click.png"))
+            step("snapshot", page="story-after-click", seq=story.seq, url=story.url)
+        step("navigate", to="/search/", url=navigate_with_retry("/search/"))
+        search = session.snapshot(path=str(shots / "search.png"))
+        step("snapshot", page="search", seq=search.seq, width=search.width,
+             height=search.height, scale=search.scale, path=str(search.path))
+        if args.type_click:
+            x, y = args.type_click
+            session.click(x, y)
+            step("click-input", x=x, y=y)
+            time.sleep(0.4)
+            typed = session.type_text("ai")
+            focused = (session.state().get("focused") or {})
+            step("type", text="ai", typed=typed, value_length=focused.get("valueLength"))
+            report["typed_ok"] = focused.get("valueLength") == 2
+        report["ok"] = True
+    except BrowserError as exc:
+        report["error"] = {"reason": exc.reason, "detail": exc.detail}
+        step("error", reason=exc.reason, detail=exc.detail)
+    finally:
+        session.stop()
+        server.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len([line for line in check.stdout.split() if line.strip()])
+        report["temp_snapshots_cleaned"] = not session.snapshot_dir.exists()
+
+    out = Path(args.out) if args.out else RUNS_DIR / ("browser-smoke-{}.json".format(stamp))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    print("orphans: {}  (temp snapshot dir cleaned: {})".format(
+        report["orphans"], report["temp_snapshots_cleaned"]))
+    print("report:", out)
+    print("RESULT:", "PASS" if report["ok"] and report["orphans"] == 0 else "FAIL")
+    return 0 if report["ok"] and report["orphans"] == 0 else 1
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="browser_cli", description="M018A fixture/browser-task stage tooling")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -137,6 +229,16 @@ def main(argv=None) -> int:
     p_serve.add_argument("--port", type=int, default=0)
     p_serve.add_argument("--rebuild", action="store_true")
     p_serve.set_defaults(func=cmd_serve)
+
+    p_smoke = sub.add_parser("smoke", help="live scripted smoke of the browser helper")
+    p_smoke.add_argument("--instance", choices=fixtures.instances(), default="dev")
+    p_smoke.add_argument("--story-click", type=int, nargs=2, metavar=("X", "Y"),
+                         help="screenshot-pixel click on the rank-3 story link")
+    p_smoke.add_argument("--type-click", type=int, nargs=2, metavar=("X", "Y"),
+                         help="screenshot-pixel click on the search query input")
+    p_smoke.add_argument("--snapshot-dir", default="")
+    p_smoke.add_argument("--out", default="")
+    p_smoke.set_defaults(func=cmd_smoke)
 
     args = parser.parse_args(argv)
     return args.func(args)
