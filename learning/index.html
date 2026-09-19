@@ -37,8 +37,8 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M007 · complete — OCR augmentation flips the last held-out failure</dd></div>
-          <div><dt>Tests</dt><dd>97 passing · 91 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M008 · complete — bounded chat passes all six frozen tasks</dd></div>
+          <div><dt>Tests</dt><dd>111 passing · 105 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>Qwen3.5-4B · Q4_K_M — pinned, local</dd></div>
           <div><dt>Action access</dt><dd>None</dd></div>
         </dl>
@@ -140,11 +140,11 @@
         <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
 
-      <p><strong>Plan checkpoint:</strong> M007 is complete — zoom ×2 plus local
-        OCR evidence fixed the only held-out failure with no regressions. M008 adds
-        bounded follow-up questions; M009 brings the browser-UI treatment. After M009,
-        desktop actions are optional and read-only packaging can proceed. These are
-        planned gates.</p>
+      <p><strong>Plan checkpoint:</strong> M008 is complete — bounded follow-ups
+        passed all six frozen reference/correction tasks. M009 brings the usable
+        browser-UI treatment with the five read-only capstones. After M009, desktop
+        actions are optional and read-only packaging can proceed. These are planned
+        gates.</p>
 
       <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
         <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
@@ -256,6 +256,9 @@
       <p>M007 held-out: baseline reproduced 23/24, and the OCR-augmented prompts
         scored 24/24 — the missed dialog string is read reliably after a zoom. Facts
         reach the model prompt only; traces keep counts, never text.</p>
+      <p>M008 chat: one session, one capture — six frozen tasks (three reference,
+        three corrections) passed 6/6 with every artifact released and prompts
+        under 333 characters.</p>
       <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
       <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
     </section>

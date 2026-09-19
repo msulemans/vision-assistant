@@ -170,4 +170,18 @@ pinned model: baseline reproduced v4 exactly (23/24, ui 0.9583) and
 OCR-augmented prompts scored 24/24 — flipping the last failure — with
 unsupported 0, forbidden 0, no guard regressions, and 1.25–1.49 s per
 augmented call. Facts enter the model prompt only; traces record counts and
-kinds, never text. Next milestone: M008 — multi-turn visual conversation.
+kinds, never text. Next milestone was M008 — multi-turn conversation
+(complete; see below).
+
+## M008 outcome — bounded multi-turn conversation
+
+One session binds one capture (identity = trace id + content sha256); a new
+capture never inherits history. Hard bounds: 12 turns, 4000-character
+transcript budget (oldest dropped first, marked when omitted), 15-minute stale
+warning; reset releases the artifact and closes the session; asking after
+reset and exceeding the limit are typed errors. Measured on the pinned model:
+6/6 frozen tasks passed — three reference questions (the follow-up must carry
+a fact from the earlier turn) and three corrections (a false premise must be
+contradicted with the true value) — every artifact released and prompts
+bounded (max 333 characters). Follow-ups answered in 1.1–1.6 s. Next
+milestone: M009 — usable capture and answer UI.

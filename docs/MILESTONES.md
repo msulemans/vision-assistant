@@ -108,6 +108,12 @@ new-capture indicator, reset, and stale-image warnings.
 Gate: frozen reference/correction tasks pass; no screenshot crosses sessions;
 prompt growth and retained artifacts remain bounded.
 
+Delivered: `conversation.py` (one session per capture; 12-turn / 4000-char /
+15-min bounds; typed errors; session traces), `assistant_cli --chat`, a frozen
+6-task evaluation (`conversation_eval.py`) and its harness
+(`conversation_cli.py`). Measured 2026-09-19: 6/6 tasks passed, all artifacts
+released, prompts ≤ 333 characters. **Complete.**
+
 ### 009 — Usable capture and answer UI
 
 Build: window/region picker, keyboard shortcut, preview/redact/retake, recent

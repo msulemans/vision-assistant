@@ -1,0 +1,225 @@
+{
+  "config": {
+    "candidate": "qwen3.5-4b",
+    "ctx_size": 4096,
+    "evidence": null
+  },
+  "rows": [
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "Whether the device is fully charged is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Whether the device is fully charged is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        }
+      },
+      "case_id": "m004-dashboard-14",
+      "follow_ms": 1142.9525,
+      "kind": "reference",
+      "pass": true,
+      "prompt_chars": [
+        67,
+        324
+      ],
+      "reason": "all present",
+      "released": true,
+      "seed_ms": 1085.593167,
+      "task_id": "ref-dashboard-14"
+    },
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "The power level is not 12%."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Whether the device is fully charged is not visible."
+          ],
+          "visible": [
+            "STATUS DASHBOARD POWER 87% CHARGING"
+          ]
+        }
+      },
+      "case_id": "m004-dashboard-14",
+      "follow_ms": 1138.087709,
+      "kind": "correction",
+      "pass": true,
+      "prompt_chars": [
+        67,
+        333
+      ],
+      "reason": "corrected",
+      "released": true,
+      "seed_ms": 1092.406958,
+      "task_id": "corr-dashboard-14"
+    },
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will succeed on a different system is not visible."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will succeed on a different system is not visible."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        }
+      },
+      "case_id": "m004-terminal-15",
+      "follow_ms": 1422.111833,
+      "kind": "reference",
+      "pass": true,
+      "prompt_chars": [
+        50,
+        309
+      ],
+      "reason": "all present",
+      "released": true,
+      "seed_ms": 1229.116042,
+      "task_id": "ref-terminal-15"
+    },
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "Whether the crash was caused by a disk problem is not visible."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Whether the application will succeed on a different system is not visible."
+          ],
+          "visible": [
+            "/APP OUT OF MEMORY: KILLED BY SIGNAL 9 EXIT CODE 1"
+          ]
+        }
+      },
+      "case_id": "m004-terminal-15",
+      "follow_ms": 1572.890375,
+      "kind": "correction",
+      "pass": true,
+      "prompt_chars": [
+        50,
+        327
+      ],
+      "reason": "corrected",
+      "released": true,
+      "seed_ms": 1460.314,
+      "task_id": "corr-terminal-15"
+    },
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "Whether the maintenance is scheduled for a specific date or time is not visible."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Whether the maintenance is scheduled for a specific date or time is not visible."
+          ],
+          "visible": [
+            "MAINTENANCE NOTICE. EXPECT DOWNTIME AT MIDNIGHT."
+          ]
+        }
+      },
+      "case_id": "m004-small_text-13",
+      "follow_ms": 1615.19925,
+      "kind": "reference",
+      "pass": true,
+      "prompt_chars": [
+        59,
+        314
+      ],
+      "reason": "all present",
+      "released": true,
+      "seed_ms": 1490.501333,
+      "task_id": "ref-small_text-13"
+    },
+    {
+      "answers": {
+        "follow": {
+          "inferred": [],
+          "unknown": [
+            "Whether the session was saved is not established."
+          ],
+          "visible": [
+            "SESSION TIMEOUT SIGN IN AGAIN TO CONTINUE"
+          ]
+        },
+        "seed": {
+          "inferred": [],
+          "unknown": [
+            "Which specific button the user should press is not established."
+          ],
+          "visible": [
+            "\"SESSION TIMEOUT\" \"SIGN IN AGAIN TO CONTINUE\""
+          ]
+        }
+      },
+      "case_id": "m004-dialog-13",
+      "follow_ms": 1300.044375,
+      "kind": "correction",
+      "pass": true,
+      "prompt_chars": [
+        59,
+        313
+      ],
+      "reason": "corrected",
+      "released": true,
+      "seed_ms": 1376.888917,
+      "task_id": "corr-dialog-13"
+    }
+  ],
+  "run_id": "m008-20260919-231017-f40d4a",
+  "summary": {
+    "all_released": true,
+    "correction_passes": 3,
+    "correction_total": 3,
+    "max_prompt_chars": 333,
+    "prompt_bounded": true,
+    "reference_passes": 3,
+    "reference_total": 3,
+    "tasks": 6
+  },
+  "total_ms": 16163.5
+}

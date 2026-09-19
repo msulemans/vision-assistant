@@ -950,7 +950,8 @@ Next milestone: M008 — multi-turn visual conversation.
 
 ## Milestone 008 — multi-turn visual conversation
 
-Status: in progress. Scope frozen 2026-09-19:
+Status: complete (2026-09-19). Scope was frozen before any model output was
+inspected:
 
 - One session binds exactly one capture (identity = trace id + content
   sha256); a new capture starts a fresh session and never inherits history.
@@ -981,5 +982,36 @@ PYTHONPATH=src python -m vision_assistant.conversation_cli
 PYTHONPATH=src python -m vision_assistant.conversation_cli --evidence-ocr
 ```
 
-Pending: the measurement run and its result record.
+Measurement (user machine, 2026-09-19, run `m008-20260919-231017-f40d4a`):
+6/6 frozen tasks passed — three reference (`87`+`charging`, signal `9`,
+`midnight`) and three corrections (`12%`→87, `disk`→memory, `saved`→sign in)
+— every artifact released, prompts bounded (max 333 characters), follow-up
+calls 1138–1615 ms. Evidence:
+`docs/evidence/2026-09-19-m008-conversation-measurement.md` (+ JSON copy).
+
+Next milestone: M009 — usable capture and answer UI.
+
+## Milestone 009 — usable capture and answer UI
+
+Status: in progress. Scope frozen 2026-09-19:
+
+- A loopback-only stdlib UI server owns the trusted side (submission,
+  artifact lifecycle, model calls, session state, traces) and serves a
+  dependency-free browser page (no CDN, no build step, offline). Bound to
+  127.0.0.1; request-size and origin checked; no request-body logging.
+- UI surface: file picker (plus reuse-last), preview with a
+  what-will-be-shared note, redact (black out a chosen region before submit),
+  ask, bounded follow-ups (M008 session), stop, copy answer, status (capture
+  identity, turns, stale), and a failure explorer (typed failures with
+  recovery hints).
+- Five read-only capstones (frozen): (1) one-shot ask with labelled answer
+  and timings; (2) three bounded follow-ups including one reference and one
+  correction question; (3) stop mid-generation — clean cancel, artifact
+  released, no orphaned server; (4) recover from a typed failure (corrupt
+  file) and succeed on retry; (5) privacy cycle — preview, ask, exit, with
+  no persistent private content.
+- Gate: a new user (the author) completes all five capstones in the UI
+  without terminal help.
+
+Next: the UI server and page.
 

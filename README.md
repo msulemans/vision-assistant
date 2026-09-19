@@ -241,3 +241,16 @@ the frozen scorer, and writes a side-by-side JSON under `runs/m007/`.
 Measured 2026-09-19 on the pinned model: held-out 23/24 → **24/24** with OCR
 evidence (the only failure recovered, no regressions, unsupported 0,
 forbidden 0).
+
+### Multi-turn chat (M008)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png --chat
+PYTHONPATH=src python -m vision_assistant.assistant_cli shot.png --chat --evidence-ocr
+```
+
+Keeps one capture bound to one bounded session (12 turns, 4000-character
+transcript budget, stale warning after 15 minutes); `:status`, `:reset`,
+`:quit`; reset releases the artifact. Measured 2026-09-19: 6/6 frozen
+reference/correction tasks passed, all artifacts released, prompts ≤ 333
+characters.
