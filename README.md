@@ -226,3 +226,14 @@ no orphaned server process. Retry is re-running with the same image; reset is
 artifact release. Live evidence is preserved in
 `docs/evidence/2026-09-19-m006-live-demo.md` and
 `docs/evidence/2026-09-19-m006-stop-check.md`.
+
+### Evidence augmentation measurement (M007)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.augment_cli
+PYTHONPATH=src python -m vision_assistant.augment_cli --heldout-all
+```
+
+Runs the frozen difficult subset (or the full held-out set) twice per case —
+baseline question vs question plus local Vision OCR facts — scores both with
+the frozen scorer, and writes a side-by-side JSON under `runs/m007/`.

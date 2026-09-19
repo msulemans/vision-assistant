@@ -915,6 +915,15 @@ never text), appends rendered facts to the model prompt only, degrades
 gracefully when augmentation fails, and reports fact text in the runtime
 result (never persisted). CLI: `--evidence-ocr`.
 
-Next: the frozen-subset measurement on the pinned model (user machine) and
-the result record.
+Measurement harness landed: `augment_cli.py` runs each frozen case twice
+(baseline question vs question + OCR facts), scores both with the frozen
+scorer, and writes a side-by-side JSON under `runs/m007/`. Commands for the
+user's machine (Metal):
+
+```bash
+PYTHONPATH=src python -m vision_assistant.augment_cli                # frozen subset
+PYTHONPATH=src python -m vision_assistant.augment_cli --heldout-all  # full held-out guard
+```
+
+Pending: the measurement run and its result record.
 
