@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 017 in progress — M006 through M016 are complete (see their
-sections); M017 (public beta hardening) scope is frozen and the first build
-is under way.
+Status: Roadmap complete — M001 through M017 are complete and evidenced
+(see their sections). There is no next milestone; changes after this point
+must go through the same freeze–evidence discipline as any milestone.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1603,7 +1603,8 @@ Next milestone: M017 — public beta hardening.
 
 ## Milestone 017 — public beta hardening
 
-Status: in progress. Scope frozen before implementation (2026-09-20).
+Status: complete (2026-09-20). Scope was frozen before implementation
+(2026-09-20) — the roadmap's final milestone:
 
 - Objective: audit the product against the eleven named areas, fix what the
   audit finds, and close with an honest release: a reproducible bundle, a
@@ -1646,5 +1647,25 @@ Status: in progress. Scope frozen before implementation (2026-09-20).
 - Evidence: runs/m017/audit-<id>.json plus the release manifest, the
   audit's own test suite, and SUPPORT.md.
 
-End of the frozen roadmap: M001 through M017.
+Outcome (2026-09-20): the gate passed on the first full run — 26/26 checks,
+zero critical failures, across all eleven areas. Highlights: trace canaries
+(planted evidence text and pixel bytes) never reach traces; the 22-scenario
+adversarial agent suite and the 13-payload policy funnel re-ran green with
+zero bypasses; model files verified against the pin and the runtime build
+recorded; corrupt input fails typed with zero leftovers; every site input
+is labeled and every button named; two bundle builds produced byte-identical
+content hashes; install → upgrade → rollback → uninstall re-verified on real
+bundles with models kept; and the release manifest is byte-stable, with
+Apple signing/notarization explicitly documented as unavailable rather than
+claimed. The audit's own teeth test found and fixed a real bug in the
+interpreter-fallback path of the stdlib-only import scanner (Python 3.9
+without sys.stdlib_module_names treated an uninstalled third-party import
+as stdlib). Deliverables: audit.py + audit_cli.py (run/sign/support),
+docs/SUPPORT.md (support matrix with known limitations), release manifest
+for 0.1.0 (59 files, aggregate 4134fad3…). Evidence:
+docs/evidence/2026-09-20-m017-beta-hardening.md + audit and release JSONs.
+Learning map: every milestone done; figures: 337 tests = 331 product +
+6 learning.
+
+End of the frozen roadmap: M001 through M017 — all complete and evidenced.
 

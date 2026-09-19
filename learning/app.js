@@ -119,7 +119,7 @@ const milestones = [
   { id: 14, phase: 3, status: "done", title: "Recovery and bounded task agent", build: "Add step/time budgets, takeover, focus-change detection, recovery, blocked, and finished states.", gate: "Unexpected dialogs and prompt injection cause a safe stop or recovery." },
   { id: 15, phase: 4, status: "done", title: "Profiles, packaging, and offline verification", build: "Package only measured passing profiles after M009; M014 is required only for action-enabled packaging.", gate: "A clean Mac reproduces read-only operation fully offline." },
   { id: 16, phase: 4, status: "done", title: "Evaluation and reciprocal learning field manual", build: "Consolidate the failure explorer, comparisons, quizzes, and reproduction material maintained at every milestone.", gate: "A new learner can explain, measure, modify, and safely reproduce the system." },
-  { id: 17, phase: 4, status: "current", title: "Public beta hardening", build: "Audit privacy, redaction, malicious screen text, supply chain, recovery, accessibility, and signing.", gate: "Zero critical safety failures and verified rollback/removal." },
+  { id: 17, phase: 4, status: "done", title: "Public beta hardening", build: "Audit privacy, redaction, malicious screen text, supply chain, recovery, accessibility, and signing.", gate: "Zero critical safety failures and verified rollback/removal." },
 ];
 
 const phaseNames = { 1: "SEE ONE IMAGE RELIABLY", 2: "UNDERSTAND A LIVE UI", 3: "PROPOSE BEFORE ACTING", 4: "FINISH THE LOCAL PRODUCT" };

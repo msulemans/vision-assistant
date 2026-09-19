@@ -287,3 +287,16 @@ accessibility, long-session resources, signing, and support matrix.
 
 Gate: zero critical safety-suite failures; signed/reproducible release artifacts;
 known limitations, rollback, and removal are verified.
+
+Delivered: public beta hardening, closed 2026-09-20 — and with it the
+frozen roadmap. `audit.py` (eleven frozen categories, 26 checks: capture
+privacy, trace redaction with live canaries, malicious screen text, action
+policy, permission changes, supply chain, crash recovery, accessibility,
+long-session resources, reproducibility, release integrity) +
+`audit_cli.py` (run/sign/support) + `docs/SUPPORT.md` + a reproducible
+release manifest. Gate results: 26/26 checks, zero critical failures; two
+bundle builds byte-identical; rollback and removal re-verified on real
+bundles; unsigned artifacts documented as a known limitation. The audit's
+own tests caught a real Python 3.9 fallback bug in the import scanner,
+fixed the same day. **Complete. End of the frozen roadmap:** M001 through
+M017 are complete and evidenced.

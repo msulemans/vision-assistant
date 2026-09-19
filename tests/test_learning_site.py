@@ -69,8 +69,8 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M016 · complete",
-            "321 passing · 315 product + 6 learning",
+            "Roadmap · complete",
+            "337 passing · 331 product + 6 learning",
             "pinned, local",
             "Intentionally absent",
             "selection_timed_out",
@@ -95,7 +95,8 @@ class LearningSiteContractTest(unittest.TestCase):
         self.assertIn('status: "done", title: "Recovery and bounded task agent"', self.js)
         self.assertIn('status: "done", title: "Profiles, packaging, and offline verification"', self.js)
         self.assertIn('status: "done", title: "Evaluation and reciprocal learning field manual"', self.js)
-        self.assertIn('status: "current", title: "Public beta hardening"', self.js)
+        self.assertIn('status: "done", title: "Public beta hardening"', self.js)
+        self.assertNotIn('status: "current"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)

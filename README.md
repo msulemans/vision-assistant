@@ -143,7 +143,16 @@ explains every permission on first run; smoke reproduces the read-only
 profile — audit, model verification, grounding 44/44, and a verified
 one-shot ask — including under a sandbox that denies all non-loopback
 networking; upgrade/rollback and a choiceful uninstall are verified.
-Current focus: M016 — evaluation and reciprocal learning field manual.
+Milestone 016 turns the learning lab into an evaluation instrument: a real
+turn's latency waterfall (99.94% model), a 12-entry failure catalog with
+component toggles, the losing run kept beside the selection, five
+teach-back tasks, and exact reproduction commands. Milestone 017 closes
+the roadmap with public-beta hardening: an eleven-area audit (26 checks,
+zero critical failures), byte-identical bundle builds, a byte-stable
+release manifest, a support matrix with documented limitations (unsigned
+artifacts), and a re-verified rollback/removal story.
+Roadmap complete: M001–M017. See `docs/SUPPORT.md` and
+`docs/evidence/2026-09-20-m017-*.json`.
 
 ## Run the Milestone 002 lab
 
@@ -397,3 +406,17 @@ first token 723 ms); the field manual's waterfall, failure explorer
 (12 entries with component chips), teach-back cards, copyable commands,
 and the 5/5 quiz grader were verified in a live browser; the fixture
 procedure ran as a worked example (freeze 121/121 PASS, then reverted).
+
+### Hardening audit (M017)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.audit_cli run        # 11 areas, 26 checks; exit 0 iff zero critical
+PYTHONPATH=src python -m vision_assistant.audit_cli sign --bundle runs/m015/bundle-0.1.0
+PYTHONPATH=src python -m vision_assistant.audit_cli support    # regenerate docs/SUPPORT.md
+```
+
+Measured 2026-09-20: 26/26 checks green with zero critical failures; two
+bundle builds byte-identical; install→upgrade→rollback→uninstall
+re-verified on real bundles; the release manifest is byte-stable. Unsigned
+artifacts (no Apple notarization in this lab) are documented in
+`docs/SUPPORT.md`.

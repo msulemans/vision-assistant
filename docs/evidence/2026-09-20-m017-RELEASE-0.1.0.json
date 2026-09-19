@@ -1,0 +1,304 @@
+{
+  "aggregate_sha256": "4134fad3d76b1becdaff9c3ac9d6dda7ffd77273ca90c1b47ae8ee6d9a0ee0a5",
+  "files": [
+    {
+      "bytes": 1404,
+      "path": "LICENCES.md",
+      "sha256": "65fe0702a8f65810ac95a5acd3cc6cf1e3efbca88503fda91fdfa4f19896a65b"
+    },
+    {
+      "bytes": 2963,
+      "path": "README-INSTALL.md",
+      "sha256": "8ab0179ec6a1ad5a398bf7f57fec94b500e2867b9f6ea849b17a96b12ba09d49"
+    },
+    {
+      "bytes": 6,
+      "path": "VERSION",
+      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67"
+    },
+    {
+      "bytes": 818,
+      "path": "install.sh",
+      "sha256": "4a0e030fd2d16cade74c84c4cf9ae1f705658b0ba07a418ce0c371c5b4404420"
+    },
+    {
+      "bytes": 9633,
+      "path": "integrity.json",
+      "sha256": "d01c4c42efd08cae4afe3a6c05f9083215967c50cfde747db55fb18d20178e5e"
+    },
+    {
+      "bytes": 3743,
+      "path": "manifest.json",
+      "sha256": "c7b3ea0052ae0ddf94bd562e8c54f179efed5456795113379ae296b1e44e20c1"
+    },
+    {
+      "bytes": 328,
+      "path": "src/vision_assistant/__init__.py",
+      "sha256": "a75f1ad3ff8ca511b9719e6f04bccfd38c208bab20f8e5487508c17fb7b5c584"
+    },
+    {
+      "bytes": 5822,
+      "path": "src/vision_assistant/acquire.py",
+      "sha256": "671f67b3c52c513cea114c15ec492b0c535aac25a4e5e4ed6b90f830a23c0014"
+    },
+    {
+      "bytes": 8863,
+      "path": "src/vision_assistant/action_loop.py",
+      "sha256": "af9ac065dd3ae5f9bc9b51ddd2b8ba6d33067c979c79e1ccbe2a5e61ff5bd803"
+    },
+    {
+      "bytes": 4005,
+      "path": "src/vision_assistant/adapters.py",
+      "sha256": "1bbb95f86820acfbc2a1ab4c90b9fda08982e735921324da6dd849ff6b7c6c87"
+    },
+    {
+      "bytes": 29273,
+      "path": "src/vision_assistant/agent.py",
+      "sha256": "ada639a28e097974ae750d03b041df7033319498119e7fcd2b9feb3e02b26504"
+    },
+    {
+      "bytes": 10576,
+      "path": "src/vision_assistant/agent_cli.py",
+      "sha256": "92c7883e0cb926ca7c9bc92990ae6b0482ee54670658beaeff9e6dfae58ee78e"
+    },
+    {
+      "bytes": 27055,
+      "path": "src/vision_assistant/agent_eval.py",
+      "sha256": "addd8c97754348c117578859bfc7dc19fc35a81f195eb806ca147fffed23c3cc"
+    },
+    {
+      "bytes": 8142,
+      "path": "src/vision_assistant/assistant.py",
+      "sha256": "d37e6a5937014472f0f12b1d8c865615b668cb549d1fe81bb37a3dab7db7f61d"
+    },
+    {
+      "bytes": 9191,
+      "path": "src/vision_assistant/assistant_cli.py",
+      "sha256": "a195554180644cac13427ffbbd5385b443847397ba88b133aa05d68a2b1d59b3"
+    },
+    {
+      "bytes": 8714,
+      "path": "src/vision_assistant/augment_cli.py",
+      "sha256": "55a8b8fcf406aedc9c4981939d489299bce6043f9965a12640baaf9bd5adee98"
+    },
+    {
+      "bytes": 15498,
+      "path": "src/vision_assistant/ax_vision.py",
+      "sha256": "7ec41db4cb3df17b7b506948ff2b6fc65ad89e3e62d7a8b7b96c2a2c9f5ba3f2"
+    },
+    {
+      "bytes": 10498,
+      "path": "src/vision_assistant/bakeoff.py",
+      "sha256": "12da8b2317a34e56ef0cac1e24297c1d0a568ef1c4f47860e9abd40a6cc7053f"
+    },
+    {
+      "bytes": 15280,
+      "path": "src/vision_assistant/bakeoff_cli.py",
+      "sha256": "bcf76a5286b79673fc42109d586bf26bc34d2411aa853a2a37790a8c026f6182"
+    },
+    {
+      "bytes": 15209,
+      "path": "src/vision_assistant/capture.py",
+      "sha256": "b5ae2011d0f6211fbb5adc6a1dd69555052d72be37de099324fb6b856e693edb"
+    },
+    {
+      "bytes": 5438,
+      "path": "src/vision_assistant/capture_cli.py",
+      "sha256": "ce574b719059827421f167a466e7b9bf8af95a49c3b6ea051c0a7a867fc18ad3"
+    },
+    {
+      "bytes": 6375,
+      "path": "src/vision_assistant/cli.py",
+      "sha256": "2641203aab516cd18491fbb548a5a83d08bc5eb67cdeec785e078b7d581ed8ea"
+    },
+    {
+      "bytes": 806,
+      "path": "src/vision_assistant/clock.py",
+      "sha256": "cd73b2fdca57aea0028e2f9354dc6204a9b590110d848b66858c77ade4f1120f"
+    },
+    {
+      "bytes": 10988,
+      "path": "src/vision_assistant/conversation.py",
+      "sha256": "e3637fbd90ef44e70f51537ee344ae2678a6e5782119a15d280f3ff18727c319"
+    },
+    {
+      "bytes": 6507,
+      "path": "src/vision_assistant/conversation_cli.py",
+      "sha256": "32150d964296c7815d9ef9ca7230e6eb88d8727c3bceb5e13c372ea9deb927a3"
+    },
+    {
+      "bytes": 3616,
+      "path": "src/vision_assistant/conversation_eval.py",
+      "sha256": "75626239a61a80ba4452d89e13c484e031b088ab2383948c73fab94b50d9c1aa"
+    },
+    {
+      "bytes": 24060,
+      "path": "src/vision_assistant/corpus.py",
+      "sha256": "57523a6869319356c4df3f8fffc169da612802cf094581741e91ec554118949e"
+    },
+    {
+      "bytes": 8258,
+      "path": "src/vision_assistant/corpus_cli.py",
+      "sha256": "e7429158bd1f8c00ea57f0143a2c6d246f61433e38c37fc5c7501808da291ceb"
+    },
+    {
+      "bytes": 823,
+      "path": "src/vision_assistant/events.py",
+      "sha256": "777527b10a3ee17c3cada2e3713365251e32f9b3a1da77c5103f71c7f1f2a8a5"
+    },
+    {
+      "bytes": 4056,
+      "path": "src/vision_assistant/evidence.py",
+      "sha256": "56d36fe988383243e59d1c97640a2f8c593f2f2d96f002488f3e1568dc7f897c"
+    },
+    {
+      "bytes": 14033,
+      "path": "src/vision_assistant/executor.py",
+      "sha256": "7e2155ea252f67e240785061ee68c7141043cccaa1d3ffe1624eb3b72131ec82"
+    },
+    {
+      "bytes": 3924,
+      "path": "src/vision_assistant/fixture.py",
+      "sha256": "17cfdece247fabdeebc2bcc479821f39362594f525581c0e745de3393a7b4b20"
+    },
+    {
+      "bytes": 9900,
+      "path": "src/vision_assistant/grounding.py",
+      "sha256": "08e96f1e6e0281f870594b02f27eaace3fdacaee837b2f312a5770664206076c"
+    },
+    {
+      "bytes": 14455,
+      "path": "src/vision_assistant/grounding_cli.py",
+      "sha256": "ea251a157e253536642bb16f68ce2a6e1ce697f7321912b451638162505d838a"
+    },
+    {
+      "bytes": 6567,
+      "path": "src/vision_assistant/grounding_eval.py",
+      "sha256": "1166ca35d81930310b8efa9ba8d1118d95557cb41ebccf41be5bfbc5410bcee6"
+    },
+    {
+      "bytes": 8152,
+      "path": "src/vision_assistant/grounding_fixture.py",
+      "sha256": "17bc7e0c775447b444f6f307337a861a21b14950882ce2d72eeb437f1d4b730d"
+    },
+    {
+      "bytes": 8803,
+      "path": "src/vision_assistant/intents.py",
+      "sha256": "f4ba203973c07b23fcb30d3f48fc2c148a5135da6d3fe792a4915fbf9db70d9b"
+    },
+    {
+      "bytes": 8275,
+      "path": "src/vision_assistant/manifest.py",
+      "sha256": "27a0f7706f5d4012a6bf3f5b5c9a49363b7e52df97eebc904f1d3f8aeae793da"
+    },
+    {
+      "bytes": 3639,
+      "path": "src/vision_assistant/measure.py",
+      "sha256": "74d3a400587fc97b870ba422186dd7eb280eb40081ec0615323754b188f4b500"
+    },
+    {
+      "bytes": 5556,
+      "path": "src/vision_assistant/ocr_vision.py",
+      "sha256": "4260afcbc5af273202e0f00ea3a393d16d4350360c5dbbde14be8fe8a8062a6b"
+    },
+    {
+      "bytes": 34012,
+      "path": "src/vision_assistant/package_cli.py",
+      "sha256": "5d48a15af475876ae9a7b15966e07c42880d99b6dc2627012292574357598dce"
+    },
+    {
+      "bytes": 9082,
+      "path": "src/vision_assistant/pixels.py",
+      "sha256": "73b6eaccdd19d3645885513174d343294301d7b7e6e7770d8866ff28a9114fed"
+    },
+    {
+      "bytes": 2375,
+      "path": "src/vision_assistant/ports.py",
+      "sha256": "9f20531657a664f2bedad6ae5523226b8ebb9652e2ca9354fb9914abe1fc6385"
+    },
+    {
+      "bytes": 6638,
+      "path": "src/vision_assistant/practice_app.py",
+      "sha256": "2a360e63cae324f356dcb396c5c307a07b6122faaa0b36d00b4e7c31a0683f23"
+    },
+    {
+      "bytes": 3680,
+      "path": "src/vision_assistant/profiles.py",
+      "sha256": "e1e128224480c63e021fa57d1264c3107d8d3ea231d7e18cd49bac7108a72602"
+    },
+    {
+      "bytes": 9576,
+      "path": "src/vision_assistant/propose_cli.py",
+      "sha256": "74d22c2ae10ebf636386ab8544a3e51d6362381e33cfa561cacd8f427130cb46"
+    },
+    {
+      "bytes": 5336,
+      "path": "src/vision_assistant/runtime_llamacpp.py",
+      "sha256": "2d862bc0dc5929513910f68f0ba9446b7e8ad0c504a0526dda245d2b66a60069"
+    },
+    {
+      "bytes": 9435,
+      "path": "src/vision_assistant/runtime_llamaserver.py",
+      "sha256": "8c41770def2d045b5bda6fb841a99e87c8ec52151291b75e79f95819884437e7"
+    },
+    {
+      "bytes": 5865,
+      "path": "src/vision_assistant/scorer.py",
+      "sha256": "37e6fb5c3c8ea8cfe6501694d5e25666a7d6a8808373601ac00f7b239b6d2261"
+    },
+    {
+      "bytes": 8283,
+      "path": "src/vision_assistant/sim_cli.py",
+      "sha256": "8b069f923c0f518184152649f9e7cbaddfe80dcc9b23762b5bb4917273678956"
+    },
+    {
+      "bytes": 6964,
+      "path": "src/vision_assistant/spine.py",
+      "sha256": "bf756363b4bc58564f05dfcc24debab321769b77883f61c36a2e4871fdaf34ea"
+    },
+    {
+      "bytes": 20550,
+      "path": "src/vision_assistant/supervised_cli.py",
+      "sha256": "be71431b3fddfebfe8a38c9cb4d32a659ded425130655032f63295e9ae291d93"
+    },
+    {
+      "bytes": 2772,
+      "path": "src/vision_assistant/trace.py",
+      "sha256": "df4b10d700f34485383466313d9dcacd1ac899eb211938bc423f15312ff9951b"
+    },
+    {
+      "bytes": 15523,
+      "path": "src/vision_assistant/ui_server.py",
+      "sha256": "aaa2c1c810503fb1cd023aa878f4b5d6f8f39ae402067ff97eb1301858245300"
+    },
+    {
+      "bytes": 11241,
+      "path": "tools/ax_action.swift",
+      "sha256": "7a75924da022e4c54f6bb40802a0a5ce44db9de1630874b24dbe4f796a8aac1c"
+    },
+    {
+      "bytes": 11363,
+      "path": "tools/ax_dump.swift",
+      "sha256": "6a5c617d651f9161afe4394f4f1bcee3ea26a98624068119ad98e5749a07205e"
+    },
+    {
+      "bytes": 2058,
+      "path": "tools/ax_overlay.swift",
+      "sha256": "5c04e1d63e7a29ceff801c3cbb7ee18833616cc4b224a919450d140e9eb6fade"
+    },
+    {
+      "bytes": 5874,
+      "path": "tools/practice_window.swift",
+      "sha256": "8403ebbdb43b3d09c5c0fc43553142fc4e78ea327e0f2c427d55607a3857a1fb"
+    },
+    {
+      "bytes": 2285,
+      "path": "tools/vision_ocr.swift",
+      "sha256": "5f87464610bad52181584d0fd8697383ee112f5f995e4a50ec86854f9d79f5b3"
+    }
+  ],
+  "integrity": "SHA-256 content hashes; Apple Developer signing and notarization are not available in this lab \u2014 unsigned artifacts, documented as a known limitation",
+  "interpreter": "3.9.6",
+  "runtime": "version: 0.3.0 (build 10621, commit c1d0e7a00)",
+  "version": "0.1.0"
+}

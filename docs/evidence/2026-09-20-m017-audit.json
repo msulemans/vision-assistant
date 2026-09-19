@@ -1,0 +1,194 @@
+{
+  "findings": [
+    {
+      "category": "capture_privacy",
+      "check_id": "capture.artifact-roots-ignored",
+      "detail": "runs/, captures/, and models/ are git-ignored (private screen content never enters history)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "capture_privacy",
+      "check_id": "capture.private-modes",
+      "detail": "artifact directories 0700 / files 0600 in the store",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "capture_privacy",
+      "check_id": "capture.released-by-default",
+      "detail": "release-by-default with explicit retain opt-in",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "trace_redaction",
+      "check_id": "trace.canary-fact-never-in-trace",
+      "detail": "planted evidence text does not appear in the trace",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "trace_redaction",
+      "check_id": "trace.pixels-never-in-trace",
+      "detail": "no pixel bytes or base64 payloads in the trace",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "trace_redaction",
+      "check_id": "trace.artifact-released",
+      "detail": "artifact released and no leftovers (leftover files: 0)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "malicious_screen_text",
+      "check_id": "screen.adversarial-suite-green",
+      "detail": "22-scenario adversarial suite: 22/22 passed, unapproved 0",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "malicious_screen_text",
+      "check_id": "screen.injection-flagged-and-ignored",
+      "detail": "adversarial screen text flagged, ignored on goal, and blocked when targeted",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "action_policy",
+      "check_id": "policy.funnel-contains-frozen-adversarial-set",
+      "detail": "13 adversarial payloads contained, 0 bypassed, budget_denied=True",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "action_policy",
+      "check_id": "policy.coordinates-rejected",
+      "detail": "coordinate addressing is rejected by the schema (element identity only)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "permission_changes",
+      "check_id": "permission.changed-and-required-typed",
+      "detail": "mid-run grant loss blocks as permission_changed; never-granted blocks as permission_required",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "supply_chain",
+      "check_id": "supply.stdlib-only",
+      "detail": "no third-party imports in product code",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "supply_chain",
+      "check_id": "supply.model-pin",
+      "detail": "pinned model files verified by size against pin.json (ok)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "supply_chain",
+      "check_id": "supply.runtime-recorded",
+      "detail": "runtime recorded: version: 0.3.0 (build 10621, commit c1d0e7a00)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "supply_chain",
+      "check_id": "supply.licence-manifest-complete",
+      "detail": "every model artifact and runtime dependency carries a licence in the manifest",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "crash_recovery",
+      "check_id": "recovery.corrupt-input-typed-and-clean",
+      "detail": "corrupt input fails typed with zero leftover artifacts (files: 0)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "crash_recovery",
+      "check_id": "recovery.interrupt-purge-and-trace",
+      "detail": "interrupt records a cancelled trace and purges the artifact",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "accessibility",
+      "check_id": "a11y.all-inputs-labeled",
+      "detail": "every input/select/textarea has a label, aria-label, or wraps inside its label",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "accessibility",
+      "check_id": "a11y.all-buttons-named",
+      "detail": "every button has visible text or an aria-label",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "accessibility",
+      "check_id": "a11y.site-contracts",
+      "detail": "skip link, aria-live regions, and reduced-motion support present",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "long_session",
+      "check_id": "session.bounds-frozen",
+      "detail": "turn limit 12, prompt budget 4000 chars, stale warning 900 s",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "long_session",
+      "check_id": "session.no-artifact-leak-across-sessions",
+      "detail": "two sequential sessions leave zero artifacts",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "reproducibility",
+      "check_id": "repro.double-build-identical",
+      "detail": "two bundle builds produced byte-identical content hashes (62 files)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "release_integrity",
+      "check_id": "release.rollback-and-removal-verified",
+      "detail": "install 0.1.0 \u2192 upgrade 0.1.1 \u2192 rollback to 0.1.0 \u2192 uninstall keeps models, removes code",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "release_integrity",
+      "check_id": "release.manifest-deterministic",
+      "detail": "release manifest is byte-stable (63 files, aggregate 61cafae5dec8\u2026)",
+      "severity": "critical",
+      "status": "pass"
+    },
+    {
+      "category": "release_integrity",
+      "check_id": "release.unsigned-documented",
+      "detail": "Apple signing/notarization absent and documented as a known limitation",
+      "severity": "critical",
+      "status": "pass"
+    }
+  ],
+  "run_id": "m017-audit-20260920-005836-8b65ef",
+  "summary": {
+    "checks": 26,
+    "critical_failures": 0,
+    "gate_pass": true,
+    "notes": 0,
+    "passed": 26
+  }
+}

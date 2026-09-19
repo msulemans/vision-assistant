@@ -332,3 +332,31 @@ recovery. The fixture-adding procedure was demonstrated end-to-end
 (freeze → verify 121/121 → revert). The human learner walkthrough is
 recorded as a standing item; the answer key and the worked example show
 the expected depth. Next milestone: M017 — public beta hardening.
+
+## M017 outcome — hardening, and the end of the roadmap
+
+milestone: M017 — public beta hardening. Complete 2026-09-20.
+
+The final milestone turned the product on itself: an eleven-area audit —
+capture privacy, trace redaction (proven with planted canaries),
+adversarial screen text, action policy, permission changes, supply chain,
+crash recovery, accessibility, long-session bounds, reproducibility, and
+release integrity — ran 26 checks to a clean gate and re-verified the
+rollback/removal story on real bundles. Two bundle builds produced
+byte-identical hashes; the release manifest is byte-stable; unsigned
+artifacts are documented, never claimed. The audit even tested itself: its
+teeth test caught a Python 3.9 fallback bug in the stdlib-only import
+scanner, fixed the same day.
+
+## Course complete — what this lab actually taught
+
+Seventeen milestones from a contract and an empty repo to a hardened,
+offline, locally-installed system that can see a screen, explain it,
+propose actions, and — under supervision, budgets, and typed refusals —
+take them in a disposable window. The through-line was never the model; it
+was the discipline around it: freeze the gate before the build, keep every
+failed run as evidence, let live runs find the real bugs (mid-word
+substring matches, black captures, cross-app activation bans, dispatcher
+argv, a 3.9 fallback), and let constraints redesign the system instead of
+being defeated. Every claim in this curriculum traces to a command whose
+observed result is recorded. That is the whole curriculum.
