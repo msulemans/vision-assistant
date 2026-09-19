@@ -252,3 +252,23 @@ an explicit opt-in, the denial path is a typed message and exit 2, and
 secure text-field values never leave the parser. Next milestone: M013 —
 supervised mouse and keyboard execution (first executor; still disposable
 targets, previews, confirmations, and stop).
+
+## M013 outcome — the first host actions, and what macOS refuses to let you do
+
+milestone: M013 — supervised mouse and keyboard execution. Complete 2026-09-20.
+
+The executor turned anchors into actions: a click is an AXPress on an
+element found by stable identifier (never coordinates), typing writes the
+identified field's value through the accessibility API and reads it back,
+and key events post only when the target app is frontmost. Everything runs
+through one path — observe, propose, policy, plan, preflight, visible
+overlay, explicit confirmation, freshness re-check, perform,
+re-observation, verify — and anything doubtful refuses with nothing
+posted. Live runs found three real things: prior state makes blind toggles
+unsafe (fixed with an `already_done` pre-check), a black window capture
+must not confuse the model (the element list is authoritative; blank
+captures are detected and substituted), and macOS 14+ no longer allows one
+app to activate another, so a synthetic keystroke path could never be
+aimed safely — it was rejected live (`frontmost_mismatch`, nothing typed)
+in favour of the identity-bound value write. Next milestone: M014 —
+recovery and bounded task agent.

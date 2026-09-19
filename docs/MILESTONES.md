@@ -192,6 +192,21 @@ Gate: every host action is attributable to an approved typed intent; zero
 wrong-target, hidden-window, secret-field, approval-bypass, or stale-frame
 actions across the frozen suite.
 
+Delivered: the first supervised executor, closed 2026-09-20.
+`tools/practice_window.swift` (disposable window with five stable AX ids),
+`tools/ax_action.swift` (the only writer: identity-addressed AXPress,
+accessibility value-write typing with read-back, guarded key events;
+stale-frame, secure, disabled, and frontmost guards),
+`tools/ax_overlay.swift` (click-through target highlight), `executor.py`
+(identity/role/secret/freshness guards, typed refusals), and
+`supervised_cli.py` (observe → propose → policy → plan → preflight →
+preview + overlay → confirm → re-check → perform → verify, with
+`already_done`, cancellation, and full attribution), plus the M013 test
+suites including the inverted source scan (exactly one file may contain
+writer APIs; no mouse event APIs anywhere). Live gate: three frozen tasks
+performed and verified with zero unapproved actions; every refusal path
+demonstrated with zero side effects. **Complete.**
+
 ### 014 — Recovery and bounded task agent
 
 Build: multi-step plans, maximum step/time budgets, user takeover, focus-change

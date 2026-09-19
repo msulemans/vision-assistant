@@ -1,0 +1,107 @@
+{
+  "run_id": "m013-20260920-001341-74b482",
+  "window_title": "Practice App",
+  "all_done": false,
+  "tasks": {
+    "scripted": {
+      "task_id": "scripted",
+      "status": "cancelled",
+      "reason": "interrupted at confirmation",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            326.0,
+            211.0,
+            480.0,
+            332.0
+          ],
+          "elements": 11,
+          "values": {
+            "app:sync-toggle": "0",
+            "app:notify-toggle": "1",
+            "app:search": "hello",
+            "app:save": null,
+            "app:cancel": null
+          }
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "type_text",
+            "element_id": "app:search",
+            "text": "probe-cancel"
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "type_text",
+          "description": "type_text: type 12 characters into \u201cthe focused field\u201d"
+        },
+        {
+          "type": "policy",
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "identity": {
+            "role": "AXTextField",
+            "name": "Search",
+            "identifier": "app:search",
+            "frame": [
+              435.0,
+              370.0,
+              332.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "type",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:search"
+            },
+            "text": "probe-cancel",
+            "expect_window_frame": [
+              326.0,
+              211.0,
+              480.0,
+              332.0
+            ]
+          }
+        },
+        {
+          "type": "preflight",
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "text": "type 12 characters into AXTextField 'Search' (id app:search) in 'Practice App' | region (435, 370, 332, 26)"
+        },
+        {
+          "type": "overlay",
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "approved": false,
+          "interrupted": true
+        }
+      ]
+    }
+  },
+  "performed_actions": 0,
+  "unapproved_actions": 0,
+  "refusals": {
+    "cancelled": 1
+  },
+  "total_ms": 2965.023,
+  "raw_answers": []
+}

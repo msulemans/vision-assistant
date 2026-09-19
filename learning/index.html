@@ -37,8 +37,8 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M012 · complete — grounding gate 44/44, live targets OCR-verified</dd></div>
-          <div><dt>Tests</dt><dd>198 passing · 192 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M013 · complete — 3/3 supervised actions performed, verified, zero unapproved</dd></div>
+          <div><dt>Tests</dt><dd>245 passing · 239 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>Qwen3.5-4B · Q4_K_M — pinned, local</dd></div>
           <div><dt>Action access</dt><dd>None</dd></div>
         </dl>
@@ -140,13 +140,13 @@
         <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
 
-      <p><strong>Plan checkpoint:</strong> M012 is complete — the Accessibility
-        tree and the screenshot align at 1× and 2×, the frozen grounding gate
-        passes 44/44, live targets were OCR-verified, and still no input events
-        are posted. The live run found a substring false positive (now frozen as
-        a regression task). M013 is the first executor: opt-in, previewed,
-        confirmed, stoppable, and only against disposable targets. These are
-        planned gates.</p>
+      <p><strong>Plan checkpoint:</strong> M013 is complete — the first
+        supervised executor performed all three frozen tasks against the
+        disposable window, each previewed, overlaid, confirmed, re-checked, and
+        verified, with zero unapproved actions. The live runs found and fixed a
+        blind-toggle hazard, a black-capture quirk, and macOS's ban on cross-app
+        activation. M014 adds budgets, takeover, and recovery. These are planned
+        gates.</p>
 
       <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
         <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
@@ -280,6 +280,11 @@
         at 1× and 2×. The live run caught a real substring false positive —
         "AC" matched "Subtract" mid-word — now fixed and frozen as a regression
         task; the opt-in permission shows its denial path honestly.</p>
+      <p>M013 executor: the first host actions — a click is an identity-addressed
+        AXPress, typing is an accessibility value write that is read back, and key
+        events require the target app to be frontmost. Every refusal path (unknown
+        element, coordinates, secrets, declined, stale frame, cancellation) was
+        demonstrated live with nothing posted.</p>
       <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
       <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
     </section>

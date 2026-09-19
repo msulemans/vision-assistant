@@ -125,8 +125,12 @@ UI with all five read-only capstones passing live, typed intent policy
 containment (13/13 adversarial, zero bypasses), a simulated action loop
 (3/3 tasks, zero host input), and read-only Accessibility grounding (frozen
 gate 44/44; live targets grounded at 1x and 2x with OCR-verified crops; no
-input events posted). Current focus: M013 — supervised mouse and keyboard
-execution.
+input events posted). Milestone 013 adds the first supervised executor:
+three frozen tasks performed and verified against the disposable practice
+window with zero unapproved actions, and every refusal path (unknown
+element, coordinates, secret target, declined, stale frame, cancellation)
+demonstrated live with nothing posted. Current focus: M014 — recovery and
+bounded task agent.
 
 ## Run the Milestone 002 lab
 
@@ -315,3 +319,16 @@ Aligns a window's Accessibility elements with its screenshot and resolves
 targets to stable identities — read-only, with the opt-in Accessibility
 permission. Measured 2026-09-19: gate 44/44; "7"/"5"/"9" grounded at 2x with
 OCR-matched crops; absent targets fail closed; zero input events.
+
+### Supervised executor (M013)
+
+```bash
+(runs/m013-tools/practice_window >/dev/null 2>&1 &)   # disposable practice window
+PYTHONPATH=src python -m vision_assistant.supervised_cli
+```
+
+The pinned model proposes; every action is previewed with a screen overlay,
+confirmed interactively, re-checked for freshness, performed through the
+single writer helper, and verified by re-observing the window. Measured
+2026-09-20: 3/3 frozen tasks performed and verified, zero unapproved
+actions; refusal paths all demonstrated with nothing posted.

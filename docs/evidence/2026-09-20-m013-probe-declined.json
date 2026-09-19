@@ -1,0 +1,102 @@
+{
+  "run_id": "m013-20260920-000045-42d54f",
+  "window_title": "Practice App",
+  "all_done": false,
+  "tasks": {
+    "scripted": {
+      "task_id": "scripted",
+      "status": "approval_denied",
+      "reason": "user declined the action",
+      "verified": null,
+      "performed": false,
+      "events": [
+        {
+          "type": "observe",
+          "window_frame": [
+            -1391.0,
+            159.0,
+            480.0,
+            332.0
+          ],
+          "elements": 12
+        },
+        {
+          "type": "propose",
+          "payload": {
+            "kind": "click_element",
+            "element_id": "app:notify-toggle"
+          }
+        },
+        {
+          "type": "intent",
+          "kind": "click_element",
+          "description": "click_element: click \u201capp:notify-toggle\u201d"
+        },
+        {
+          "type": "policy",
+          "verdict": "needs_confirmation",
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ]
+        },
+        {
+          "type": "plan",
+          "identity": {
+            "role": "AXCheckBox",
+            "name": "Notifications",
+            "identifier": "app:notify-toggle",
+            "frame": [
+              -1352.0,
+              272.0,
+              242.0,
+              26.0
+            ]
+          },
+          "spec": {
+            "action": "press",
+            "app": "practice_window",
+            "window_title": "Practice App",
+            "element": {
+              "identifier": "app:notify-toggle"
+            },
+            "expect_window_frame": [
+              -1391.0,
+              159.0,
+              480.0,
+              332.0
+            ]
+          }
+        },
+        {
+          "type": "preflight",
+          "ok": true
+        },
+        {
+          "type": "preview",
+          "text": "press AXCheckBox 'Notifications' (id app:notify-toggle) in 'Practice App' | region (-1352, 272, 242, 26)"
+        },
+        {
+          "type": "overlay",
+          "shown": true
+        },
+        {
+          "type": "confirm",
+          "approved": false
+        },
+        {
+          "type": "refused",
+          "status": "approval_denied",
+          "detail": "user declined the action"
+        }
+      ]
+    }
+  },
+  "performed_actions": 0,
+  "unapproved_actions": 0,
+  "refusals": {
+    "approval_denied": 1
+  },
+  "total_ms": 1499.78,
+  "raw_answers": []
+}

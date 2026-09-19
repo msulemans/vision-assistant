@@ -2,9 +2,8 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 013 in progress — M006 through M012 are complete (see their
-sections); the supervised executor (the first host actions, disposable
-practice window only) is being built.
+Status: Milestone 013 complete — M006 through M013 are complete (see their
+sections); M014 (recovery and bounded task agent) is next and not started.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1220,7 +1219,7 @@ executor; opt-in, previewed, confirmed, stoppable, disposable targets only).
 
 ## Milestone 013 — supervised mouse and keyboard execution
 
-Status: in progress. Scope was frozen before implementation (2026-09-19):
+Status: complete (2026-09-20). Scope was frozen before implementation (2026-09-19):
 
 - Objective: the first host-side executor. Every executed action is (1) an
   approved typed intent (M010 schema + policy), (2) addressed by a stable
@@ -1316,4 +1315,31 @@ transcript instead of being shown. The four refusal probes from the same run
 (unknown element, raw coordinates, secret target, declined confirmation) all
 behaved correctly with zero performed actions, and `AXPress` on a checkbox
 was verified working live both before and after the finding.
+
+Outcome (2026-09-20): the live gate passed in three attempts, each finding
+something real. Attempt 1: the window carried prior state, so the model's
+"already satisfied" answers were correct and its notify click toggled an
+already-on checkbox; verification correctly failed, and a
+secondary-display window captured black. Attempt 2: the window moved
+mid-run (`stale_frame` at preflight, zero side effects) and typing refused
+with `frontmost_mismatch` — probing showed macOS no longer permits
+cross-app activation, so the keystroke path could not be aimed safely and
+was replaced with an identity-bound accessibility value write that is read
+back. Final run: all three frozen tasks completed — click (sync), type
+(search, `method: ax_value`), click (notifications) — each previewed,
+overlaid, confirmed, re-checked, performed, and verified against fresh AX
+state, with `performed_actions: 3` and `unapproved_actions: 0`. Every
+refusal path was demonstrated live with zero side effects: `not_found`
+(unknown element), `schema_rejected` (raw coordinates), `policy_denied`
+(secret target), `approval_denied` (declined), `stale_frame` (window
+dragged mid-run), `cancelled` (SIGINT at the confirmation prompt, exit
+130, nothing performed), and satisfied tasks report `already_done`
+idempotently with zero actions. Evidence:
+`docs/evidence/2026-09-20-m013-supervised-execution.md` plus nine session
+JSONs in `docs/evidence/2026-09-20-m013-*.json`. Learning map M13=done,
+M14=current; figures: 245 tests = 239 product + 6 learning.
+
+Next milestone: M014 — recovery and bounded task agent (step/time budgets,
+user takeover, focus-change detection, recovery, blocked and finished
+states).
 
