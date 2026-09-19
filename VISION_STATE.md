@@ -948,3 +948,26 @@ the measured subset; recorded as future work.
 
 Next milestone: M008 — multi-turn visual conversation.
 
+## Milestone 008 — multi-turn visual conversation
+
+Status: in progress. Scope frozen 2026-09-19:
+
+- One session binds exactly one capture (identity = trace id + content
+  sha256); a new capture starts a fresh session and never inherits history.
+- Bounds: at most 12 turns; transcript budget 4000 characters (newest turns
+  kept, older turns dropped first and marked "(earlier turns omitted)"); the
+  M007 evidence block renders once per prompt; stale warning after 15 minutes
+  of inactivity (a warning, never a silent block).
+- Reset releases the artifact and closes the session; asking after reset and
+  exceeding the turn limit are typed errors.
+- Session trace: one JSONL (`session_started`, per-turn
+  `model_started`/`answer`/`done`, `session_reset`; per-turn failures record
+  `failed`). Evidence fact text never enters traces, as in M006/M007.
+
+First build: `conversation.py` (session state machine, bounded prompt
+composition, typed errors, session trace) and `assistant_cli --chat` (REPL
+with `:status`, `:reset`, `:quit`, stale warnings, clean Ctrl+C). Tests:
+`tests/test_conversation.py`.
+
+Next: the frozen reference/correction task set and its measurement run.
+

@@ -2,10 +2,12 @@
 
     python -m vision_assistant.assistant_cli shot.png --preview-only
     python -m vision_assistant.assistant_cli shot.png
+    python -m vision_assistant.assistant_cli shot.png --chat
 
 The default path uses the pinned Qwen3.5-4B configuration selected in M005
 (thinking off, context pinned at 4096). The private artifact is deleted before
-the command exits unless --retain is given.
+the command exits unless --retain is given. `--chat` (M008) keeps one capture
+bound to one bounded conversation session.
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ DEFAULT_PIN_DIR = REPO_ROOT / "models" / "qwen3.5-4b"
 
 
 def _trace_id() -> str:
-    return f"m006-{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
+    return f"va-{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -33,12 +35,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--think", action="store_true", help="keep the model's thinking mode (Qwen only)")
     parser.add_argument("--preview-only", action="store_true", help="normalize + report; no model run")
     parser.add_argument(
+        "--chat",
+        action="store_true",
+        help="multi-turn: keep asking follow-ups about this capture (M008)",
+    )
+    parser.add_argument(
         "--evidence-ocr",
         action="store_true",
         help="collect local Vision OCR facts into the prompt (M007)",
     )
     parser.add_argument("--retain", action="store_true", help="keep the private artifact (testing only)")
-    parser.add_argument("--trace-dir", type=Path, default=REPO_ROOT / "runs" / "m006")
+    parser.add_argument(
+        "--trace-dir",
+        type=Path,
+        default=None,
+        help="trace directory (default: runs/m008 with --chat, else runs/m006)",
+    )
     parser.add_argument(
         "--artifacts-root",
         type=Path,
@@ -46,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
         help="private artifact root (tests override this)",
     )
     args = parser.parse_args(argv)
+    trace_dir = args.trace_dir or REPO_ROOT / "runs" / ("m008" if args.chat else "m006")
 
     from .assistant import (
         DEFAULT_QUESTION,
@@ -104,25 +117,34 @@ def main(argv: list[str] | None = None) -> int:
         chat_template_kwargs={"enable_thinking": False} if not args.think else None,
         log_path=REPO_ROOT / "runs" / "assistant-server.log",
     )
-    trace_path = args.trace_dir / f"{trace_id}.jsonl"
+    trace_path = trace_dir / f"{trace_id}.jsonl"
     stage = "model_start"
     try:
         adapter.start()
+        if args.chat:
+            stage = "chat"
+            return _run_chat(
+                frame,
+                store,
+                adapter,
+                evidence_port=evidence_port,
+                trace_dir=trace_dir,
+            )
         stage = "answer"
         result = answer_frame(
             frame,
             args.question or DEFAULT_QUESTION,
             adapter=adapter,
-            trace_dir=args.trace_dir,
+            trace_dir=trace_dir,
             store=store,
             evidence_port=evidence_port,
         )
     except KeyboardInterrupt:
         store.release(frame)
-        if stage != "answer":
-            # The answer flow records its own `cancelled` trace; earlier
-            # stages have none yet.
-            record_interruption(args.trace_dir, trace_id, stage=stage)
+        if stage == "model_start":
+            # Only the pre-answer stage lacks its own trace; the answer and
+            # chat flows record `cancelled` themselves.
+            record_interruption(trace_dir, trace_id, stage=stage)
         print(json.dumps({"status": "cancelled", "stage": stage, "trace": str(trace_path)}))
         return 130
     except Exception as exc:  # noqa: BLE001 - report cleanly; the server log has details
@@ -159,6 +181,58 @@ def main(argv: list[str] | None = None) -> int:
     print(f"trace: {result['trace_path']}")
     print(f"artifact released: {result['released']}")
     print(json.dumps({"status": "answered", "trace_id": result["trace_id"], "released": result["released"], "evidence": bool(result.get("evidence"))}))
+    return 0
+
+
+def _run_chat(frame, store, adapter, *, evidence_port, trace_dir: Path) -> int:
+    from .conversation import ConversationSession, TurnLimitReached
+
+    session = ConversationSession(
+        frame, store, adapter, evidence_port=evidence_port, trace_dir=trace_dir
+    )
+    print("chat: ask follow-ups about this capture; :status  :reset  :quit  (Ctrl+C stops)")
+    released = False
+    try:
+        while True:
+            try:
+                line = input("you> ").strip()
+            except EOFError:
+                break
+            if not line:
+                continue
+            if line in {":quit", ":exit"}:
+                break
+            if line == ":status":
+                state = "stale" if session.stale() else "fresh"
+                print(
+                    f"session: {len(session.turns)} turn(s), "
+                    f"capture {frame.content_sha256[:12]}..., {state}"
+                )
+                continue
+            if line == ":reset":
+                released = session.reset()
+                print(f"reset: artifact released: {released}")
+                break
+            try:
+                result = session.ask(line)
+            except TurnLimitReached as exc:
+                print(f"limit: {exc}")
+                continue
+            if result["stale_warning"]:
+                print("[stale] this capture is older than the freshness window; re-capture soon")
+            print(f"[turn {result['turn']}]")
+            for label in ("visible", "inferred", "unknown"):
+                print(f"[{label}]")
+                for item in result["answer"][label] or ["(none)"]:
+                    print(f"  {item}")
+            timing = result["timing_ms"]
+            print(
+                f"  first {timing['first_token']:.0f} ms - complete {timing['complete']:.0f} ms"
+            )
+    finally:
+        if not session.closed:
+            released = session.reset()
+    print(json.dumps({"status": "chat_ended", "turns": len(session.turns), "released": released}))
     return 0
 
 
