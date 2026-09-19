@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from vision_assistant.assistant import DEFAULT_QUESTION, answer_frame, preview_image
 from vision_assistant.corpus import build_corpus
@@ -97,6 +100,91 @@ class OneShotAssistantTest(unittest.TestCase):
             )
             self.assertFalse(result["released"])
             self.assertTrue((root / "artifacts" / "m006-retain" / "frame.png").exists())
+
+
+class PreviewInterruptTest(unittest.TestCase):
+    def test_interrupt_during_preview_purges_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            calls = {"n": 0}
+
+            def clock() -> float:
+                calls["n"] += 1
+                if calls["n"] >= 2:  # interrupt after the artifact was written
+                    raise KeyboardInterrupt
+                return 0.0
+
+            with self.assertRaises(KeyboardInterrupt):
+                preview_image(
+                    _write_png(root),
+                    artifacts_root=root / "artifacts",
+                    trace_id="m006-stop",
+                    clock=clock,
+                )
+            self.assertFalse((root / "artifacts" / "m006-stop").exists())
+
+
+class _FakeStartupAdapter:
+    instances: list = []
+
+    def __init__(self, *args, **kwargs) -> None:
+        self.stopped = False
+        _FakeStartupAdapter.instances.append(self)
+
+    def start(self) -> None:
+        raise KeyboardInterrupt
+
+    def stop(self) -> None:
+        self.stopped = True
+
+
+class CliStartupInterruptTest(unittest.TestCase):
+    def test_startup_interrupt_is_clean(self) -> None:
+        from vision_assistant import assistant_cli
+
+        _FakeStartupAdapter.instances = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pin_dir = root / "pin"
+            pin_dir.mkdir()
+            (pin_dir / "pin.json").write_text(
+                json.dumps(
+                    {
+                        "files": [
+                            {"role": "model", "name": "model.gguf"},
+                            {"role": "mmproj", "name": "mmproj.gguf"},
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with mock.patch(
+                "vision_assistant.runtime_llamaserver.LlamaServerAdapter",
+                _FakeStartupAdapter,
+            ), contextlib.redirect_stdout(stdout):
+                code = assistant_cli.main(
+                    [
+                        str(_write_png(root)),
+                        "--pin-dir",
+                        str(pin_dir),
+                        "--artifacts-root",
+                        str(root / "artifacts"),
+                        "--trace-dir",
+                        str(root / "traces"),
+                    ]
+                )
+            self.assertEqual(code, 130)
+            payload = json.loads(stdout.getvalue().strip().splitlines()[-1])
+            self.assertEqual(payload["status"], "cancelled")
+            self.assertEqual(payload["stage"], "model_start")
+            self.assertTrue(_FakeStartupAdapter.instances[0].stopped)
+            self.assertEqual(list((root / "artifacts").iterdir()), [])
+            traces = list((root / "traces").glob("*.jsonl"))
+            self.assertEqual(len(traces), 1)
+            records = _read_trace(str(traces[0]))
+            self.assertEqual(records[1]["type"], "cancelled")
+            self.assertEqual(records[1]["payload"]["stage"], "model_start")
 
 
 if __name__ == "__main__":

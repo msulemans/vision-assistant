@@ -34,18 +34,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--preview-only", action="store_true", help="normalize + report; no model run")
     parser.add_argument("--retain", action="store_true", help="keep the private artifact (testing only)")
     parser.add_argument("--trace-dir", type=Path, default=REPO_ROOT / "runs" / "m006")
+    parser.add_argument(
+        "--artifacts-root",
+        type=Path,
+        default=REPO_ROOT / "runs" / "m006-artifacts",
+        help="private artifact root (tests override this)",
+    )
     args = parser.parse_args(argv)
 
-    from .assistant import DEFAULT_QUESTION, answer_frame, preview_image
+    from .assistant import (
+        DEFAULT_QUESTION,
+        answer_frame,
+        preview_image,
+        record_interruption,
+    )
 
     trace_id = _trace_id()
     try:
         preview, frame, store, _ingestor = preview_image(
             args.image,
-            artifacts_root=REPO_ROOT / "runs" / "m006-artifacts",
+            artifacts_root=args.artifacts_root,
             trace_id=trace_id,
             retain=args.retain,
         )
+    except KeyboardInterrupt:
+        print(json.dumps({"status": "cancelled", "stage": "preview"}))
+        return 130
     except Exception as exc:  # noqa: BLE001 - the CLI reports typed capture failures
         print(json.dumps({"status": "failed", "stage": "preview", "reason": str(exc)}))
         return 1
@@ -79,8 +93,11 @@ def main(argv: list[str] | None = None) -> int:
         chat_template_kwargs={"enable_thinking": False} if not args.think else None,
         log_path=REPO_ROOT / "runs" / "assistant-server.log",
     )
-    adapter.start()
+    trace_path = args.trace_dir / f"{trace_id}.jsonl"
+    stage = "model_start"
     try:
+        adapter.start()
+        stage = "answer"
         result = answer_frame(
             frame,
             args.question or DEFAULT_QUESTION,
@@ -89,8 +106,21 @@ def main(argv: list[str] | None = None) -> int:
             store=store,
         )
     except KeyboardInterrupt:
-        print(json.dumps({"status": "cancelled"}))
+        store.release(frame)
+        if stage != "answer":
+            # The answer flow records its own `cancelled` trace; earlier
+            # stages have none yet.
+            record_interruption(args.trace_dir, trace_id, stage=stage)
+        print(json.dumps({"status": "cancelled", "stage": stage, "trace": str(trace_path)}))
         return 130
+    except Exception as exc:  # noqa: BLE001 - report cleanly; the server log has details
+        store.release(frame)
+        print(
+            json.dumps(
+                {"status": "failed", "stage": stage, "reason": f"{type(exc).__name__}: {exc}"}
+            )
+        )
+        return 1
     finally:
         adapter.stop()
 

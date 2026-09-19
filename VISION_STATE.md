@@ -844,6 +844,17 @@ model_started → answer → done`, artifact released. Verbatim stdout and the
 trace are preserved in `docs/evidence/2026-09-19-m006-live-demo.md` and
 `docs/evidence/2026-09-19-m006-live-demo.jsonl`.
 
-Remaining for the M006 gate: an interrupt (Ctrl+C) check, and the capstone
-smoke checklist; retry = re-run with the same image, reset = artifact
-release.
+Stop check round 1 (user, 2026-09-19) found a real gap: Ctrl+C during
+`adapter.start()` (model load) produced a raw traceback, left the private
+artifact on disk, and only the process-group SIGINT prevented an orphaned
+`llama-server`. Fixed: every stage now cancels cleanly — interrupts during
+preview purge the artifact (`EphemeralArtifactStore.purge`), interrupts during
+startup stop the server (`LlamaServerAdapter.start` cleanup), earlier-stage
+interrupts record a `cancelled` trace (`record_interruption`), and the CLI
+prints one JSON line (`{"status": "cancelled", "stage": ...}`) with exit 130.
+Regression tests: `test_runtime_interrupt.py`, `CliStartupInterruptTest`,
+`PreviewInterruptTest`.
+
+Remaining for the M006 gate: a successful stop-check re-run on the user's
+machine (clean cancel from any stage), and the capstone smoke checklist;
+retry = re-run with the same image, reset = artifact release.

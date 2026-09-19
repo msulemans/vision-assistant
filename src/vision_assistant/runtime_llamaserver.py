@@ -154,13 +154,18 @@ class LlamaServerAdapter:
             self._log_handle = self.log_path.open("w", encoding="utf-8")
         self._process = self._runner(self._server_argv(), **self._spawn_kwargs())
         deadline = time.monotonic() + wait_s
-        while time.monotonic() < deadline:
-            try:
-                with urllib.request.urlopen(f"{self.base_url}{HEALTH}", timeout=2) as response:
-                    if response.status == 200:
-                        return
-            except (OSError, urllib.error.URLError):
-                time.sleep(0.5)
+        try:
+            while time.monotonic() < deadline:
+                try:
+                    with urllib.request.urlopen(f"{self.base_url}{HEALTH}", timeout=2) as response:
+                        if response.status == 200:
+                            return
+                except (OSError, urllib.error.URLError):
+                    time.sleep(0.5)
+        except KeyboardInterrupt:
+            # Ctrl+C while the model loads must not leak the child process.
+            self.stop()
+            raise
         raise RuntimeError(f"llama-server did not become healthy on {self.base_url}")
 
     def stop(self) -> None:

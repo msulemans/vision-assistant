@@ -233,6 +233,26 @@ class EphemeralArtifactStore:
         except OSError:
             pass
 
+    def purge(self, trace_id: str) -> None:
+        """Remove any artifact for *trace_id* without needing a CapturedFrame.
+
+        Used when an interrupted run may not have produced a frame object yet.
+        """
+        if self.retain:
+            return
+        if not _TRACE_ID.fullmatch(trace_id):
+            raise ValueError("trace_id contains unsafe characters")
+        trace_dir = self.root / trace_id
+        if trace_dir.is_symlink() or not trace_dir.is_dir():
+            return
+        for child in trace_dir.iterdir():
+            if child.is_file() or child.is_symlink():
+                child.unlink()
+        try:
+            trace_dir.rmdir()
+        except OSError:
+            pass
+
 
 class PngIngestor:
     """The single normalization path used by file and macOS capture ports."""

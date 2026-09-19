@@ -56,15 +56,20 @@ def preview_image(
     """Normalize the selected PNG, store it privately, and measure ingest time."""
     store = EphemeralArtifactStore(artifacts_root, retain=retain)
     ingestor = PngIngestor(store)
-    data = Path(image_path).read_bytes()
-    started = clock()
-    frame = ingestor.ingest_bytes(
-        data,
-        trace_id=trace_id,
-        source=CaptureSource(kind="file", label=str(image_path)),
-        duration_ms=0.0,
-    )
-    ingest_ms = (clock() - started) * 1000.0
+    try:
+        data = Path(image_path).read_bytes()
+        started = clock()
+        frame = ingestor.ingest_bytes(
+            data,
+            trace_id=trace_id,
+            source=CaptureSource(kind="file", label=str(image_path)),
+            duration_ms=0.0,
+        )
+        ingest_ms = (clock() - started) * 1000.0
+    except KeyboardInterrupt:
+        # The frame may not exist yet; purge whatever was written for this id.
+        store.purge(trace_id)
+        raise
     preview = Preview(
         trace_id=trace_id,
         width=frame.width,
@@ -74,6 +79,39 @@ def preview_image(
         ingest_ms=round(ingest_ms, 3),
     )
     return preview, frame, store, ingestor
+
+
+def record_interruption(
+    trace_dir: Path,
+    trace_id: str,
+    *,
+    stage: str,
+    clock: Callable[[], float] = time.monotonic,
+) -> Path:
+    """Record a `cancelled` trace for an interrupt before the answer flow ran.
+
+    The answer flow records its own `cancelled` trace; this covers the
+    preview and model-start stages, where no trace exists yet.
+    """
+    trace_path = Path(trace_dir) / f"{trace_id}.jsonl"
+    sink = JsonlTraceSink(
+        trace_path,
+        trace_id=trace_id,
+        kind=KIND_REAL,
+        created_at_ms=clock() * 1000.0,
+    )
+    sink.emit(
+        Event(
+            trace_id=trace_id,
+            event_id="e1",
+            ts_ms=clock() * 1000.0,
+            type="cancelled",
+            state=CANCELLED,
+            payload={"reason": "user_interrupt", "stage": stage},
+        )
+    )
+    sink.write()
+    return trace_path
 
 
 def answer_frame(
