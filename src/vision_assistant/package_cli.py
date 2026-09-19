@@ -71,7 +71,7 @@ if [ ! -x "$PREFIX/venv/bin/python" ]; then
 fi
 export PYTHONPATH="$PREFIX/current/src"
 case "${1:-}" in
-  doctor|smoke|forecast|verify|versions|rollback|uninstall|build) module=vision_assistant.package_cli ;;
+  doctor|smoke|forecast|verify|versions|rollback|uninstall|build|install) module=vision_assistant.package_cli ;;
   ask) module=vision_assistant.assistant_cli ;;
   ui) module=vision_assistant.ui_server ;;
   grounding) module=vision_assistant.grounding_cli ;;
