@@ -60,8 +60,8 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M005 · bake-off pending",
-            "42 passing · 36 product + 6 learning",
+            "M005 · complete — Qwen3.5-4B selected",
+            "70 passing · 64 product + 6 learning",
             "None acquired",
             "Intentionally absent",
             "selection_timed_out",
@@ -74,7 +74,8 @@ class LearningSiteContractTest(unittest.TestCase):
         ids = [int(value) for value in re.findall(r"\{ id: (\d+), phase:", self.js)]
         self.assertEqual(ids, list(range(1, 18)))
         self.assertIn('status: "done", title: "Frozen screen-understanding corpus"', self.js)
-        self.assertIn('status: "current", title: "Local VLM and runtime bake-off"', self.js)
+        self.assertIn('status: "done", title: "Local VLM and runtime bake-off"', self.js)
+        self.assertIn('status: "current", title: "One-shot local Vision Assistant"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)
