@@ -895,6 +895,26 @@ First build: `pixels.py` (stdlib PNG decode/crop/integer-zoom; every output
 re-validates through `normalize_png`; all five PNG row filters round-trip) and
 `evidence.py` (fact/provenance types, `EvidencePort` with null/static
 adapters, trace-safe summaries, bounded prompt rendering), with deterministic
-tests. Next: the Vision OCR adapter, assistant-CLI wiring, then the frozen
-subset measurement.
+tests.
+
+OCR adapter landed: `tools/vision_ocr.swift` (Vision `VNRecognizeTextRequest`,
+literal mode by default, optional `--correction`; no TCC permission, no
+package) plus `ocr_vision.py`, which compiles the helper once into
+`runs/m007-tools/vision_ocr` (~5 s) and returns pixel-region facts.
+
+OCR experiment (2026-09-19), which froze the pipeline: on `m004-dialog-14`,
+plain 1x OCR misread the missed string ("UNSEVED BEFOBT"), `--correction`
+partially fixed it ("UNSAVED BEFORT", 0.5), and x2 zoom via `pixels.py` read
+`UNSAVED REPORT` at confidence 1.0; x4 regressed ("UNSAWED"). Frozen: zoom
+x2 → literal OCR → facts into the model prompt. Detail:
+`docs/evidence/2026-09-19-m007-ocr-smoke.md`.
+
+Wiring landed: `answer_frame(..., evidence_port=...)` gathers facts (zoom x2)
+before `model_started`, emits a trace-safe `evidence` event (status + counts,
+never text), appends rendered facts to the model prompt only, degrades
+gracefully when augmentation fails, and reports fact text in the runtime
+result (never persisted). CLI: `--evidence-ocr`.
+
+Next: the frozen-subset measurement on the pinned model (user machine) and
+the result record.
 

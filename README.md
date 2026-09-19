@@ -216,6 +216,10 @@ pinned Qwen3.5-4B configuration (context 4096, thinking off), prints
 `[visible]`/`[inferred]`/`[unknown]` labels with real timings, writes a JSONL
 trace under `runs/m006/`, and deletes the private artifact before exit.
 
+`--evidence-ocr` (M007) adds optional local Vision OCR evidence: the image is
+zoomed ×2 in-process, the extracted facts are appended to the model prompt,
+and only counts and provenance kinds enter the trace.
+
 Interrupting any stage (Ctrl+C) exits cleanly: one JSON line with the stage and
 trace path, a `cancelled` trace record, the artifact purged, exit code 130, and
 no orphaned server process. Retry is re-running with the same image; reset is

@@ -24,6 +24,8 @@ from .events import (
     IDLE,
     KIND_REAL,
 )
+from .evidence import EvidencePort, EvidenceReport, facts_to_prompt
+from .pixels import zoom_png
 from .ports import CaptureSource, CapturedFrame
 from .trace import JsonlTraceSink
 
@@ -33,6 +35,16 @@ LABELS_NOTE = (
     "Model output: [visible] quotes the screenshot, [inferred] is a supported "
     "cause, [unknown] is what the screenshot does not establish. Verify before trusting."
 )
+
+EVIDENCE_ZOOM = 2  # frozen 2026-09-19: x2 read the missed dialog string; x4 regressed
+
+
+def gather_evidence(
+    png_bytes: bytes, port: EvidencePort, *, zoom_factor: int = EVIDENCE_ZOOM
+) -> EvidenceReport:
+    """The frozen M007 augmentation: integer-zoom first, then collect facts."""
+    prepared = zoom_png(png_bytes, factor=zoom_factor) if zoom_factor > 1 else png_bytes
+    return port.collect(prepared)
 
 
 @dataclass(frozen=True)
@@ -121,6 +133,7 @@ def answer_frame(
     adapter,
     trace_dir: Path,
     store: EphemeralArtifactStore,
+    evidence_port: EvidencePort | None = None,
     clock: Callable[[], float] = time.monotonic,
 ) -> dict:
     """Submit one question, record the trace, release the artifact, return results."""
@@ -150,22 +163,31 @@ def answer_frame(
             trace.emit(event)
         trace.write()
 
-    emit(
-        "preview",
-        IDLE,
-        {
-            "width": frame.width,
-            "height": frame.height,
-            "byte_size": frame.byte_size,
-            "sha256": frame.content_sha256,
-        },
-    )
-    emit("model_started", ANALYSING, {"question": question})
+    emit("preview", IDLE, {
+        "width": frame.width,
+        "height": frame.height,
+        "byte_size": frame.byte_size,
+        "sha256": frame.content_sha256,
+    })
 
     png_bytes = Path(frame.image_path).read_bytes() if frame.image_path else b""
+    evidence_report: EvidenceReport | None = None
+    prompt = question
+    if evidence_port is not None:
+        try:
+            evidence_report = gather_evidence(png_bytes, evidence_port)
+        except Exception as exc:  # noqa: BLE001 - augmentation is optional
+            emit("evidence", ANALYSING, {"status": "failed", "reason": type(exc).__name__})
+        else:
+            emit("evidence", ANALYSING, {"status": "collected", **evidence_report.summary()})
+            block = facts_to_prompt(evidence_report)
+            if block:
+                prompt = f"{question}\n\n{block}"
+
+    emit("model_started", ANALYSING, {"question": question, "evidence": evidence_report is not None})
     try:
         started = clock()
-        answer, timings = adapter.predict_image(png_bytes, question)
+        answer, timings = adapter.predict_image(png_bytes, prompt)
         total_ms = (clock() - started) * 1000.0
     except KeyboardInterrupt:
         emit("cancelled", CANCELLED, {"reason": "user_interrupt"})
@@ -219,6 +241,17 @@ def answer_frame(
             "inferred": list(answer.inferred),
             "unknown": list(answer.unknown),
         },
+        "evidence": (
+            {
+                **evidence_report.summary(),
+                "facts": [
+                    {"kind": fact.kind, "text": fact.text, "region": fact.region}
+                    for fact in evidence_report.facts
+                ],
+            }
+            if evidence_report is not None
+            else None
+        ),
         "labels_note": LABELS_NOTE,
         "released": released,
     }

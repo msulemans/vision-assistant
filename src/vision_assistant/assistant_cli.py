@@ -32,6 +32,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ctx-size", type=int, default=4096, help="bounded context (M005 selection)")
     parser.add_argument("--think", action="store_true", help="keep the model's thinking mode (Qwen only)")
     parser.add_argument("--preview-only", action="store_true", help="normalize + report; no model run")
+    parser.add_argument(
+        "--evidence-ocr",
+        action="store_true",
+        help="collect local Vision OCR facts into the prompt (M007)",
+    )
     parser.add_argument("--retain", action="store_true", help="keep the private artifact (testing only)")
     parser.add_argument("--trace-dir", type=Path, default=REPO_ROOT / "runs" / "m006")
     parser.add_argument(
@@ -83,6 +88,12 @@ def main(argv: list[str] | None = None) -> int:
     model = next(f for f in pin["files"] if f["role"] == "model")
     mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
 
+    evidence_port = None
+    if args.evidence_ocr:
+        from .ocr_vision import VisionOcrAdapter
+
+        evidence_port = VisionOcrAdapter()
+
     from .runtime_llamaserver import LlamaServerAdapter
 
     adapter = LlamaServerAdapter(
@@ -104,6 +115,7 @@ def main(argv: list[str] | None = None) -> int:
             adapter=adapter,
             trace_dir=args.trace_dir,
             store=store,
+            evidence_port=evidence_port,
         )
     except KeyboardInterrupt:
         store.release(frame)
@@ -129,13 +141,24 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[{label}]")
         for line in answer[label] or ["(none)"]:
             print(f"  {line}")
+    if args.evidence_ocr:
+        evidence = result.get("evidence")
+        if evidence:
+            print(
+                f"[evidence] {evidence['fact_count']} {evidence['adapter']} facts, "
+                f"{evidence['elapsed_ms']:.0f} ms"
+            )
+            for fact in evidence["facts"]:
+                print(f"  [{fact['kind']}] {fact['text']}")
+        else:
+            print("[evidence] unavailable — see the trace for the failure reason")
     timing = result["timing_ms"]
     first = f"{timing['first_token']:.0f} ms" if timing["first_token"] is not None else "n/a"
     complete = f"{timing['complete']:.0f} ms" if timing["complete"] is not None else "n/a"
     print(f"\nfirst token {first} - complete {complete} - total {timing['total']:.0f} ms")
     print(f"trace: {result['trace_path']}")
     print(f"artifact released: {result['released']}")
-    print(json.dumps({"status": "answered", "trace_id": result["trace_id"], "released": result["released"]}))
+    print(json.dumps({"status": "answered", "trace_id": result["trace_id"], "released": result["released"], "evidence": bool(result.get("evidence"))}))
     return 0
 
 

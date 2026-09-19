@@ -10,6 +10,8 @@ from unittest import mock
 
 from vision_assistant.assistant import DEFAULT_QUESTION, answer_frame, preview_image
 from vision_assistant.corpus import build_corpus
+from vision_assistant.evidence import KIND_OCR, EvidenceFact, EvidenceReport
+from vision_assistant.pixels import decode_png
 from vision_assistant.ports import LabelledAnswer
 
 
@@ -28,10 +30,16 @@ class _FakeAdapter:
         return answer, {"first_token_ms": 12.5, "complete_ms": 34.0}
 
 
+_FIXTURE_PNG: bytes | None = None
+
+
 def _write_png(root: Path) -> Path:
-    case = build_corpus()[0]
+    # build_corpus() takes seconds; build the fixture once per test process.
+    global _FIXTURE_PNG
+    if _FIXTURE_PNG is None:
+        _FIXTURE_PNG = build_corpus()[0].fixture.png_bytes
     path = root / "shot.png"
-    path.write_bytes(case.fixture.png_bytes)
+    path.write_bytes(_FIXTURE_PNG)
     return path
 
 
@@ -185,6 +193,97 @@ class CliStartupInterruptTest(unittest.TestCase):
             records = _read_trace(str(traces[0]))
             self.assertEqual(records[1]["type"], "cancelled")
             self.assertEqual(records[1]["payload"]["stage"], "model_start")
+
+
+class _RecordingAdapter:
+    def __init__(self) -> None:
+        self.calls: list[tuple[bytes, str]] = []
+
+    def predict_image(self, png_bytes: bytes, question: str):
+        self.calls.append((png_bytes, question))
+        answer = LabelledAnswer(visible=("SAVE YOUR WORK",), inferred=(), unknown=())
+        return answer, {"first_token_ms": 1.0, "complete_ms": 2.0}
+
+
+class _RecordingEvidencePort:
+    def __init__(self) -> None:
+        self.received: list[bytes] = []
+
+    def collect(self, png_bytes: bytes) -> EvidenceReport:
+        self.received.append(png_bytes)
+        return EvidenceReport(
+            adapter="test-ocr",
+            facts=(
+                EvidenceFact(
+                    fact_id="ocr-1",
+                    kind=KIND_OCR,
+                    text="SECRET-FACT-42",
+                    region=(1, 2, 3, 4),
+                    source="test-ocr",
+                ),
+            ),
+            elapsed_ms=0.5,
+        )
+
+
+class _FailingEvidencePort:
+    def collect(self, png_bytes: bytes) -> EvidenceReport:  # pragma: no cover - raises
+        raise RuntimeError("ocr down")
+
+
+class EvidenceFlowTest(unittest.TestCase):
+    def test_evidence_enters_prompt_but_not_trace(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _preview, frame, store, _ = preview_image(
+                _write_png(root), artifacts_root=root / "artifacts", trace_id="m007-ocr"
+            )
+            port = _RecordingEvidencePort()
+            adapter = _RecordingAdapter()
+            expected_bytes = Path(frame.image_path).read_bytes()
+            result = answer_frame(
+                frame,
+                DEFAULT_QUESTION,
+                adapter=adapter,
+                trace_dir=root / "traces",
+                store=store,
+                evidence_port=port,
+            )
+            sent_bytes, sent_question = adapter.calls[0]
+            self.assertEqual(sent_bytes, expected_bytes)  # model sees the raw artifact
+            self.assertIn("[ocr]", sent_question)
+            self.assertIn("SECRET-FACT-42", sent_question)
+            self.assertIn(DEFAULT_QUESTION, sent_question)
+            zoomed = decode_png(port.received[0])
+            self.assertEqual((zoomed.width, zoomed.height), (frame.width * 2, frame.height * 2))
+            records = _read_trace(result["trace_path"])
+            types = [record["type"] for record in records[1:]]
+            self.assertEqual(types, ["preview", "evidence", "model_started", "answer", "done"])
+            self.assertEqual(records[2]["payload"]["kinds"], {"ocr": 1})
+            self.assertNotIn("SECRET-FACT-42", Path(result["trace_path"]).read_text())
+            self.assertEqual(result["evidence"]["facts"][0]["kind"], "ocr")
+
+    def test_evidence_failure_degrades_gracefully(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _preview, frame, store, _ = preview_image(
+                _write_png(root), artifacts_root=root / "artifacts", trace_id="m007-ocrfail"
+            )
+            adapter = _RecordingAdapter()
+            result = answer_frame(
+                frame,
+                DEFAULT_QUESTION,
+                adapter=adapter,
+                trace_dir=root / "traces",
+                store=store,
+                evidence_port=_FailingEvidencePort(),
+            )
+            self.assertEqual(adapter.calls[0][1], DEFAULT_QUESTION)
+            self.assertIsNone(result["evidence"])
+            records = _read_trace(result["trace_path"])
+            self.assertEqual(records[2]["type"], "evidence")
+            self.assertEqual(records[2]["payload"]["status"], "failed")
+            self.assertEqual(records[-1]["state"], "done")
 
 
 if __name__ == "__main__":
