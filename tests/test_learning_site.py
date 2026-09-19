@@ -60,8 +60,8 @@ class LearningSiteContractTest(unittest.TestCase):
 
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
-            "M011 · complete",
-            "161 passing · 155 product + 6 learning",
+            "M012 · complete",
+            "198 passing · 192 product + 6 learning",
             "pinned, local",
             "Intentionally absent",
             "selection_timed_out",
@@ -81,7 +81,8 @@ class LearningSiteContractTest(unittest.TestCase):
         self.assertIn('status: "done", title: "Usable capture and answer UI"', self.js)
         self.assertIn('status: "done", title: "Typed action intents and policy—no execution"', self.js)
         self.assertIn('status: "done", title: "Disposable simulated action loop"', self.js)
-        self.assertIn('status: "current", title: "Read-only macOS UI grounding"', self.js)
+        self.assertIn('status: "done", title: "Read-only macOS UI grounding"', self.js)
+        self.assertIn('status: "current", title: "Supervised mouse and keyboard execution"', self.js)
 
     def test_accessibility_and_reduced_motion_contracts_exist(self) -> None:
         self.assertIn("skip-link", self.html)

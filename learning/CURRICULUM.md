@@ -231,3 +231,24 @@ second run finished all three frozen tasks in one step each, verified
 against state predicates, with zero host input events. Lesson: format
 compliance is an infrastructure problem, not a politeness problem. Next
 milestone: M012 — read-only macOS UI grounding (no posted input).
+
+## M012 outcome — read-only grounding, and a false positive the live run found
+
+milestone: M012 — read-only macOS UI grounding (no posted input). Complete 2026-09-19.
+
+The window's Accessibility tree and its screenshot are aligned through one
+derived scale (image pixels / window points), so Retina and external
+displays both work: a 2x capture on the built-in display and a 1x capture
+on a negative-origin external display both aligned correctly, with the CG
+window id matched. Targets resolve through normalized role-aware scoring —
+exact names, token subsets, and boundary substrings — with stable
+identifiers beating duplicate labels, and absence or ties failing closed
+(`not_found` / `ambiguous`, never a guess). The live run earned its keep:
+resolving "AC" on Calculator matched "Subtract" because the substring tier
+accepted mid-word sequences; the fix (require a word boundary and at least
+four characters) is frozen as a regression task, taking the gate to 44
+checks. The permission story is honest both ways — nothing is read before
+an explicit opt-in, the denial path is a typed message and exit 2, and
+secure text-field values never leave the parser. Next milestone: M013 —
+supervised mouse and keyboard execution (first executor; still disposable
+targets, previews, confirmations, and stop).

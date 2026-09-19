@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-19 (Australia/Sydney)
 
-Status: Milestone 012 in progress — M006 through M011 are complete (see their
-sections); the read-only macOS UI grounding layer is being built (Accessibility
-alignment, stable element identity, zero posted input).
+Status: Milestone 012 complete — M006 through M012 are complete (see their
+sections); M013 (supervised mouse and keyboard execution) is next and not
+started.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1128,7 +1128,7 @@ Next milestone: M012 — read-only macOS UI grounding (no posted input).
 
 ## Milestone 012 — read-only macOS UI grounding
 
-Status: in progress. Scope was frozen before implementation (2026-09-19):
+Status: complete (2026-09-19). Scope was frozen before implementation:
 
 - Objective: given a window screenshot and a read-only Accessibility (AX)
   snapshot of the same window, align AX element frames (global screen
@@ -1193,4 +1193,28 @@ regression task ("card" must not match "DISCARD"), so the gate runs
 in: `--app NAME` selects an application by name (the frontmost app races
 with typing the next command in a terminal), and OCR cross-checks zoom
 crops smaller than 96 px by 2x (the M007 legibility finding).
+
+Outcome (2026-09-19): live gate completed in the user's environment. The
+opt-in flow was observed both ways — the first `--request-permission` left
+the trust state unchanged ("still not granted"); the second, after the user
+enabled the terminal in System Settings, reported granted — and without the
+grant `--dump` fails closed with a typed permission message (exit 2).
+Calculator targets resolved live at 2x Retina scale: "7"/"5"/"9" found
+with exact identity and 96x96 px regions whose crops were read by Vision
+OCR and matched; "clear" resolved to the `All Clear` key (0.85) — the OCR
+read the visible key face instead, an honest limitation when the AX name
+differs from the visible label. `AC` and `card` resolve `not_found`. The
+live run caught a real scoring bug before closure: `AC` had matched
+`Subtract` through a mid-word substring (fixed: word boundary + four
+characters minimum; frozen regression task added; gate 44/44). A VS Code
+window on a negative-origin 1x display also aligned correctly (CG window id
+matched); Electron exposes only a shallow read-only tree (enhancement
+requires a write this milestone refuses). Zero input events were posted —
+enforced by the source scan and observed (no focus changes). Evidence:
+`docs/evidence/2026-09-19-m012-live-grounding.{md,json}` and
+`docs/evidence/2026-09-19-m012-gate.json`. Learning map M12=done,
+M13=current; figures: 198 tests = 192 product + 6 learning.
+
+Next milestone: M013 — supervised mouse and keyboard execution (first
+executor; opt-in, previewed, confirmed, stoppable, disposable targets only).
 

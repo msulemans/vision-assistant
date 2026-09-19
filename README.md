@@ -114,10 +114,19 @@ Milestone 004 is complete: a 48-case frozen screen-understanding corpus
 (24 dev + 24 held-out across 8 categories), a deterministic answer scorer, and a
 frozen prompt/image/resource contract — locked before any model download.
 
-Milestone 005 is in progress: the frozen bake-off contract (candidate rule,
-runtime matrix, thresholds, resource ceilings, promotion rule) and the
-deterministic evaluation harness are verified. A real, pinned local model bake-off
-on the frozen held-out corpus is still pending.
+Milestone 005 is complete: the pinned local candidate (Qwen3.5-4B Q4_K_M,
+llama.cpp, thinking off, ctx 4096) passed the frozen held-out gate and the
+balanced resource ceiling; release-grade certification is deferred to
+packaging (M015). See `VISION_STATE.md` for the outcome.
+
+Milestones 006–012 are complete: one-shot assistant, OCR evidence
+augmentation (held-out 24/24), bounded multi-turn chat (6/6), the loopback
+UI with all five read-only capstones passing live, typed intent policy
+containment (13/13 adversarial, zero bypasses), a simulated action loop
+(3/3 tasks, zero host input), and read-only Accessibility grounding (frozen
+gate 44/44; live targets grounded at 1x and 2x with OCR-verified crops; no
+input events posted). Current focus: M013 — supervised mouse and keyboard
+execution.
 
 ## Run the Milestone 002 lab
 
@@ -291,3 +300,18 @@ Runs three frozen tasks against a deterministic toy app: the model proposes
 schema-constrained intents, the loop validates, approves, fake-executes
 (Python state only), and verifies against state predicates. Measured
 2026-09-19: 3/3 tasks done in one step each, zero host input events.
+
+### Read-only macOS grounding (M012)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.grounding_cli --verify   # frozen gate, no permission
+PYTHONPATH=src python -m vision_assistant.grounding_cli --check    # trust state (no prompt)
+PYTHONPATH=src python -m vision_assistant.grounding_cli --request-permission   # explicit opt-in
+PYTHONPATH=src python -m vision_assistant.grounding_cli --dump --app Calculator
+PYTHONPATH=src python -m vision_assistant.grounding_cli --ground --app Calculator --target "7" --capture --ocr-check
+```
+
+Aligns a window's Accessibility elements with its screenshot and resolves
+targets to stable identities — read-only, with the opt-in Accessibility
+permission. Measured 2026-09-19: gate 44/44; "7"/"5"/"9" grounded at 2x with
+OCR-matched crops; absent targets fail closed; zero input events.

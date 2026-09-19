@@ -170,6 +170,18 @@ screenshot. Prefer stable element indices/roles/names to coordinates.
 Gate: selected-window target identity and state meet the frozen grounding gate
 across scale/layout variants; no input events are posted.
 
+Delivered: read-only AX helper + grounding pipeline + frozen gate, closed
+2026-09-19. `tools/ax_dump.swift` (attributes only; explicit
+`--request-permission`; `--app` selector), `ax_vision.py` (typed errors;
+secure values dropped), `grounding.py` (derived-scale alignment; fail-closed
+resolution), `grounding_fixture.py` + `grounding_eval.py` (frozen gate:
+11 tasks × 4 variants = 44 checks, 44/44 passing), `grounding_cli.py`
+(`--verify`, `--check`, `--request-permission`, `--dump`, `--ground` with
+`--capture`, `--crop-out`, `--ocr-check`), 37 tests including the no-input
+source scan. Live run: `7`/`5`/`9` grounded at 2x with OCR-matched crops;
+`AC`/`card` fail closed; a mid-word substring false positive found live
+("AC" → "Subtract") was fixed and frozen as a regression task. **Complete.**
+
 ### 013 — Supervised mouse and keyboard execution
 
 Build: an opt-in macOS executor with Accessibility permission, visible target

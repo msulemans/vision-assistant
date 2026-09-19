@@ -1,0 +1,93 @@
+{
+  "date": "2026-09-19",
+  "host": "Apple M2 Max, macOS 27.0",
+  "commits": ["84108bc", "8094be3"],
+  "environment": "workspace terminal on the user's machine, Accessibility granted to the host terminal app",
+  "permission": {
+    "check_before_grant": false,
+    "denial_path": "dump/ground exit 2 with typed permission message; nothing read",
+    "request_attempt_1": "still not granted (honest message)",
+    "request_attempt_2_after_settings": "granted"
+  },
+  "gate": {
+    "checks": 44,
+    "passed": 44,
+    "gate_pass": true,
+    "variants": ["stacked-1x", "stacked-2x", "split-1x", "split-2x"],
+    "result_file": "docs/evidence/2026-09-19-m012-gate.json"
+  },
+  "live_targets": [
+    {
+      "app": "Calculator",
+      "target": "7",
+      "status": "found",
+      "identity": "AXButton '7' identifier=Seven path=w0/0/0/1/0/6",
+      "score": 0.95,
+      "region": [20, 374, 96, 96],
+      "image": [460, 816],
+      "scales": [2.0, 2.0],
+      "ocr": "matched '7'"
+    },
+    {
+      "app": "Calculator",
+      "target": "5",
+      "status": "found",
+      "identity": "AXButton '5' identifier=Five path=w0/0/0/1/0/11",
+      "score": 0.95,
+      "region": [128, 482, 96, 96],
+      "image": [460, 816],
+      "scales": [2.0, 2.0],
+      "ocr": "matched '5'"
+    },
+    {
+      "app": "Calculator",
+      "target": "9",
+      "status": "found",
+      "identity": "AXButton '9' identifier=Nine path=w0/0/0/1/0/8",
+      "score": 0.95,
+      "region": [236, 374, 96, 96],
+      "image": [460, 816],
+      "scales": [2.0, 2.0],
+      "ocr": "matched '9'"
+    },
+    {
+      "app": "Calculator",
+      "target": "Delete",
+      "status": "found",
+      "identity": "AXButton 'Delete' identifier=Delete path=w0/0/0/1/0/2",
+      "score": 1.0,
+      "region": [10, 133, 48, 48],
+      "ocr": "not re-run"
+    },
+    {
+      "app": "Calculator",
+      "target": "clear",
+      "status": "found",
+      "identity": "AXButton 'All Clear' identifier=AllClear",
+      "score": 0.85,
+      "region": [128, 266, 96, 96],
+      "ocr": "read the visible key face; no token match (AX name differs from visible glyphs)"
+    },
+    {
+      "app": "Calculator",
+      "target": "AC",
+      "status": "not_found",
+      "note": "before the scoring fix this matched 'Subtract' (0.80) via a mid-word substring — the live-found false positive"
+    },
+    {
+      "app": "Calculator",
+      "target": "card",
+      "status": "not_found",
+      "note": "frozen regression task"
+    }
+  ],
+  "vs_code_dump": {
+    "app": "Code - Insiders",
+    "window_frame": [-1920.0, -33.0, 1920.0, 998.0],
+    "display": "external, negative origin, 1x",
+    "cg_window_id": 10327,
+    "scales": [1.0, 1.0],
+    "note": "Electron exposes a shallow read-only tree; enhancement requires a write we refuse"
+  },
+  "input_events_posted": 0
+}
