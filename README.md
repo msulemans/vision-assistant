@@ -280,3 +280,14 @@ The model proposes actions as JSON intents; every proposal is parsed
 strictly and reviewed by the consequence policy before any preview is shown.
 No executor exists in this project — nothing can control the Mac. Measured
 2026-09-19: 13/13 adversarial payloads contained, zero bypasses.
+
+### Simulated action loop (M011)
+
+```bash
+PYTHONPATH=src python -m vision_assistant.sim_cli
+```
+
+Runs three frozen tasks against a deterministic toy app: the model proposes
+schema-constrained intents, the loop validates, approves, fake-executes
+(Python state only), and verifies against state predicates. Measured
+2026-09-19: 3/3 tasks done in one step each, zero host input events.

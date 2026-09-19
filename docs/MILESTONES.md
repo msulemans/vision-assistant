@@ -156,6 +156,12 @@ propose -> approve -> execute -> verify, retry, and emergency stop.
 Gate: frozen tasks complete within action budgets; denial/cancel/timeout are
 final; no stale observation is acted on; zero host mouse/keyboard events.
 
+Delivered: `practice_app.py` (Python-only toy app), `action_loop.py`
+(observe → propose → validate → approve → fake-execute → verify with final
+denial/cancel/stale/budget states), `sim_cli.py` (schema-constrained model
+proposals), 19 tests. Measured 2026-09-19: 3/3 frozen tasks done in one step
+each, zero host input events. **Complete.**
+
 ### 012 — Read-only macOS UI grounding
 
 Build: inspect selected-window Accessibility elements and align them with the

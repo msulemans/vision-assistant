@@ -1,0 +1,221 @@
+{
+  "all_done": true,
+  "raw_answers": [
+    "[\n  {\"kind\": \"click_element\", \"element_id\": \"app:sync-toggle\"}\n]",
+    "[\n  {\"kind\": \"type_text\", \"text\": \"hello\", \"field\": \"app:search\"}\n]",
+    "[\n  {\"kind\": \"press_key\", \"key\": \"escape\"}\n]"
+  ],
+  "results": [
+    {
+      "events": [
+        {
+          "revision": 0,
+          "type": "observe"
+        },
+        {
+          "count": 1,
+          "type": "propose"
+        },
+        {
+          "index": 0,
+          "kind": "click_element",
+          "parsed": true,
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ],
+          "type": "validate",
+          "verdict": "needs_confirmation"
+        },
+        {
+          "approved": true,
+          "approved_by": "simulation",
+          "kind": "click_element",
+          "type": "approve"
+        },
+        {
+          "applied": true,
+          "kind": "click_element",
+          "reason": "applied",
+          "type": "execute"
+        },
+        {
+          "passed": true,
+          "type": "verify"
+        },
+        {
+          "reason": "verified",
+          "steps": 1,
+          "type": "done"
+        }
+      ],
+      "host_input_events": 0,
+      "instruction": "Turn on the Sync checkbox.",
+      "reason": "verified",
+      "state": {
+        "dialog_open": true,
+        "log": [
+          "click_element",
+          "type_text",
+          "press_key",
+          "escape"
+        ],
+        "notifications": false,
+        "saved": false,
+        "search_text": "",
+        "sync_enabled": true
+      },
+      "status": "done",
+      "steps": 1,
+      "task_id": "enable-sync"
+    },
+    {
+      "events": [
+        {
+          "revision": 1,
+          "type": "observe"
+        },
+        {
+          "count": 1,
+          "type": "propose"
+        },
+        {
+          "index": 0,
+          "kind": "type_text",
+          "parsed": true,
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ],
+          "type": "validate",
+          "verdict": "needs_confirmation"
+        },
+        {
+          "approved": true,
+          "approved_by": "simulation",
+          "kind": "type_text",
+          "type": "approve"
+        },
+        {
+          "applied": true,
+          "kind": "type_text",
+          "reason": "applied",
+          "type": "execute"
+        },
+        {
+          "passed": true,
+          "type": "verify"
+        },
+        {
+          "reason": "verified",
+          "steps": 1,
+          "type": "done"
+        }
+      ],
+      "host_input_events": 0,
+      "instruction": "Type the word hello into the search field.",
+      "reason": "verified",
+      "state": {
+        "dialog_open": true,
+        "log": [
+          "click_element",
+          "type_text",
+          "press_key",
+          "escape"
+        ],
+        "notifications": false,
+        "saved": false,
+        "search_text": "hello",
+        "sync_enabled": true
+      },
+      "status": "done",
+      "steps": 1,
+      "task_id": "type-search"
+    },
+    {
+      "events": [
+        {
+          "revision": 2,
+          "type": "observe"
+        },
+        {
+          "count": 1,
+          "type": "propose"
+        },
+        {
+          "index": 0,
+          "kind": "press_key",
+          "parsed": true,
+          "reasons": [
+            "mutating intent",
+            "would require explicit approval once execution exists"
+          ],
+          "type": "validate",
+          "verdict": "needs_confirmation"
+        },
+        {
+          "approved": true,
+          "approved_by": "simulation",
+          "kind": "press_key",
+          "type": "approve"
+        },
+        {
+          "applied": true,
+          "kind": "press_key",
+          "reason": "applied",
+          "type": "execute"
+        },
+        {
+          "passed": true,
+          "type": "verify"
+        },
+        {
+          "reason": "verified",
+          "steps": 1,
+          "type": "done"
+        }
+      ],
+      "host_input_events": 0,
+      "instruction": "Close the confirmation dialog using Cancel or the Escape key.",
+      "reason": "verified",
+      "state": {
+        "dialog_open": false,
+        "log": [
+          "click_element",
+          "type_text",
+          "press_key",
+          "escape"
+        ],
+        "notifications": false,
+        "saved": false,
+        "search_text": "hello",
+        "sync_enabled": true
+      },
+      "status": "done",
+      "steps": 1,
+      "task_id": "cancel-dialog"
+    }
+  ],
+  "run_id": "m011-20260919-233401-317621",
+  "tasks": {
+    "cancel-dialog": {
+      "host_input_events": 0,
+      "reason": "verified",
+      "status": "done",
+      "steps": 1
+    },
+    "enable-sync": {
+      "host_input_events": 0,
+      "reason": "verified",
+      "status": "done",
+      "steps": 1
+    },
+    "type-search": {
+      "host_input_events": 0,
+      "reason": "verified",
+      "status": "done",
+      "steps": 1
+    }
+  },
+  "total_ms": 5358.0
+}

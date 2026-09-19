@@ -1087,7 +1087,7 @@ no host input).
 
 ## Milestone 011 — disposable simulated action loop
 
-Status: in progress. Scope frozen 2026-09-19:
+Status: complete (2026-09-19). Scope was frozen before implementation:
 
 - Practice app: a deterministic Python state machine (`practice_app.py`)
   rendered to a PNG with the embedded font; elements are addressed by stable
@@ -1109,6 +1109,22 @@ Status: in progress. Scope frozen 2026-09-19:
 First build: `practice_app.py`, `action_loop.py`, `sim_cli.py` (model-driven
 run with one JSON repair attempt per step), and `tests/test_action_loop.py`
 (deterministic scripted-loop tests for every terminal state).
+
+Attempt 1 (run `m011-20260919-233218-1b0550`): all three tasks blocked
+`no_proposal` — the model produced no JSON array even with a repair attempt
+(fail-closed as designed; zero host input events, all retries bounded). Fix:
+`predict_image` supports runtime JSON-schema-constrained decoding
+(`response_format.json_schema`, converted by llama.cpp to a grammar); the
+proposer uses it first with a prompt-only fallback; raw answers are recorded.
+
+Gate run (user machine, 2026-09-19, run `m011-20260919-233401-317621`):
+all three frozen tasks completed in exactly one step each — observe →
+propose → validate (`needs_confirmation`) → approve (simulation) → execute
+(`applied`) → verify (passed) → done — with `host_input_events: 0` and
+5.36 s total. Evidence:
+`docs/evidence/2026-09-19-m011-simulated-loop.md` (+ JSON copy).
+
+Next milestone: M012 — read-only macOS UI grounding (no posted input).
 
 Next: the user's live run on the pinned model.
 

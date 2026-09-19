@@ -213,6 +213,21 @@ and a source-scanning test proves there is no executor anywhere. Live demo:
 13/13 adversarial payloads contained with zero bypasses. The 4B model itself
 proposed no parseable JSON yet — it quoted screen text and invented element
 ids; the funnel is fail-closed, so nothing happened. Format scaffolding for
-model proposals is noted for M011. Next milestone: M011 — disposable
-simulated action loop (a fake executor in a practice app; still no host
-input).
+model proposals is noted for M011. Next milestone was M011 — disposable
+simulated action loop (complete; see below).
+
+## M011 outcome — the loop works, and the model had to be constrained
+
+A deterministic practice app (a Python state machine rendered to a PNG) is
+acted on by a simulated loop: observe → propose → validate → approve →
+fake-execute → verify, with 12-step and 2-retry budgets and final states for
+denial, approval refusal, stale observations, cancellation, and emergency
+stop. The first live attempt blocked all tasks with `no_proposal`: the model
+would not emit JSON even after a repair prompt — fail-closed worked, nothing
+executed. The fix was to constrain the decoding itself: the runtime now
+accepts a JSON schema (`response_format.json_schema`, converted to a
+llama.cpp grammar) and the proposer uses it with a prompt-only fallback. The
+second run finished all three frozen tasks in one step each, verified
+against state predicates, with zero host input events. Lesson: format
+compliance is an infrastructure problem, not a politeness problem. Next
+milestone: M012 — read-only macOS UI grounding (no posted input).
