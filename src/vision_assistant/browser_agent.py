@@ -27,7 +27,17 @@ from pathlib import Path
 from . import browser_tasks as tasks
 from .pixels import fit_for_model
 
-PROMPT_VERSION = "m018c-v2"
+PROMPT_VERSION = "m018d-v3"
+
+REFUSAL_HINTS = {
+    "refused_focus": "nothing is focused — click the field first, then type",
+    "refused_password": "never type into password fields; stop instead",
+    "refused_viewport": "those coordinates are outside the page — observe again",
+    "refused_stale": "the page changed — observe again before acting",
+    "refused_origin": "that navigation is not allowed; stay on this site",
+    "navigation_failed": "the page did not load — try again or pick another target",
+    "budget_steps": "step budget is nearly exhausted — act directly on the goal",
+}
 
 ACTION_SCHEMA = {
     "type": "object",
@@ -74,16 +84,30 @@ def build_loop_prompt(goal: str, image_w: int, image_h: int, css_w: int, css_h: 
         "these pixels.".format(image_w, image_h),
         "The browser viewport is {}x{} CSS points; you never address CSS "
         "directly.".format(css_w, css_h),
+        "Work in small, verified steps:",
+        "- To type: first CLICK the middle of the text field's box, then "
+        "type, then press enter to submit.",
+        "- 'rank' means the story's position number on the news list ('2.' "
+        "is rank 2), not the order among AI stories.",
+        "- To open a story: click the CENTER of its title text, and only read "
+        "it on the next screenshot.",
+        "- If the next screenshot shows the same page after a click, the click "
+        "missed — click a different spot, closer to the center of the text.",
+        "- Before finish: every value you report (title, number, story code) "
+        "must be visible in a screenshot you already saw.",
+        "- For finish, include only the keys the goal asks for, using these "
+        "names: title, rank, points, comments, code, author, date_display, "
+        "count, present, winner_rank, stories (a list of {rank, code}).",
+        "- If a step is refused, do not repeat it; use the hint in the history "
+        "and change your approach.",
         "Allowed actions (exactly one JSON object, no other text):",
         '{"action":"click","x":<int>,"y":<int>} to click a visible target;',
-        '{"action":"type","text":"..."} types into the focused field — if '
-        'nothing is focused, click the field first;',
+        '{"action":"type","text":"..."} types into the focused field;',
         '{"action":"press","key":"enter"} presses a page key;',
         '{"action":"scroll","direction":"down","amount":2};',
         '{"action":"navigate","url":"/path/"}; {"action":"back"}; {"action":"wait"};',
         '{"action":"finish","answer":{...}} when the goal is provably done;',
         '{"action":"stop"} when the goal cannot be done safely.',
-        "If a step is refused, do not repeat it — choose a different action.",
     ]
     if history:
         lines.append("Recent steps (oldest first):")
@@ -270,6 +294,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         return finish("finished", already_satisfied=True)
 
     history: list = []
+    outcomes: list = []
 
     # ---------------------------------------------------------------- loop
     while True:
@@ -329,6 +354,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         kind = parsed["kind"]
         state["steps_used"] += 1
         step_no = state["steps_used"]
+        prev_url = state["url"]
         executed = ""
         try:
             if kind == "click":
@@ -370,7 +396,8 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         except Exception as exc:  # noqa: BLE001 - typed adapter refusals
             reason = getattr(exc, "reason", type(exc).__name__)
             record("action", step=step_no, executed=None, refused=reason)
-            history.append("action refused: {}".format(reason))
+            history.append("action refused: {}. hint: {}".format(
+                reason, REFUSAL_HINTS.get(reason, "change your approach")))
             stop = exhausted(reason)
             if stop:
                 return stop
@@ -396,7 +423,8 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             record("observe", step=step_no, ok=False, reason=reason)
             if state["infrastructure"] >= limits.max_infrastructure_failures:
                 return finish("failed:infrastructure", reason=reason)
-            history.append("observation failed: {}".format(reason))
+            history.append("observation failed: {}. hint: {}".format(
+                reason, REFUSAL_HINTS.get(reason, "observe again")))
             stop = exhausted("observe_" + reason)
             if stop:
                 return stop
@@ -409,7 +437,11 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         record("action", step=step_no, executed=executed, url=shot.url,
                oracle_ok=verdict["ok"])
         history.append("{} -> {}".format(executed, shot.url))
+        outcomes.append("{} -> {}".format(executed, shot.url))
+        if kind == "click" and shot.url == prev_url:
+            history.append("that click changed nothing — click a different "
+                           "spot, at the center of the text you want")
         if verdict["ok"]:
             return finish("finished")
-        if len(history) >= 2 and history[-1] == history[-2]:
-            return finish("blocked:no_progress", repeated=history[-1])
+        if len(outcomes) >= 2 and outcomes[-1] == outcomes[-2]:
+            return finish("blocked:no_progress", repeated=outcomes[-1])

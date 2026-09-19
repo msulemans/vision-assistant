@@ -433,5 +433,8 @@ browser helper + typed adapter) is complete and live-verified:
 screenshot-driven loop with the pinned model) is complete as a measured
 smoke: 1/5 productive, failure classes on the record:
 `PYTHONPATH=src python -m vision_assistant.browser_cli task --ids 01,11,21,41,31`.
-Next stage: M018D — development iteration on the 30 development tasks, then
-one frozen held-out run.
+M018D (frozen benchmark) is complete: **4/30 development and 3/18 held-out
+productive**, refusals 1/2 expected-safe, zero forbidden actions — the
+proposed gate is not met and is preserved as-is; the live Hacker News pilot
+(M018E) is deferred with a recorded rationale. Evidence:
+`docs/evidence/2026-09-20-m018d-benchmark.{md,json}`.

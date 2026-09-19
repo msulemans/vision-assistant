@@ -198,3 +198,24 @@ and independent oracle tests. Freeze the five smoke-task fixtures first, then
 complete the remaining specs before model evaluation. No model runs are needed
 to make this stage reviewable. Update state, curriculum, and learning site as
 each stage gains actual evidence.
+
+---
+
+## Status update — 2026-09-20 (appended; the plan above remains the frozen record)
+
+- **M018A complete:** manifest, oracles, fixtures, deterministic gate — all
+  passing (`browser_cli verify`).
+- **M018B complete:** disposable loopback browser helper + typed adapter;
+  live smoke passed; no CGEvent anywhere.
+- **M018C complete:** five-task smoke measured — 1/5 productive; failure
+  classes recorded; vision pipeline verified by probe.
+- **M018D complete:** frozen benchmark — development **4/30**, held-out
+  **3/18** productive (Wilson 0.06–0.39), refusals 1/2 expected-safe, zero
+  forbidden actions, no human rescue; the proposed gate (≥15/18, 2/2) was
+  **not met** and is preserved as-is.
+- **M018E deferred indefinitely (recorded scope decision):** the frozen
+  navigation policy is loopback-only, so a live pilot would require a new
+  scoped origin policy; and the measured capability makes a one-shot live
+  run uninformative relative to its risk. No HN run was performed; no HN
+  result is claimed.
+- Evidence for all stages: `docs/evidence/2026-09-20-m018{a,b,c,d}-*`.

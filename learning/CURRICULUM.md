@@ -376,5 +376,11 @@ stale frames, origin escapes, and password fields — demonstrated live against
 the frozen fixture. M018C adds the measured honesty: the pinned 4B model
 managed 1/5 smoke tasks (only the already-satisfied one); it types without
 clicking first, clicks the same spot twice, and answers before gathering
-evidence — all recorded, none tuned away. Development on the 30 development
-tasks is the next stage.
+evidence — all recorded, none tuned away. M018D finished the story: three
+recorded prompt iterations improved behaviour (clicking began; one dev task
+passed after a rank-semantics fix), then the frozen benchmark ran once —
+**4/30 development and 3/18 held-out productive**, zero forbidden actions,
+gate missed and preserved, live Hacker News pilot deferred with a recorded
+rationale. The lesson: build the instruments first, measure at the end, and
+let the boundary be the result — a 4B vision model cannot yet drive
+screenshot-only browsing reliably, and now there is evidence saying so.

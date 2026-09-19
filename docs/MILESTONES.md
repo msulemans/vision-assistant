@@ -324,5 +324,15 @@ five smoke tasks run once each with the pinned model — productive completion
 **1/5** (only the already-satisfied case); failure classes recorded (type-
 without-focus; same-point clicks; premature finish), one prompt revision
 after the single inspected class, vision pipeline verified by probe.
-Evidence: `docs/evidence/2026-09-20-m018c-smoke.md`. Next: M018D
-development on the 30 development tasks, then one frozen held-out run.
+Evidence: `docs/evidence/2026-09-20-m018c-smoke.md`.
+
+**M018D delivered (2026-09-20):** frozen benchmark — development **4/30**
+productive, held-out **3/18** productive (Wilson 0.06–0.39), refusals 1/2
+expected-safe, zero forbidden actions, no human rescue; proposed gate NOT
+met and preserved; **M018E deferred** with a recorded scope rationale (loop
+back-only navigation policy frozen; measured capability makes a one-shot
+live pilot uninformative). Evidence:
+`docs/evidence/2026-09-20-m018d-benchmark.{md,json}`. The extension pauses
+at a measured boundary: the 4B model cannot yet drive screenshot-only
+browsing reliably, and the guards/oracles that proved it are the keepable
+artifact.
