@@ -196,8 +196,18 @@ class LlamaServerAdapter:
             case.fixture.path.write_bytes(case.fixture.png_bytes)
         return self.predict_image(case.fixture.png_bytes, case.question)
 
-    def predict_image(self, png_bytes: bytes, question: str) -> tuple[LabelledAnswer, dict]:
-        """Answer one question about one PNG (the M006 one-shot path)."""
+    def predict_image(
+        self,
+        png_bytes: bytes,
+        question: str,
+        *,
+        json_schema: dict | None = None,
+    ) -> tuple[LabelledAnswer, dict]:
+        """Answer one question about one PNG (the M006 one-shot path).
+
+        With *json_schema*, the runtime constrains decoding to that JSON shape
+        (llama.cpp grammar), which makes proposal output machine-parseable.
+        """
         data_uri = "data:image/png;base64," + base64.b64encode(png_bytes).decode("ascii")
         payload = {
             "messages": [
@@ -216,6 +226,8 @@ class LlamaServerAdapter:
         }
         if self.chat_template_kwargs:
             payload["chat_template_kwargs"] = dict(self.chat_template_kwargs)
+        if json_schema is not None:
+            payload["response_format"] = {"type": "json_object", "schema": json_schema}
         started = self._monotonic_ns()
         raw_collected: list[str] = []
 

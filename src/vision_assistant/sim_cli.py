@@ -39,21 +39,85 @@ REPAIR_PROMPT = (
     '[{{"kind": "click_element", "element_id": "app:sync-toggle"}}]'
 )
 
+# Frozen 2026-09-19: with prompt scaffolding alone the pinned model answered
+# with prose fragments (blocked no_proposal). The runtime now constrains
+# decoding to this schema so proposals are machine-parseable.
+PROPOSE_SCHEMA = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "kind": {
+                "type": "string",
+                "enum": [
+                    "observe",
+                    "click_element",
+                    "type_text",
+                    "press_key",
+                    "scroll",
+                    "cancel",
+                    "finish",
+                ],
+            },
+            "element_id": {"type": "string"},
+            "text": {"type": "string"},
+            "field": {"type": "string"},
+            "key": {
+                "type": "string",
+                "enum": [
+                    "return",
+                    "tab",
+                    "escape",
+                    "space",
+                    "up",
+                    "down",
+                    "left",
+                    "right",
+                    "page_up",
+                    "page_down",
+                    "home",
+                    "end",
+                    "delete",
+                    "backspace",
+                ],
+            },
+            "direction": {"type": "string", "enum": ["up", "down", "left", "right"]},
+            "steps": {"type": "integer"},
+            "summary": {"type": "string"},
+        },
+        "required": ["kind"],
+    },
+}
 
-def model_proposer(adapter, *, repair: bool = True):
-    """A proposer backed by the pinned model, with one JSON repair attempt."""
+
+def model_proposer(adapter, *, repair: bool = True, record: list | None = None):
+    """A proposer backed by the pinned model.
+
+    Tries schema-constrained decoding first, falls back to the plain prompt if
+    the runtime rejects the schema request, keeps exactly one JSON repair
+    attempt, and records every raw answer for diagnosis.
+    """
+
+    def _join(answer) -> str:
+        return " ".join((*answer.visible, *answer.inferred, *answer.unknown))
 
     def propose(png_bytes: bytes, instruction: str, revision: int) -> list:
-        answer, _timings = adapter.predict_image(
-            png_bytes, PROPOSE_PROMPT.format(instruction=instruction)
-        )
-        text = " ".join((*answer.visible, *answer.inferred, *answer.unknown))
+        prompt = PROPOSE_PROMPT.format(instruction=instruction)
+        try:
+            answer, _timings = adapter.predict_image(png_bytes, prompt, json_schema=PROPOSE_SCHEMA)
+        except Exception:  # noqa: BLE001 - fall back to prompt-only decoding
+            answer, _timings = adapter.predict_image(png_bytes, prompt)
+        text = _join(answer)
+        if record is not None:
+            record.append(text)
         payloads = extract_json_array(text)
         if payloads is None and repair:
             answer2, _timings2 = adapter.predict_image(
                 png_bytes, REPAIR_PROMPT.format(instruction=instruction)
             )
-            text2 = " ".join((*answer2.visible, *answer2.inferred, *answer2.unknown))
+            text2 = _join(answer2)
+            if record is not None:
+                record.append(text2)
             payloads = extract_json_array(text2)
         return payloads or []
 
@@ -104,6 +168,7 @@ def main(argv: list[str] | None = None) -> int:
 
     app = PracticeApp()
     results: list[dict] = []
+    raw_answers: list[str] = []
     started = time.monotonic()
     try:
         adapter.start()
@@ -112,7 +177,7 @@ def main(argv: list[str] | None = None) -> int:
             loop = SimulatedActionLoop(
                 app,
                 task,
-                model_proposer(adapter),
+                model_proposer(adapter, record=raw_answers),
                 policy=ActionPolicy(),
                 trace_dir=trace_dir,
                 trace_id=f"{run_id}-{task.task_id}",
@@ -144,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
         "all_done": all(result["status"] == "done" for result in results),
         "total_ms": round(total_ms, 1),
     }
-    payload = {**summary, "results": results}
+    payload = {**summary, "results": results, "raw_answers": raw_answers}
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     print(f"\nsummary: {json.dumps(summary, sort_keys=True)}")
