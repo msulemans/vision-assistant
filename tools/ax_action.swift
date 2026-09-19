@@ -15,8 +15,9 @@
 // refusal, 2 = permission missing, 3 = usage/bad spec, 4 = runtime failure.
 //
 // Safety posture: clicks are AXPress actions on an element found by stable
-// identifier — never coordinates; typing sets and re-reads AX focus first;
-// key events require the target app to be frontmost; window geometry is
+// identifier — never coordinates; typing writes the element value through the
+// accessibility API (identity-bound, no focus change, no activation); key
+// events require the target app to be frontmost; window geometry is
 // re-verified (stale-frame guard); secure and disabled elements are refused.
 // There are no synthetic mouse events anywhere in this file.
 //
@@ -236,54 +237,31 @@ case "press", "type":
         emit(["performed": true, "action": "press", "match": match, "key_events": 0], code: 0)
     }
 
-    // type: activate the target app, verify frontmost, focus, re-read, then
-    // post Unicode key events. Keys can never land in another app: the
-    // frontmost check runs immediately before posting and refuses otherwise.
+    // type: write the value through the accessibility API on the identified
+    // element. macOS no longer permits cross-app activation (activate()
+    // reports success but focus is not stolen), and synthetic keystrokes
+    // cannot be aimed at a background target — a keystroke path was observed
+    // refusing (frontmost_mismatch) exactly because the terminal stayed
+    // frontmost. The identity-bound value write is therefore the honest and
+    // safest mechanism for typing; press_key remains the synthetic-keyboard
+    // path (with its frontmost guard).
     guard let text = spec["text"] as? String, !text.isEmpty, text.count <= 200 else {
         refuse("bad_spec", code: 3)
     }
     if text.unicodeScalars.contains(where: { $0.value < 32 }) {
         refuse("bad_spec", code: 3)
     }
-    if let running = NSRunningApplication(processIdentifier: pid) {
-        if #available(macOS 14.0, *) {
-            running.activate()
-        } else {
-            running.activate(options: [.activateIgnoringOtherApps])
-        }
-    }
-    var frontmostOK = false
-    for _ in 0..<20 {
-        if let front = NSWorkspace.shared.frontmostApplication, front.processIdentifier == pid {
-            frontmostOK = true
-            break
-        }
-        usleep(50000)
-    }
-    guard frontmostOK else {
-        refuse("frontmost_mismatch", extra: ["match": match])
-    }
-    let focusResult = AXUIElementSetAttributeValue(
-        element, kAXFocusedAttribute as CFString, kCFBooleanTrue
+    let writeResult = AXUIElementSetAttributeValue(
+        element, kAXValueAttribute as CFString, text as CFTypeRef
     )
-    guard focusResult == .success, boolAttribute(element, kAXFocusedAttribute as CFString) == true else {
-        refuse("focus_failed", extra: ["match": match])
+    guard writeResult == .success else {
+        refuse("value_write_failed", extra: ["ax_error": Int(writeResult.rawValue), "match": match])
     }
-    var keyEvents = 0
-    for character in text {
-        guard
-            let down = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: true),
-            let up = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: false)
-        else { refuse("perform_failed") }
-        var units = Array(String(character).utf16)
-        down.keyboardSetUnicodeString(stringLength: units.count, unicodeString: &units)
-        up.keyboardSetUnicodeString(stringLength: units.count, unicodeString: &units)
-        down.post(tap: .cghidEventTap)
-        up.post(tap: .cghidEventTap)
-        keyEvents += 2
-        usleep(8000)
+    let readBack = stringAttribute(element, kAXValueAttribute as CFString) ?? ""
+    guard readBack == text else {
+        refuse("value_write_failed", extra: ["read_back": readBack, "match": match])
     }
-    emit(["performed": true, "action": "type", "match": match, "key_events": keyEvents], code: 0)
+    emit(["action": "type", "key_events": 0, "match": match, "method": "ax_value", "performed": true], code: 0)
 
 case "key":
     guard let key = spec["key"] as? String else {

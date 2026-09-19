@@ -319,7 +319,12 @@ class SupervisedRunner:
             return refuse(refusal.reason or "perform_failed", refusal.detail)
         self.performed_actions += 1
         outcome["performed"] = True
-        record("perform", action=plan.spec.get("action"), key_events=performed.get("key_events", 0))
+        record(
+            "perform",
+            action=plan.spec.get("action"),
+            method=performed.get("method"),
+            key_events=performed.get("key_events", 0),
+        )
 
         try:
             observed = self.snapshot_provider()

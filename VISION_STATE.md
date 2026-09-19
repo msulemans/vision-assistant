@@ -1240,13 +1240,16 @@ Status: in progress. Scope was frozen before implementation (2026-09-19):
     `--perform` (press / focus+type / key). It re-walks the AX tree by
     identity and refuses missing/ambiguous/disabled/secure elements, a
     window that disappeared, a window frame that moved (stale frame), and —
-    for key events — a frontmost app that is not the target. Typing first
-    activates the target app, waits for frontmost, and refuses if it never
-    arrives, then sets and re-reads AX focus (refusing on failure) before any
-    key event is posted. Keyboard events use Unicode CGEvent posting; there
-    are no synthetic mouse events anywhere — clicks are AXPress actions on an
-    identified element, and coordinates are used only to draw the preview
-    overlay, never to address anything.
+    for key events — a frontmost app that is not the target. Typing writes
+    the element's value through the accessibility API on the identified
+    element and reads it back (refusing on mismatch): no activation, no focus
+    change, and no keystrokes that could land elsewhere — live probing showed
+    macOS no longer permits cross-app activation, and the keystroke path was
+    rejected because it cannot be aimed safely at a background target.
+    press_key remains synthetic keyboard events (Unicode posting) under the
+    frontmost guard. There are no synthetic mouse events anywhere — clicks
+    are AXPress actions on an identified element, and coordinates are used
+    only to draw the preview overlay, never to address anything.
   - `tools/ax_overlay.swift` — a click-through borderless highlight over the
     target's screen region, shown before confirmation; it cannot become key,
     ignores mouse events, and auto-expires.
