@@ -1797,3 +1797,21 @@ one-shot live pilot uninformative relative to its risk — a recorded scope
 decision; no HN run was performed and no HN result claimed. Evidence:
 `docs/evidence/2026-09-20-m018d-benchmark.{md,json}` +
 `scripts/m018d_summarize.py`.
+
+## M018T scope frozen — target-assisted observation treatment — 2026-09-20
+
+User-directed next step after the M018D boundary: a separately labelled
+experimental observation mode that attacks the dominant failure class (click
+aim without grounding). Frozen in `docs/M018T_TARGET_ASSISTED_PLAN.md`: the
+model keeps the screenshot and additionally receives a bounded list of
+visible actionable targets (opaque id, role, visible label, clipped bounding
+box, enabled/focused); it proposes `click_target(id)` instead of raw
+`click(x, y)`; trusted code (adapter + helper) resolves the id against the
+current frame and refuses stale, hidden, disabled, moved (>2 CSS px), or
+off-screen targets with five new typed refusal codes. Nothing DOM-, value-,
+URL-, storage-, or script-shaped is exposed; labels are quoted untrusted
+page data. Absolute do-nots recorded in the freeze: no benchmark rerun, no
+held-out runs, no model runs before review, no guard relaxation, no new
+model. Smoke set frozen at development tasks 02/11/41/43/45; proceed/stop
+criteria in plan §9. **Planned only: zero code written, zero model runs
+performed; the M018A–D record and its baseline stand untouched.**

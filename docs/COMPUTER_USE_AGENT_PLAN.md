@@ -219,3 +219,8 @@ each stage gains actual evidence.
   run uninformative relative to its risk. No HN run was performed; no HN
   result is claimed.
 - Evidence for all stages: `docs/evidence/2026-09-20-m018{a,b,c,d}-*`.
+- **M018T plan frozen (2026-09-20):** target-assisted observation treatment
+  — screenshot kept, bounded visible-target list added, `click_target(id)`
+  replaces raw click in this mode only; separately labelled, never merged
+  into the screenshot-only score. Full freeze:
+  `docs/M018T_TARGET_ASSISTED_PLAN.md`. Nothing implemented or run yet.
