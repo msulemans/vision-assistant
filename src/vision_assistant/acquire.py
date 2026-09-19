@@ -59,6 +59,11 @@ def _resolve_url(repo: str, filename: str) -> str:
     return f"https://huggingface.co/{repo}/resolve/main/{filename}?download=true"
 
 
+def source_url(repo: str) -> str:
+    """Displayable source URL for the licences manifest (no download params)."""
+    return f"https://huggingface.co/{repo}"
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:

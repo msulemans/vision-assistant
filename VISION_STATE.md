@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 014 complete — M006 through M014 are complete (see their
-sections); M015 (profiles, packaging, and offline verification) is next and
-not started.
+Status: Milestone 015 in progress — M006 through M014 are complete (see their
+sections); M015 (profiles, packaging, and offline verification) scope is
+frozen and the first build is under way.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1451,4 +1451,63 @@ session JSONs. Learning map M14=done, M15=current; figures: 266 tests =
 260 product + 6 learning.
 
 Next milestone: M015 — profiles, packaging, and offline verification.
+
+## Milestone 015 — profiles, packaging, and offline verification
+
+Status: in progress. Scope frozen before implementation (2026-09-20).
+
+- Objective: make the lab installable and reproducible as a local product.
+  A versioned bundle carries the stdlib-only source and tool sources; an
+  installer lays it down under a prefix with its own venv; profiles state
+  measured versus planned configurations honestly; a doctor explains the
+  permission contract on first run; and a smoke command reproduces the
+  read-only profile from the installed copy with networking switched off.
+- Profiles (frozen registry; measured-vs-planned stated per entry):
+  - inspect — the pinned Qwen3.5-4B (Q4_K_M), ctx 4096, thinking off;
+    measured RSS 3.792 GiB fits the 6 GiB target (reference host: M2 Max;
+    low-resource-device certification not performed).
+  - balanced — the pinned candidate as shipped (M005 selection); measured
+    2026-09-19 on the M2 Max: first p95 839 ms, complete p95 1389 ms,
+    RSS 3.792 GiB, fits the 8 GiB ceiling. Default profile.
+  - quality — planned, unpinned: requires a ≤9B bake-off that has not been
+    run; clearly marked unmeasured.
+- New artifacts:
+  - `profiles.py` — the frozen profile registry (data only).
+  - `manifest.py` — artifact/licence manifest (pinned model files with
+    name/bytes/sha256/licence/source; runtime and framework licences:
+    llama.cpp MIT, Python PSF, Apple system frameworks; bundle version;
+    Python floor), size forecast (download bytes, on-disk bytes, RAM
+    targets), and model verification (size mode and full-hash mode).
+  - `package_cli.py` — `forecast`; `build` (self-contained bundle: source,
+    tool sources, manifest, integrity hashes, generated installer, `bin`
+    wrapper, LICENCES.md, README-INSTALL.md); `verify` (integrity +
+    offline audit); `install`, `rollback`, `uninstall` (dry run by
+    default; `--remove-models` / `--remove-captures` are the only ways
+    models or captures are ever deleted); `doctor` (first-run permission
+    education + environment report; never prompts for permissions);
+    `smoke` (offline source audit + model presence + the frozen 44-check
+    grounding gate + optional `--with-model` read-only one-shot on a
+    synthetic fixture); `versions`.
+  - install.sh (generated inside the bundle) — creates the venv and
+    installs the bundle, fully offline; model acquisition remains a
+    separate, explicit, one-time online step.
+- Offline audit (frozen, source-level): outbound HTTP-client imports may
+  appear only in `runtime_llamaserver.py` (loopback calls to the local
+  server); `https://` literals and `curl` only in `acquire.py`;
+  `0.0.0.0` appears nowhere; installer, wrapper, and doctor contain no
+  network calls at all.
+- Gate: a fresh prefix plus fresh venv reproduces the read-only profile
+  from the bundle alone — grounding gate 44/44 and, with the pinned model
+  present, one verified one-shot ask — with networking disabled; upgrade
+  keeps the previous version and rollback restores it; uninstall removes
+  code but deletes local models/captures only when explicitly asked;
+  doctor documents exactly what each permission enables and how to revoke
+  it.
+- Honest note for the evidence: "clean Mac" is reproduced in-lab as a
+  fresh prefix and fresh venv with no repository dependency; the manifest
+  and README-INSTALL list the host prerequisites for a genuinely clean
+  machine (Xcode command line tools for swiftc, a llama.cpp runtime,
+  Python 3.9+; one-time model acquisition while online, ~3.4 GiB).
+
+Next milestone: M016 — evaluation and reciprocal learning field manual.
 
