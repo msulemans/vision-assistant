@@ -37,10 +37,10 @@
           <button class="text-action" id="resumeButton" type="button">Resume my last lesson</button>
         </div>
         <dl class="project-strip" aria-label="Verified project status">
-          <div><dt>Current gate</dt><dd>M014 · complete — bounded agent: budgets, recovery, takeover, dialog and injection stops, zero unapproved</dd></div>
-          <div><dt>Tests</dt><dd>266 passing · 260 product + 6 learning</dd></div>
+          <div><dt>Current gate</dt><dd>M015 · complete — installable bundle: offline install, permission education, 44/44 smoke; zero network beyond loopback</dd></div>
+          <div><dt>Tests</dt><dd>302 passing · 296 product + 6 learning</dd></div>
           <div><dt>Model</dt><dd>Qwen3.5-4B · Q4_K_M — pinned, local</dd></div>
-          <div><dt>Action access</dt><dd>None</dd></div>
+          <div><dt>Action access</dt><dd>None by default · opt-in actions in the disposable practice window</dd></div>
         </dl>
       </div>
 
@@ -140,14 +140,15 @@
         <div><h2>An image gets a private room, not permanent storage</h2><p>The generated fixture, selected file, and two user-selected Mac captures all pass one bounded PNG path and are deleted by default.</p></div>
       </header>
 
-      <p><strong>Plan checkpoint:</strong> M014 is complete — the bounded
-        agent finished all three frozen goals stepwise (each step freshly
-        proposed, previewed, confirmed, and verified), recovered from a window
-        moved mid-confirmation, yielded when the screen changed outside its own
-        action, and stopped safely on an unexpected dialog, a revoked
-        permission, an exhausted budget, and adversarial screen text. The
-        interrupt gate measured p95 18.1 ms. M015 packages the measured
-        read-only profile. These are planned gates.</p>
+      <p><strong>Plan checkpoint:</strong> M015 is complete — the lab now
+        installs as a versioned bundle: an offline installer lays it down with
+        its own venv, doctor explains every permission on first run, and a
+        smoke command replays the read-only profile — audit, model
+        verification, the frozen 44-check grounding gate, and a verified
+        one-shot ask — all green under a sandbox that denies every network
+        route except loopback. Upgrade, rollback, and choiceful uninstall are
+        verified. M016 builds the evaluation and field manual. These are
+        planned gates.</p>
 
       <div class="custody-line" aria-label="Ephemeral artifact lifecycle">
         <div class="custody-step done"><span>1</span><b>Read</b><small>No-follow descriptor</small></div>
@@ -293,6 +294,14 @@
         permission both stopping with zero actions, an external state change
         read as user takeover, and adversarial screen text flagged — and never
         followed.</p>
+      <p>M015 packaging: the same code installs from a self-contained bundle
+        with a frozen offline audit — outbound network clients live only in the
+        model downloader (explicit, one-time) and the loopback calls to the
+        local server; the installer and doctor touch no network at all. The
+        smoke gate runs the read-only profile end-to-end (44/44 grounding plus
+        a verified model ask) even when every non-loopback network route is
+        denied, and uninstall removes code while deleting models or captures
+        only when explicitly asked.</p>
       <p>Freeze the screenshots, questions, prompt, image budget, decoding, latency, memory, and accuracy gates first. The smallest passing local candidate wins.</p>
       <div class="source-links"><a href="../VISION_STATE.md">Canonical state</a><a href="../docs/MILESTONES.md">Milestone gates</a><a href="../docs/ARCHITECTURE.md">Architecture</a><a href="CURRICULUM.md">Written curriculum</a></div>
     </section>

@@ -1,0 +1,74 @@
+{
+  "checks": {
+    "grounding_gate": true,
+    "model_smoke": true,
+    "models": true,
+    "offline_audit": true
+  },
+  "grounding": {
+    "checks": 44,
+    "failures": [],
+    "gate_pass": true,
+    "passed": 44,
+    "variants": {
+      "split-1x": {
+        "checks": 11,
+        "passed": 11
+      },
+      "split-2x": {
+        "checks": 11,
+        "passed": 11
+      },
+      "stacked-1x": {
+        "checks": 11,
+        "passed": 11
+      },
+      "stacked-2x": {
+        "checks": 11,
+        "passed": 11
+      }
+    }
+  },
+  "model_smoke": {
+    "answer_labels": 2,
+    "image": {
+      "height": 340,
+      "width": 520
+    },
+    "ok": true,
+    "released": true,
+    "timing_ms": {
+      "complete": 1483.622083,
+      "first_token": 714.576583,
+      "total": 1499.164
+    },
+    "total_ms": 3101.6,
+    "trace": "/Users/suleman/vision-assistant/runs/m015/traces/smoke-20260920-004301.jsonl"
+  },
+  "models": {
+    "directory": "/Users/suleman/vision-assistant/models/qwen3.5-4b",
+    "files": [
+      {
+        "name": "Qwen3.5-4B-Q4_K_M.gguf",
+        "present": true,
+        "sha_ok": null,
+        "size_ok": true,
+        "verified": true
+      },
+      {
+        "name": "mmproj-F16.gguf",
+        "present": true,
+        "sha_ok": null,
+        "size_ok": true,
+        "verified": true
+      }
+    ],
+    "mode": "size",
+    "ok": true,
+    "reason": "ok"
+  },
+  "offline_violations": [],
+  "passed": true,
+  "root": "/Users/suleman/vision-assistant/current",
+  "run_id": "m015-smoke-20260920-004304"
+}

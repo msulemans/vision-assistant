@@ -137,7 +137,13 @@ and explicit finished/blocked/cancelled terminals. Measured 2026-09-20:
 stepwise with the pinned model (zero unapproved); stale recovery, dialog,
 takeover, permission change, budget, injection-targeted, and off-goal all
 demonstrated live with zero unapproved actions; interrupt p95 18.1 ms.
-Current focus: M015 — profiles, packaging, and offline verification.
+Milestone 015 makes the lab installable: a versioned bundle with a frozen
+offline audit installs into a fresh prefix with its own venv; doctor
+explains every permission on first run; smoke reproduces the read-only
+profile — audit, model verification, grounding 44/44, and a verified
+one-shot ask — including under a sandbox that denies all non-loopback
+networking; upgrade/rollback and a choiceful uninstall are verified.
+Current focus: M016 — evaluation and reciprocal learning field manual.
 
 ## Run the Milestone 002 lab
 
@@ -356,3 +362,22 @@ finished stepwise (zero unapproved); stale-frame recovery and
 external-change takeover demonstrated live; unexpected dialog, permission
 loss, budget exhaustion, injection-targeted, and off-goal proposals each
 blocked safely; interruption p95 18.1 ms over ten real SIGINT samples.
+
+### Packaging and offline verification (M015)
+
+```bash
+sh runs/m015/bundle-0.1.0/install.sh ~/vision-assistant      # offline installer (fresh venv)
+~/vision-assistant/bin/vision doctor                          # environment + permission education
+~/vision-assistant/bin/vision smoke                           # audit + model check + grounding 44/44
+~/vision-assistant/bin/vision smoke --with-model              # + verified read-only ask (try with Wi-Fi off)
+~/vision-assistant/bin/vision install --bundle <bundle> --prefix ~/vision-assistant   # upgrade
+~/vision-assistant/bin/vision rollback --prefix ~/vision-assistant                     # switch back
+~/vision-assistant/bin/vision uninstall --prefix ~/vision-assistant                    # dry run; --apply removes code
+```
+
+Measured 2026-09-20: bundle built from the pinned model directory and
+verified (58 files, 504 KB); fresh-prefix install (venv on Python 3.14.7);
+doctor education; smokes 44/44 with verified asks in 3.1–4.7 s; a
+Seatbelt-sandboxed run denying all non-loopback networking reproduced the
+read-only profile; upgrade/rollback kept both versions; uninstall removed
+code and kept models unless explicitly asked.

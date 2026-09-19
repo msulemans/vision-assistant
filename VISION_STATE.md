@@ -2,9 +2,9 @@
 
 Last updated: 2026-09-20 (Australia/Sydney)
 
-Status: Milestone 015 in progress — M006 through M014 are complete (see their
-sections); M015 (profiles, packaging, and offline verification) scope is
-frozen and the first build is under way.
+Status: Milestone 015 complete — M006 through M015 are complete (see their
+sections); M016 (evaluation and reciprocal learning field manual) is next
+and not started.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1454,7 +1454,8 @@ Next milestone: M015 — profiles, packaging, and offline verification.
 
 ## Milestone 015 — profiles, packaging, and offline verification
 
-Status: in progress. Scope frozen before implementation (2026-09-20).
+Status: complete (2026-09-20). Scope was frozen before implementation
+(2026-09-20):
 
 - Objective: make the lab installable and reproducible as a local product.
   A versioned bundle carries the stdlib-only source and tool sources; an
@@ -1508,6 +1509,31 @@ Status: in progress. Scope frozen before implementation (2026-09-20).
   and README-INSTALL list the host prerequisites for a genuinely clean
   machine (Xcode command line tools for swiftc, a llama.cpp runtime,
   Python 3.9+; one-time model acquisition while online, ~3.4 GiB).
+
+Outcome (2026-09-20): the gate passed. The bundle (58 files, 504 KB) built
+from the pinned model directory verified clean (integrity + the frozen
+offline audit). A fresh-prefix install through the generated installer
+created its own venv — which happened to be Python 3.14.7, newer than any
+tested interpreter, and the entire read-only smoke passed under it — and
+the live gate caught one real bug on first contact: the dispatcher consumed
+the subcommand, so `vision doctor` failed; the passthrough routes were
+fixed and behavioral wrapper tests now execute the real dispatcher (commit
+0154191). Doctor printed the environment report and the three-capability
+permission education. `smoke` verified the real 3.4 GiB pin (audit ok,
+models ok, grounding gate 44/44) and `smoke --with-model` produced a
+verified, artifact-released one-shot answer in 3.1–4.7 s. The offline proof
+was strengthened beyond the manual Wi-Fi variant: the same smoke ran under
+a Seatbelt sandbox denying all networking except loopback (negative
+control: DNS denied, curl exit 6), reproducing the read-only profile with
+networking provably unavailable. Upgrade to 0.1.1 kept 0.1.0 and rollback
+restored it; the uninstall dry run listed code-only removal, and applying
+it left the prefix with install.json, models (symlink target untouched),
+and runs — the model-deletion path stays behind the explicit
+--remove-models flag (unit-tested; the live deletion was left as the user's
+explicit choice and conservatively skipped while the user was away).
+Evidence: docs/evidence/2026-09-20-m015-packaging-offline.md plus five live
+smoke JSONs. Learning map M15=done, M16=current; figures: 302 tests =
+296 product + 6 learning.
 
 Next milestone: M016 — evaluation and reciprocal learning field manual.
 

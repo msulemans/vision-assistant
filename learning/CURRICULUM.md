@@ -293,3 +293,25 @@ Adversarial screen text was flagged and ignored: the screen is data, never
 instructions. Interruption (SIGINT at the confirmation prompt) stopped the
 agent with p95 18.1 ms across ten real samples. Next milestone: M015 —
 profiles, packaging, and offline verification.
+
+## M015 outcome — making it installable, and proving it offline
+
+milestone: M015 — profiles, packaging, and offline verification. Complete 2026-09-20.
+
+The lab became a product: a versioned bundle (source, tool sources,
+artifact/licence manifest, integrity hashes, generated installer) installs
+into a fresh prefix with its own venv; `doctor` explains every permission
+on first run and never prompts; `smoke` replays the read-only profile —
+the frozen 44-check grounding gate plus, with the model present, one
+verified one-shot ask — from the installed copy. The offline claim is
+enforced at three levels: a frozen source audit (outbound clients only in
+the explicit model downloader; URLs and curl only there; the installer and
+doctor touch no network at all), a loopback-only local server, and a
+sandboxed reproduction run with every non-loopback network route denied
+(negative control: DNS denied). The live gate caught a real dispatcher bug
+on first contact (a consumed subcommand), fixed with behavioral tests that
+execute the installed wrapper; a fresh venv on Python 3.14.7 ran the whole
+read-only path. Upgrade keeps the previous version and rollback restores
+it; uninstall removes code while models and captures survive unless the
+user explicitly asks. Next milestone: M016 — evaluation and reciprocal
+learning field manual.

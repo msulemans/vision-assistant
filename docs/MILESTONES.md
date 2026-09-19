@@ -242,6 +242,21 @@ Gate: a clean Mac reproduces the read-only profile; action support remains an
 explicit separate opt-in; removal deletes local models/captures only with user
 choice.
 
+Delivered: the installable local product, closed 2026-09-20. `profiles.py`
+(frozen measured/planned registry; default balanced), `manifest.py`
+(artifact/licence manifest, size forecast, size/hash model verification),
+`package_cli.py` (build/verify/install/rollback/uninstall/versions/doctor/
+smoke/forecast, with a frozen source-level offline audit and a generated
+offline installer plus a `bin/vision` dispatcher). Live gate: bundle
+verified (58 files, 504 KB); fresh-prefix install with its own venv
+(Python 3.14.7 — newer than tested); doctor permission education; smoke
+44/44 with verified asks in 3.1–4.7 s; a Seatbelt-sandboxed run denying
+all non-loopback networking reproduced the read-only profile (negative
+control: DNS denied); upgrade/rollback verified; uninstall removed code
+and kept models (deletion behind an explicit flag). The live gate also
+caught and fixed a dispatcher bug (subcommand passthrough) with new
+behavioral wrapper tests. **Complete.**
+
 ### 016 — Evaluation and reciprocal learning field manual
 
 Build: latency waterfall, model comparison, failure explorer, component
