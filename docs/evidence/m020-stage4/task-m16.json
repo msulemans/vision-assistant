@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 22942.6,
+  "goal": "In display settings, turn compact mode on and dark mode on, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m16"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 1028.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2630.9,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 7688.3,
+      "executed": "set_toggle ui:5 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 9251.6,
+      "count": 9,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 15014.9,
+      "executed": "set_toggle ui:6 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 16671.7,
+      "count": 9,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 22942.6,
+      "executed": "save_form ui:8",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:63131/settings/?saved=1"
+    },
+    {
+      "at_ms": 22942.6,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m16",
+  "task_mode": "form",
+  "visited": [
+    "/settings/",
+    "/settings/?saved=1"
+  ]
+}

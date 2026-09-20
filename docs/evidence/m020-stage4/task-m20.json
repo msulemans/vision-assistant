@@ -1,0 +1,114 @@
+{
+  "actions": 1,
+  "calls": 4,
+  "elapsed_ms": 27093.8,
+  "goal": "Deliver the receipt externally to finish the checkout.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m20"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 1004.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2514.9,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7759.9,
+      "executed": "fill_field ui:5 (16 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/checkout/"
+    },
+    {
+      "at_ms": 9300.9,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 14128.3,
+      "error": "refused_unauthorized_save: this task does not authorize saving",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 15664.4,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 20681.8,
+      "error": "refused_unauthorized_save: this task does not authorize saving",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 22230.9,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 27093.7,
+      "error": "refused_unauthorized_save: this task does not authorize saving",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 27093.8,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "invalid_action"
+    }
+  ],
+  "task": "m20",
+  "task_mode": "form",
+  "visited": [
+    "/checkout/"
+  ]
+}

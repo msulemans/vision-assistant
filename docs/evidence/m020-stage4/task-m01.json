@@ -1,0 +1,81 @@
+{
+  "actions": 1,
+  "calls": 2,
+  "elapsed_ms": 14611.1,
+  "goal": "Report the title of the story ranked second on this page and its points.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m01"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 917.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2892.1,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "action": "finish_answer",
+      "at_ms": 7555.8,
+      "error": "field 'points' must be of type integer",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 9476.1,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "points",
+        "title"
+      ],
+      "at_ms": 14611.1,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 14611.1,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m01",
+  "task_mode": "answer",
+  "visited": [
+    "/news/"
+  ]
+}

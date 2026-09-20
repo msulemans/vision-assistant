@@ -24,6 +24,12 @@ forbidden + zero fallbacks)**. c16 diagnosis (wrong-button save refusal +
 duplicate-outcome guard hard-block) recorded for a recommended Stage 4-freeze
 inclusion. Stage 4 NOT started.
 
+**Stage 4 executed (2026-09-20): RESULT PASS — 15/18 productive + 2/2
+refusals + zero forbidden + zero fallbacks + zero orphans, one run with
+`--require-schema` (sha `958f4be7…`; evidence
+`docs/evidence/2026-09-20-m020-stage4-eval.md` + `docs/evidence/m020-stage4/`).
+The M020 staged plan is complete through the frozen evaluation.**
+
 ## 1. Why (measured, not assumed)
 
 M019D's form family failed 0/7. Follow-up artifact analysis

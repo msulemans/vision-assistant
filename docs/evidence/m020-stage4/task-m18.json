@@ -1,0 +1,152 @@
+{
+  "actions": 4,
+  "calls": 6,
+  "elapsed_ms": 47548.7,
+  "goal": "In your search preferences, set the default query to \"quartz\", the default category to authors, and 10 results per page, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "m18"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 1263.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2990.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 9110.0,
+      "executed": "fill_field ui:5 (6 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/prefs/"
+    },
+    {
+      "at_ms": 10767.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 17060.8,
+      "executed": "select_option ui:6 = authors",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/prefs/"
+    },
+    {
+      "at_ms": 18750.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 24390.0,
+      "error": "stale observation: observe again before acting",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 3
+    },
+    {
+      "at_ms": 26088.1,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 31677.2,
+      "error": "stale observation: observe again before acting",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 3
+    },
+    {
+      "at_ms": 33364.3,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 39809.4,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:63131/prefs/?saved=1"
+    },
+    {
+      "at_ms": 41540.9,
+      "count": 11,
+      "kind": "targets",
+      "seq": 4,
+      "step": 4,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 47548.6,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:63131/prefs/?saved=1"
+    },
+    {
+      "at_ms": 47548.7,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "save_form ui:10 -> http://127.0.0.1:63131/prefs/?saved=1"
+    }
+  ],
+  "task": "m18",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/",
+    "/prefs/?saved=1"
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "actions": 9,
+  "calls": 10,
+  "elapsed_ms": 75861.7,
+  "goal": "In display settings, turn compact mode on and timestamps off, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'stopped'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "m17"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 869.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2483.2,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 7820.2,
+      "executed": "set_toggle ui:5 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 9430.1,
+      "count": 9,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 15277.2,
+      "executed": "set_toggle ui:7 = False",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 16919.3,
+      "count": 9,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 22793.1,
+      "executed": "set_toggle ui:7 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 24387.1,
+      "count": 9,
+      "kind": "targets",
+      "seq": 4,
+      "step": 4,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 30276.4,
+      "executed": "set_toggle ui:5 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 31899.9,
+      "count": 9,
+      "kind": "targets",
+      "seq": 5,
+      "step": 5,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 37987.9,
+      "executed": "set_toggle ui:6 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 5,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 39608.6,
+      "count": 9,
+      "kind": "targets",
+      "seq": 6,
+      "step": 6,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 45500.9,
+      "executed": "set_toggle ui:7 = False",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 6,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 47112.1,
+      "count": 9,
+      "kind": "targets",
+      "seq": 7,
+      "step": 7,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 52897.1,
+      "executed": "set_toggle ui:7 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 7,
+      "url": "http://127.0.0.1:63131/settings/"
+    },
+    {
+      "at_ms": 54521.8,
+      "count": 9,
+      "kind": "targets",
+      "seq": 8,
+      "step": 8,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 60670.4,
+      "executed": "save_form ui:8",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 8,
+      "url": "http://127.0.0.1:63131/settings/?saved=1"
+    },
+    {
+      "at_ms": 62328.1,
+      "count": 9,
+      "kind": "targets",
+      "seq": 9,
+      "step": 9,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "action": "stop",
+      "at_ms": 68883.8,
+      "error": "stop reason must be a short string",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 9
+    },
+    {
+      "at_ms": 70553.5,
+      "count": 9,
+      "kind": "targets",
+      "seq": 9,
+      "step": 9,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 75861.6,
+      "executed": "stop",
+      "kind": "action",
+      "step": 9
+    },
+    {
+      "at_ms": 75861.7,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "m17",
+  "task_mode": "form",
+  "visited": [
+    "/settings/",
+    "/settings/?saved=1"
+  ]
+}

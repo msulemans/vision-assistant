@@ -1,0 +1,81 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 16323.7,
+  "goal": "Open the story ranked 13th on the news list.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m11"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 849.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/news/page2/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2751.6,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8405.5,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/news/page3//"
+    },
+    {
+      "at_ms": 10446.6,
+      "count": 19,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 16323.7,
+      "executed": "click_target ui:5",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/story/d13/"
+    },
+    {
+      "at_ms": 16323.7,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m11",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/page2/",
+    "/news/page3//",
+    "/story/d13/"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 16385.1,
+  "goal": "Open the last story on this page.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/d12/, got /news/page3//"
+    ],
+    "ok": false,
+    "task": "m08"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 917.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/news/page2/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2851.5,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8677.5,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/news/page3//"
+    },
+    {
+      "at_ms": 10573.6,
+      "count": 19,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 16385.1,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/news/page3//"
+    },
+    {
+      "at_ms": 16385.1,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click_target ui:19 -> http://127.0.0.1:63131/news/page3//"
+    }
+  ],
+  "task": "m08",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/page2/",
+    "/news/page3//"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 22966.3,
+  "goal": "In your search preferences, hide already-seen stories and show 30 results per page, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m14"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 844.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2526.7,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 7653.9,
+      "executed": "set_toggle ui:8 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/prefs/"
+    },
+    {
+      "at_ms": 9285.4,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 14886.7,
+      "executed": "select_option ui:9 = 30",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/prefs/"
+    },
+    {
+      "at_ms": 16625.3,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 22966.3,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:63131/prefs/?saved=1"
+    },
+    {
+      "at_ms": 22966.3,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m14",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/",
+    "/prefs/?saved=1"
+  ]
+}

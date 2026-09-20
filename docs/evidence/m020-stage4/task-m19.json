@@ -1,0 +1,109 @@
+{
+  "actions": 1,
+  "calls": 3,
+  "elapsed_ms": 21224.0,
+  "goal": "Read the members-only feature: sign in at the membership area.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m19"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 1090.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/login/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2695.0,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7708.5,
+      "executed": "fill_field ui:5 (5 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/login/"
+    },
+    {
+      "at_ms": 9401.9,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 14489.2,
+      "error": "no_observable_change",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 16094.6,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 21223.9,
+      "error": "no_observable_change",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 21224.0,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "repeated": [
+        "fill_field",
+        [
+          [
+            "target_ref",
+            "ui:5"
+          ],
+          [
+            "text",
+            "hello"
+          ]
+        ]
+      ]
+    }
+  ],
+  "task": "m19",
+  "task_mode": "form",
+  "visited": [
+    "/login/"
+  ]
+}

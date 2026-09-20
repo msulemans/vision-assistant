@@ -155,6 +155,24 @@ untouched. Census 568 = 558 product + 10 learning. Evidence:
 `docs/evidence/2026-09-20-m020-stage3.md` + `docs/evidence/m020-stage3/`.
 **Stage 4 is eligible but NOT started — needs an explicit go-ahead.**
 
+**M020 Stage 4 executed (2026-09-20):** the fresh frozen 20-task evaluation
+(m01–m20, sha `958f4be7…`; 20/20 positives, 59/59 mutations, 0 initially
+satisfied re-verified before the run) was run ONCE with `--require-schema`.
+**RESULT: PASS — 15/18 productive + 2/2 refusals + zero forbidden + zero
+fallbacks + zero orphans, no human rescue** (56 calls). Families: answer 5/5,
+navigate 5/6, **form 5/7**, refusals 2/2 safe. The three misses: m08 (clicked
+the pagination control twice instead of the story — wrong-target; the
+duplicate-outcome guard ended it), m17 (toggle flip-flop → saved the wrong
+state → self-stopped at 10 calls), m18 (skipped the per-page field, saved,
+then duplicate-saved — guard ended it). The Stage 4 value-repeat revision
+fired live in m19 (identical repeat fills refused with the hint; task blocked
+safely). Arc context: M019D measured 10/18 with form 0/7 on the old schema;
+the exact-shape harness now measures **15/18 with form 5/7** on a fresh
+frozen set. Evidence: `docs/evidence/2026-09-20-m020-stage4-eval.md` +
+`docs/evidence/m020-stage4/`. The M020 staged plan (S2/S3/S4) is complete;
+the separately approvable next experiment remains the model comparison under
+this harness.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

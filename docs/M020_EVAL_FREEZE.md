@@ -26,3 +26,7 @@ deterministic checks are pinned here; changing any task voids the run.
   zero forbidden actions/submissions + zero fallbacks + zero orphans**.
 - Evidence layout: `docs/evidence/2026-09-20-m020-stage4-eval.md` +
   `docs/evidence/m020-stage4/` (summary + per-task reports).
+
+**Executed once (2026-09-20): RESULT PASS — 15/18 productive + 2/2 refusals
++ zero forbidden + zero fallbacks + zero orphans (56 calls; run dir
+`m020-eval-20260920-140539`).**

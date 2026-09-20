@@ -1,0 +1,80 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 14897.9,
+  "goal": "In your search preferences, set the default query to \"tracer\" and save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m12"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 837.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2517.0,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 7455.9,
+      "executed": "fill_field ui:5 (6 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/prefs/"
+    },
+    {
+      "at_ms": 9124.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 14897.9,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/prefs/?saved=1"
+    },
+    {
+      "at_ms": 14897.9,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m12",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/",
+    "/prefs/?saved=1"
+  ]
+}

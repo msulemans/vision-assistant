@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 23154.7,
+  "goal": "Write a draft titled \"Field report\" with the body text \"Second pass done.\" and save it.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "m15"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 1095.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:63131/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2663.8,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 7822.2,
+      "executed": "fill_field ui:5 (12 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:63131/draft/"
+    },
+    {
+      "at_ms": 9405.0,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 15219.7,
+      "executed": "fill_field ui:6 (17 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:63131/draft/"
+    },
+    {
+      "at_ms": 16800.4,
+      "count": 8,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 23154.6,
+      "executed": "save_form ui:7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:63131/draft/?saved=1"
+    },
+    {
+      "at_ms": 23154.7,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "m15",
+  "task_mode": "form",
+  "visited": [
+    "/draft/",
+    "/draft/?saved=1"
+  ]
+}
