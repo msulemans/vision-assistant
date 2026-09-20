@@ -279,10 +279,13 @@ _NO_CHANGE_EXEMPT_ACTIONS = ("fill_field", "select_option", "set_toggle")
 def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
                        css_w: int, css_h: int, observation_id: str,
                        target_block: str, history, *, budgets=None,
-                       answer_fields=(), form_fields=()) -> str:
+                       answer_fields=(), form_fields=(), page_state=None) -> str:
     """The M019 prompt: goal, mode capabilities, observation, budgets.
 
-    Field NAMES may be shown for answers and forms; never values.
+    Field NAMES may be shown for answers and forms; never values. M021
+    read-only runs pass ``observation_id=""`` and ``target_block=""``:
+    the observation/target section disappears and only the trusted scroll
+    position (``page_state``) describes where the screenshot is.
     """
 
     manifest = tasks.capability_manifest(task_mode)
@@ -290,17 +293,27 @@ def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
         "You control a small browser by looking at ONE screenshot per step.",
         "Task mode: {} \u2014 trusted code limits what you may do.".format(task_mode),
         "Goal: {}".format(goal),
-        "The screenshot you see is {}x{} pixels. Target bounds use these "
-        "pixels.".format(image_w, image_h),
+        "The screenshot you see is {}x{} pixels.".format(image_w, image_h)
+        + (" Target bounds use these pixels." if target_block else ""),
         "The browser viewport is {}x{} CSS points; you never address CSS "
         "directly.".format(css_w, css_h),
-        "Observation: {}".format(observation_id),
-        target_block,
     ]
+    if target_block:
+        lines.append("Observation: {}".format(observation_id))
+        lines.append(target_block)
+    if page_state:
+        lines.append(
+            "Scroll position: y={} CSS pixels of {} (viewport {} px tall); "
+            "the screenshot shows exactly this viewport.".format(
+                page_state.get("scroll_y"), page_state.get("scroll_height"),
+                page_state.get("viewport_height")))
     if budgets:
-        lines.append("Budgets left: {} actions, {} looks, {} s.".format(
+        budget_text = "Budgets left: {} actions, {} looks, {} s".format(
             budgets.get("steps_left"), budgets.get("calls_left"),
-            budgets.get("seconds_left")))
+            budgets.get("seconds_left"))
+        if budgets.get("scrolls_left") is not None:
+            budget_text += ", {} scrolls".format(budgets["scrolls_left"])
+        lines.append(budget_text + ".")
     if answer_fields:
         lines.append("Answer fields (names only; values must be seen in a "
                      "screenshot): {}".format(", ".join(answer_fields)))
@@ -330,9 +343,13 @@ def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
         "Work in small, verified steps:",
         "- Allowed actions in this mode: {}.".format(
             ", ".join(manifest["allowed_actions"])),
-        "Exact reply shapes for this mode (replace ui:N and the observation "
-        "id with real values from the current observation):",
     ])
+    if target_block:
+        lines.append("Exact reply shapes for this mode (replace ui:N and the "
+                     "observation id with real values from the current "
+                     "observation):")
+    else:
+        lines.append("Exact reply shapes for this mode:")
     for action in manifest["allowed_actions"]:
         lines.append("- " + shapes[action])
     mutating = {"click_target", "fill_field", "select_option", "set_toggle",
@@ -346,14 +363,17 @@ def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
             "- fill_field writes its text into the field named text; "
             "select_option sets the field named option; set_toggle sets the "
             "boolean field named value. Do not mix these names up.")
-    lines.extend([
-        "- Target references are 'ui:' ids valid ONLY for the observation "
-        "above; after any page change, use the NEW list.",
+    bullets = [
         "- If an action is refused or changes nothing, do not repeat it; "
         "choose a different action or stop.",
         "- Never report or store a ui: reference as an answer value.",
         "- Reply with exactly one JSON action object, no other text.",
-    ])
+    ]
+    if target_block:
+        bullets.insert(0, "- Target references are 'ui:' ids valid ONLY for "
+                          "the observation above; after any page change, use "
+                          "the NEW list.")
+    lines.extend(bullets)
     if history:
         lines.append("Recent results (oldest first):")
         lines.extend(history[-2:])
@@ -365,8 +385,15 @@ def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
 
 
 def _observation_signature(shot, target_list) -> tuple:
-    """What counts as an observable change: URL + the visible target set."""
+    """What counts as an observable change: URL + the visible target set.
 
+    Read-only runs (``observe_targets=False``) pass ``None``: the signature
+    then carries the URL only, and the run-level exempt-action set decides
+    which actions may ignore it.
+    """
+
+    if target_list is None:
+        return (_path_only(shot.url), (), 0, False)
     return (
         _path_only(shot.url),
         tuple((entry.id, entry.role, entry.label,
@@ -411,6 +438,9 @@ class LoopLimits:
     max_seconds: float = tasks.LIMITS["max_seconds"]
     max_consecutive_recoveries: int = tasks.LIMITS["max_consecutive_recoveries"]
     max_infrastructure_failures: int = tasks.LIMITS["consecutive_infrastructure_failures_stop"]
+    # M021: an explicit bound on executed scroll actions (None = unbounded,
+    # the default; the frozen M018/M019/M020 behavior is unchanged).
+    max_scrolls: int = None
 
 
 def _png_dims(data: bytes) -> tuple:
@@ -460,7 +490,8 @@ def evaluator_state(*, url: str, answer, server_state, visited, outcome: str) ->
 
 def run_task(spec, *, session, proposer, server_state_provider, limits=None,
              sleep=time.sleep, monotonic=time.monotonic, log=print,
-             mode="screenshot", pilot=False) -> dict:
+             mode="screenshot", pilot=False, verifier=None,
+             exempt_actions=None) -> dict:
     """Run one frozen task: observe → propose → execute → observe → verify.
 
     ``mode="screenshot"`` is the frozen M018 baseline path (unchanged by
@@ -470,7 +501,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
     into the baseline score. ``pilot=True`` is the M018E live-pilot variant:
     there is no oracle (a reviewer scores the answer); the run never
     auto-satisfies, and a finish is terminal with the answer captured in
-    ``report["final_answer"]``.
+    ``report["final_answer"]``. ``verifier`` (M021) replaces the typed
+    oracle for reviewer-scored read-only runs; ``exempt_actions`` overrides
+    the run-level set of actions that do not arm the no-change guard.
     """
 
     if mode not in ("screenshot", "target", "typed"):
@@ -482,6 +515,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         typed_task_mode = getattr(spec, "mode", "")
         if typed_task_mode not in tasks.TYPED_MODES:
             raise ValueError("typed runs need a spec.mode in TYPED_MODES")
+    send_targets = bool(getattr(spec, "observe_targets", True))
+    exempt = (set(exempt_actions) if exempt_actions is not None
+              else set(_NO_CHANGE_EXEMPT_ACTIONS))
     hints = REFUSAL_HINTS
     if target_mode:
         hints = dict(REFUSAL_HINTS)
@@ -516,7 +552,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
     state = {"steps_used": 0, "calls": 0, "recoveries": 0, "last_refusal": None,
              "infrastructure": 0, "unchanged_streak": 0, "awaiting_change": False,
              "sig_before_action": None, "last_action_sig": None,
-             "value_repeat_refusals": 0, "current_sig": None}
+             "value_repeat_refusals": 0, "current_sig": None, "scrolls_used": 0}
     finish_answer = None
     visited: list = []
     shot = None
@@ -536,10 +572,13 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             # captured answer against an independently recorded listing.
             return {"ok": False, "task": spec.id, "failures": [], "pilot": True}
         if typed_mode:
-            return tasks.verify_typed_task(spec, evaluator_state(
+            snapshot_state = evaluator_state(
                 url=state.get("url", ""), answer=finish_answer,
                 server_state=server_state_provider(), visited=visited,
-                outcome=outcome))
+                outcome=outcome)
+            if verifier is not None:
+                return verifier(spec, snapshot_state)
+            return tasks.verify_typed_task(spec, snapshot_state)
         return tasks.verify_task(spec, evaluator_state(
             url=state.get("url", ""), answer=finish_answer,
             server_state=server_state_provider(), visited=visited, outcome=outcome))
@@ -549,8 +588,11 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         report["outcome"] = outcome
         report["oracle"] = verdict
         report["actions"] = state["steps_used"]
+        report["scrolls"] = state["scrolls_used"]
         report["elapsed_ms"] = round((monotonic() - started) * 1000.0, 1)
         report["visited"] = [_path_only(item) for item in visited]
+        if typed_mode and finish_answer is not None:
+            report["final_answer"] = dict(finish_answer)
         record("terminal", outcome=outcome, oracle_ok=verdict["ok"],
                failures=len(verdict["failures"]), **data)
         return report
@@ -616,7 +658,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             continue
 
         observed_targets = None
-        if target_mode or typed_mode:
+        if target_mode or (typed_mode and send_targets):
             try:
                 observed_targets = session.targets()
             except Exception as exc:  # noqa: BLE001 - typed adapter failure
@@ -635,7 +677,8 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                    truncated=observed_targets.truncated, seq=observed_targets.seq)
 
         if typed_mode:
-            observation_id = "obs-{}".format(observed_targets.seq)
+            observation_id = ("obs-{}".format(observed_targets.seq)
+                              if observed_targets is not None else "")
             sig = _observation_signature(shot, observed_targets)
             if state["awaiting_change"]:
                 if sig == state["sig_before_action"]:
@@ -650,23 +693,45 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 state["awaiting_change"] = False
             state["current_sig"] = sig
 
+        page_state = None
+        if typed_mode and getattr(spec, "page_metrics", False):
+            state_fn = getattr(session, "state", None)
+            if callable(state_fn):
+                try:
+                    info = (state_fn() or {}).get("page") or {}
+                    page_state = {
+                        "scroll_y": int(info.get("scrollY") or 0),
+                        "scroll_height": int(info.get("scrollHeight") or 0),
+                        "viewport_height": int(info.get("innerHeight") or 0),
+                    }
+                except Exception:  # noqa: BLE001 - metrics are best-effort
+                    page_state = None
+            if page_state is not None:
+                record("page", step=state["steps_used"] + 1, **page_state)
         if typed_mode:
-            target_block = browser_targets.render_typed_target_block(
-                observed_targets.targets, model_w, model_h, shot.width,
-                shot.height, shot.scale, truncated=observed_targets.truncated,
-                total=observed_targets.total)
+            target_block = ("" if observed_targets is None else
+                            browser_targets.render_typed_target_block(
+                                observed_targets.targets, model_w, model_h,
+                                shot.width, shot.height, shot.scale,
+                                truncated=observed_targets.truncated,
+                                total=observed_targets.total))
             prompt = build_typed_prompt(
                 spec.goal, typed_task_mode, model_w, model_h, session.width,
-                session.height, observation_id, target_block, history,
+                session.height, observation_id if send_targets else "",
+                target_block, history,
                 budgets={
                     "steps_left": max(0, limits.max_steps - state["steps_used"]),
                     "calls_left": max(0, limits.max_calls - state["calls"]),
                     "seconds_left": max(0, int(limits.max_seconds
                                                 - (monotonic() - started))),
+                    "scrolls_left": (None if limits.max_scrolls is None else
+                                     max(0, limits.max_scrolls
+                                         - state["scrolls_used"])),
                 },
                 answer_fields=tuple(sorted(
                     (getattr(spec, "answer_schema", None) or {}).get("fields", {}))),
-                form_fields=tuple(getattr(spec, "form_fields", ())))
+                form_fields=tuple(getattr(spec, "form_fields", ())),
+                page_state=page_state)
         elif target_mode:
             target_block = browser_targets.render_target_block(
                 observed_targets.targets, model_w, model_h, shot.width,
@@ -728,11 +793,14 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 if state["unchanged_streak"] >= 2:
                     return finish("blocked:no_progress", repeated=action_sig)
                 continue
+            current_targets = (observed_targets.targets
+                               if observed_targets is not None else ())
             parsed, error = tasks.validate_typed_action(
                 proposal, mode=typed_task_mode, observation_id=observation_id,
-                targets=observed_targets.targets,
-                authorized_saves=_authorized_refs(spec, observed_targets.targets),
-                answer_schema=getattr(spec, "answer_schema", None))
+                targets=current_targets,
+                authorized_saves=_authorized_refs(spec, current_targets),
+                answer_schema=getattr(spec, "answer_schema", None),
+                answer_validator=getattr(spec, "answer_validator", None))
         else:
             proposal = {"kind": _KIND_MAP.get(raw_kind, raw_kind)}
             for key in ("x", "y", "text", "key", "direction", "amount", "url",
@@ -769,6 +837,17 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         state["steps_used"] += 1
         step_no = state["steps_used"]
         prev_url = state["url"]
+        if (kind == "scroll" and limits.max_scrolls is not None
+                and state["scrolls_used"] >= limits.max_scrolls):
+            record("action", step=step_no, executed=None,
+                   refused="budget_scrolls")
+            history.append("scroll budget exhausted ({} of {}); report what "
+                           "you see with finish_answer or stop".format(
+                               state["scrolls_used"], limits.max_scrolls))
+            stop = exhausted("budget_scrolls")
+            if stop:
+                return stop
+            continue
         executed = ""
         try:
             if kind == "click":
@@ -822,6 +901,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 sleep(0.3)
             elif kind == "scroll":
                 session.scroll(parsed["direction"], parsed["amount"])
+                state["scrolls_used"] += 1
                 executed = "scroll {} {}".format(parsed["direction"], parsed["amount"])
                 sleep(0.3)
             elif kind == "navigate":
@@ -855,7 +935,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         if typed_mode:
             state["last_action_sig"] = action_sig
             state["sig_before_action"] = state["current_sig"]
-            state["awaiting_change"] = (kind not in _NO_CHANGE_EXEMPT_ACTIONS)
+            state["awaiting_change"] = (kind not in exempt)
 
         state["recoveries"] = 0
         state["last_refusal"] = None
@@ -905,5 +985,5 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         if verdict["ok"]:
             return finish("finished")
         if (len(outcomes) >= 2 and outcomes[-1] == outcomes[-2]
-                and kind not in _NO_CHANGE_EXEMPT_ACTIONS):
+                and kind not in exempt):
             return finish("blocked:no_progress", repeated=outcomes[-1])

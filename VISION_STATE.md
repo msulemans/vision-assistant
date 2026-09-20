@@ -173,6 +173,35 @@ frozen set. Evidence: `docs/evidence/2026-09-20-m020-stage4-eval.md` +
 the separately approvable next experiment remains the model comparison under
 this harness.
 
+**M021 Phase 1 executed (2026-09-20):** the read-only live Hacker News
+transfer harness is implemented and **frozen** (plan
+`docs/M021_HN_TRANSFER_PLAN.md`) — the M020 answer-mode treatment of the
+M018E failure shape (the old pilot's model clicked useless targets because
+clicking was available; M018E stays preserved as the old failed baseline).
+`src/vision_assistant/m021_hn.py` + `browser_cli m021-hn`: trusted code
+opens HN (helper `--live-host` + session `live_origins` — origin pinned to
+the HN host); the model may ONLY scroll/wait/finish_answer/stop (capability
+manifest + exact `oneOf` schema branches; click/type/forms/navigation are
+inexpressible); target lists are never requested or sent (new
+`observe_targets=False`); the observation is a viewport screenshot plus the
+trusted scroll position (helper `state` now reports
+`scrollY/scrollHeight/innerHeight` — additive, compiled clean) plus a
+bounded history; ctx 8192; budgets **4 scrolls / 8 calls / 120 s** (new
+`max_scrolls`, refusal-with-hint); require-schema semantics are hard-wired
+(zero fallbacks permitted); the answer grammar is an exact nested object
+`{stories:[{rank,title,url,points?,reason}], found}` mirroring
+`validate_m021_answer` (duplicate ranks/urls, rank ordering, ui:/target-id
+text and count mismatches all rejected with feedback); `observed_at` is
+trusted metadata. Reviewer protocol frozen: trusted pre-run front-page
+capture (`reviewer/`), HN API/article pages post-run only, never in the
+prompt (canary-tested). 26 new deterministic tests; focused sweep 193
+green (incl. all audit/invariant modules — the audit caught a
+scheme-separator literal in the new module's docstring, fixed before the
+freeze); census **606 = 596 product + 10 learning**. **The single live run
+is ready but NOT executed** — it requires the committed freeze (this
+commit) and an explicit go-ahead; if it fails, the honest next step is a
+stronger model, not more guard/prompt churn on this set.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

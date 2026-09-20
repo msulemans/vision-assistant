@@ -27,6 +27,8 @@
 //   {"id":4,"cmd":"type","text":"hello"}
 //   {"id":5,"cmd":"key","key":"enter"}
 //   {"id":6,"cmd":"scroll","direction":"down","amount":2}
+//                    (optional "method":"dom" = M021 in-page scrolling,
+//                     activation-independent; absent = frozen key path)
 //   {"id":7,"cmd":"back"}
 //   {"id":8,"cmd":"state"}
 //   {"id":9,"cmd":"quit"}
@@ -771,6 +773,27 @@ final class Helper: NSObject, WKNavigationDelegate {
         guard amount >= 1 && amount <= 10 else {
             respond(id, ["ok": false, "error": "bad_amount"]); return
         }
+        // M021 read-only scope: optional in-page scrolling (`method:"dom"`),
+        // independent of window activation — no synthesized events at all.
+        // Absent method keeps the frozen key-event path unchanged.
+        let method = (req["method"] as? String) ?? "keys"
+        if method == "dom" {
+            let sign = direction == "down" ? 1 : -1
+            let script = """
+            (function(){var d=\(sign)*\(amount)*Math.max(1,Math.round(window.innerHeight));window.scrollBy(0,d);return JSON.stringify({scrollY:Math.round(window.scrollY||0)});})()
+            """
+            webView.evaluateJavaScript(script) { [weak self] result, _ in
+                guard let self = self else { return }
+                guard let json = result as? String,
+                      let data = json.data(using: .utf8),
+                      let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                    self.respond(id, ["ok": false, "error": "scroll_unreadable"]); return
+                }
+                self.respond(id, ["ok": true, "pages": amount, "method": "dom",
+                                  "scrollY": (info["scrollY"] as? Int) ?? 0])
+            }
+            return
+        }
         let (characters, keyCode) = direction == "down" ? specialKeys["page_down"]! : specialKeys["page_up"]!
         for _ in 0..<amount {
             sendKey(characters, keyCode: keyCode)
@@ -780,8 +803,10 @@ final class Helper: NSObject, WKNavigationDelegate {
     }
 
     func state(id: Int) {
+        // M021 additive read-only metrics: scroll position (CSS pixels),
+        // total scrollable height, and viewport height — no behavior change.
         let script = """
-        (function(){return JSON.stringify({url:location.href,ready:document.readyState});})()
+        (function(){return JSON.stringify({url:location.href,ready:document.readyState,scrollY:Math.round(window.scrollY||0),scrollHeight:Math.round((document.documentElement&&document.documentElement.scrollHeight)||0),innerHeight:Math.round(window.innerHeight||0)});})()
         """
         webView.evaluateJavaScript(script) { [weak self] result, _ in
             guard let self = self else { return }

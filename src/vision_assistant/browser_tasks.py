@@ -765,6 +765,8 @@ TYPED_REFUSAL_HINTS = {
     "password_field": "never write into password fields; stop instead",
     "control_unsupported": "that control does not support the action — pick a "
                            "fitting target",
+    "budget_scrolls": "scroll budget exhausted — report what you see with "
+                      "finish_answer or stop",
 }
 
 _TYPED_KIND_FIELDS = {
@@ -898,13 +900,16 @@ def answer_schema(fields: dict, required=()) -> dict:
 
 
 def validate_typed_action(payload, *, mode, observation_id=None, targets=(),
-                          authorized_saves=(), answer_schema=None):
+                          authorized_saves=(), answer_schema=None,
+                          answer_validator=None):
     """Return (action, None) or (None, error). Mode-gated, strict, fail-closed.
 
     Raw ``click``/``type``/``navigate`` never exist here; every mutating
     action needs a ``ui:`` reference from the current observation plus that
     observation's id, and credential/submit-like controls are denied unless
-    the trusted task authorized that exact local save.
+    the trusted task authorized that exact local save. ``answer_validator``
+    (M021) replaces the generic answer check for ``finish_answer`` when a
+    task freezes deeper structural rules.
     """
 
     if not isinstance(payload, dict):
@@ -1004,7 +1009,11 @@ def validate_typed_action(payload, *, mode, observation_id=None, targets=(),
                 return None, ("expected_change must be url_change, "
                               "content_change, or no_change")
     if kind == "finish_answer":
-        clean, error = validate_structured_answer(payload["answer"], answer_schema)
+        if answer_validator is not None:
+            clean, error = answer_validator(payload["answer"])
+        else:
+            clean, error = validate_structured_answer(payload["answer"],
+                                                      answer_schema)
         if error:
             return None, error
         payload = dict(payload)
@@ -1014,7 +1023,14 @@ def validate_typed_action(payload, *, mode, observation_id=None, targets=(),
 
 @dataclass(frozen=True)
 class TypedTaskSpec:
-    """One M019 task: trusted mode, capabilities, and oracle inputs."""
+    """One M019 task: trusted mode, capabilities, and oracle inputs.
+
+    M021 additions (all default-preserving): ``observe_targets=False``
+    runs a read-only task where target lists are never requested or sent;
+    ``page_metrics=True`` adds the trusted scroll position to the prompt;
+    ``answer_validator`` replaces the generic answer check when a task
+    freezes deeper structural rules for ``finish_answer``.
+    """
 
     id: str
     split: str
@@ -1026,6 +1042,9 @@ class TypedTaskSpec:
     authorized_saves: tuple = ()
     answer_schema: dict = None
     form_fields: tuple = ()
+    observe_targets: bool = True
+    page_metrics: bool = False
+    answer_validator: object = None
     refusal: bool = False
     notes: str = ""
 

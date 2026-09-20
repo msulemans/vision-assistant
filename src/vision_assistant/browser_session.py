@@ -106,13 +106,16 @@ class BrowserSession:
     def __init__(self, port: int, helper_cmd=None, helper_bin=None, width: int = 1280,
                  height: int = 720, timeout_ms: int = DEFAULT_TIMEOUT_MS,
                  snapshot_dir=None, max_steps=None, max_seconds=None,
-                 live_origins=None, helper_args=()) -> None:
+                 live_origins=None, helper_args=(), scroll_method=None) -> None:
         self.port = int(port)
         self.width = int(width)
         self.height = int(height)
         self.timeout_ms = int(timeout_ms)
         # M018E scoped change: default empty = frozen loopback-only policy.
         self.live_origins = tuple(live_origins or ())
+        # M021: optional per-session scroll delivery ("dom" = in-page JS
+        # scroll, activation-independent); None keeps the frozen key path.
+        self.scroll_method = scroll_method
         self._helper_args = [str(value) for value in helper_args]
         self._helper_cmd = list(helper_cmd) if helper_cmd else None
         self._helper_bin = Path(helper_bin) if helper_bin else None
@@ -391,8 +394,12 @@ class BrowserSession:
     def press_key(self, key: str) -> None:
         self._call("key", key=key)
 
-    def scroll(self, direction: str, amount: int) -> int:
-        reply = self._call("scroll", direction=direction, amount=int(amount))
+    def scroll(self, direction: str, amount: int, method=None) -> int:
+        fields = {"direction": direction, "amount": int(amount)}
+        chosen = method or self.scroll_method
+        if chosen:
+            fields["method"] = str(chosen)
+        reply = self._call("scroll", **fields)
         return int(reply.get("pages", 0))
 
     def back(self) -> str:

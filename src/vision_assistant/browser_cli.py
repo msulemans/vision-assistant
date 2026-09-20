@@ -484,6 +484,163 @@ def cmd_hn_pilot(args) -> int:
     return 0
 
 
+def cmd_m021(args) -> int:
+    """M021: one read-only live Hacker News transfer (answer mode).
+
+    Frozen phase order (docs/M021_HN_TRANSFER_PLAN.md): (1) trusted pre-run
+    reviewer capture of the front page with its own helper (no model);
+    (2) the single model run with require-schema semantics (a schema request
+    failure is fatal; zero fallbacks permitted); (3) crash-safe report plus
+    screenshot retention for review. Correctness is reviewer-scored AFTER
+    the run and this command never self-certifies success.
+    """
+
+    from . import m021_hn
+    from .browser_agent import LoopLimits, model_proposer, run_task
+    from .browser_session import BrowserSession, compile_helper
+    from .runtime_llamaserver import LlamaServerAdapter
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = (Path(args.out_dir) if args.out_dir
+            else REPO_ROOT / "runs" / "m021" / ("m021-hn-" + stamp))
+    root.mkdir(parents=True, exist_ok=True)
+    report = {
+        "stage": "M021", "run_version": m021_hn.RUN_VERSION,
+        "goal": m021_hn.GOAL,
+        "classification_rule": m021_hn.CLASSIFICATION_RULE,
+        "start_url": m021_hn.START_URL, "reviewer_scored": True,
+        "ctx_size": args.ctx_size, "goal_sha256": m021_hn.goal_sha256(),
+        "limits": {"max_scrolls": m021_hn.MAX_SCROLLS,
+                   "max_calls": m021_hn.MAX_CALLS,
+                   "max_seconds": m021_hn.MAX_SECONDS},
+        "model_calls": 0, "fallbacks": 0, "schema_events": [],
+        "outcome": None, "ok": False, "orphans": None,
+        "started_at": m021_hn.utc_now(),
+    }
+    session = None
+    adapter = None
+    run = None
+    raw_answers: list = []
+    schema_events: list = []
+    observed_at = ""
+    try:
+        helper_bin = compile_helper()
+        report["helper"] = str(helper_bin)
+
+        # Phase A: trusted pre-run reviewer capture (no model involved).
+        reviewer_dir = root / "reviewer"
+        reviewer_dir.mkdir(parents=True, exist_ok=True)
+        capture = BrowserSession(
+            port=0, helper_bin=helper_bin, snapshot_dir=root / "tmp-capture",
+            live_origins=(m021_hn.HN_ORIGIN,),
+            helper_args=("--live-host", m021_hn.HN_HOST),
+            scroll_method="dom")
+        files = []
+        try:
+            capture.launch()
+            capture.navigate(m021_hn.START_URL)
+            time.sleep(1.5)
+            for index in range(1, args.reviewer_pages + 1):
+                shot = capture.snapshot(path=str(
+                    reviewer_dir / "snapshot-{:02d}.png".format(index)))
+                files.append({"file": "snapshot-{:02d}.png".format(index),
+                              "seq": shot.seq, "url": shot.url})
+                if index < args.reviewer_pages:
+                    capture.scroll("down", 1)
+                    time.sleep(0.6)
+        finally:
+            capture.stop()
+        report["reviewer"] = {
+            "captured_at": m021_hn.utc_now(), "url": m021_hn.START_URL,
+            "files": files,
+            "note": "trusted pre-run capture; never enters the model prompt",
+        }
+
+        # Phase B: the single model run.
+        pin_dir = Path(args.pin_dir)
+        pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+        model = next(f for f in pin["files"] if f["role"] == "model")
+        mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+        adapter = LlamaServerAdapter(
+            pin_dir / model["name"], pin_dir / mmproj["name"],
+            ctx_size=args.ctx_size, jinja=True,
+            chat_template_kwargs={"enable_thinking": False},
+            log_path=root / "server.log")
+        proposer = model_proposer(
+            adapter, record=raw_answers, schema=m021_hn.action_schema(),
+            schema_events=schema_events, require_schema=True)
+        limits = LoopLimits(
+            max_steps=m021_hn.MAX_CALLS, max_calls=m021_hn.MAX_CALLS,
+            max_seconds=m021_hn.MAX_SECONDS, max_scrolls=m021_hn.MAX_SCROLLS)
+        session = BrowserSession(
+            port=0, helper_bin=helper_bin, snapshot_dir=root / "shots",
+            live_origins=(m021_hn.HN_ORIGIN,),
+            helper_args=("--live-host", m021_hn.HN_HOST),
+            scroll_method="dom")
+        print("starting llama-server with the pinned model " + model["name"])
+        adapter.start()
+        session.launch()
+        observed_at = m021_hn.utc_now()
+        run = run_task(
+            m021_hn.hn_spec(), session=session, proposer=proposer,
+            server_state_provider=lambda: {}, limits=limits, mode="typed",
+            verifier=m021_hn.verify_m021,
+            exempt_actions=("scroll", "wait"))
+    except Exception as exc:  # noqa: BLE001 - crash-safe reporting
+        run = {"outcome": "failed:exception",
+               "error": "{}: {}".format(type(exc).__name__, exc)}
+    finally:
+        kept = root / "shots-kept"
+        if (session is not None and session.snapshot_dir is not None
+                and session.snapshot_dir.exists() and not kept.exists()):
+            shutil.copytree(session.snapshot_dir, kept)
+        if session is not None:
+            session.stop()
+        if adapter is not None:
+            adapter.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len(
+            [line for line in check.stdout.split() if line.strip()])
+
+    if run is not None:
+        report["run"] = run
+        report["outcome"] = run.get("outcome")
+        report["model_calls"] = int(run.get("calls", 0))
+        report["final_answer"] = run.get("final_answer")
+    report["schema_events"] = list(schema_events)
+    report["fallbacks"] = sum(1 for event in schema_events
+                              if event == "fallback")
+    report["raw_answers"] = raw_answers
+    report["observed_at"] = observed_at or None
+    kept = root / "shots-kept"
+    report["screenshots"] = (sorted(str(path.relative_to(root))
+                                     for path in kept.glob("*.png"))
+                             if kept.exists() else [])
+    answer = (run or {}).get("final_answer")
+    if isinstance(answer, dict):
+        report["result_file"] = "result.json"
+        m021_hn.atomic_write_json(
+            root / "result.json",
+            m021_hn.result_document(answer, observed_at))
+    else:
+        report["result_file"] = None
+    report["ok"] = bool(report["outcome"] == "finished"
+                        and report["fallbacks"] == 0
+                        and report["orphans"] == 0)
+    m021_hn.atomic_write_json(root / "report.json", report)
+    print("outcome: {} | calls {} | scrolls {} | fallbacks {} | orphans {}".format(
+        report["outcome"], report["model_calls"],
+        (run or {}).get("scrolls", 0), report["fallbacks"],
+        report["orphans"]))
+    print("reviewer: score result.json against reviewer/ AFTER the run "
+          "(HN API/article pages post-run only; never in the prompt)")
+    print("report:", root)
+    print("RESULT:", "RUN OK — reviewer scoring pending" if report["ok"]
+          else "RUN ISSUE (see report.json)")
+    return 0 if report["ok"] else 1
+
+
 def cmd_task(args) -> int:
     """Run frozen browser tasks once each with the pinned model in the loop."""
 
@@ -1378,6 +1535,20 @@ def main(argv=None) -> int:
                         help="fail a task when the schema-constrained request "
                              "fails (no unconstrained fallback)")
     p_m020.set_defaults(func=cmd_m020_eval)
+
+    p_m021 = sub.add_parser(
+        "m021-hn",
+        help="M021: read-only live Hacker News transfer (answer mode); the "
+             "live run happens only after the freeze is committed")
+    p_m021.add_argument("--pin-dir", default=str(REPO_ROOT / "models" /
+                                                  "qwen3.5-4b"))
+    p_m021.add_argument("--ctx-size", type=int, default=8192,
+                        help="frozen pilot context: 8192")
+    p_m021.add_argument("--reviewer-pages", type=int, default=3,
+                        help="trusted pre-run front-page captures kept for "
+                             "the reviewer")
+    p_m021.add_argument("--out-dir", default="")
+    p_m021.set_defaults(func=cmd_m021)
 
     args = parser.parse_args(argv)
     return args.func(args)
