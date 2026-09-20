@@ -136,16 +136,30 @@ begin validated at y=0, document-end detected for a single-viewport page,
 zero orphans). The float `method:"dom"` scroll shares its JS branch with the
 int path already proven live in the M021 run (`scroll_y 0 → 498`).
 
-## The future smoke run (NOT executed; needs explicit go-ahead)
+## The development smoke (frozen run; NOT YET EXECUTED)
 
-Five-task development smoke (the frozen next step): a fresh dev set of five
-long-page scan tasks — **to be authored and frozen in a separate step** —
-run once each with the pinned Qwen3.5-4B.
+Five-task development smoke: the fresh dev set is **authored and frozen** —
+`src/vision_assistant/m022_dev.py` (`DEV_VERSION m022-dev-v1`; manifest sha
+`b5aea171…` pinned in `tests/test_m022_dev.py`): five static long-page tasks
+(`/d22-01/`..`/d22-05/`, 36–45 rows, 5–6 viewports each) mixing `primary`
+AI/ML stories with tempting `decoy` classes (Standard ML the language, model
+railways, transformer oil, the Model T, neural crest biology, LLVM) ranked
+above the third primary so a misclassification changes the selection; every
+expected selection is the three lowest-ranked primaries and spans at least
+two viewports (cross-viewport evidence required). 13 additional tests:
+byte-identical builds, unique titles, design invariants (span, decoys above
+the third primary, multi-viewport sizing, budget fit), oracle teeth (6
+mutations), pinned manifest sha, loopback-only static server, CLI crash
+safety. `browser_cli m022-dev --check-only` gate: green. Pre-flight render
+through the real helper verified (readable rows; the float `method:"dom"`
+step advanced 0 → 503 px at 69.9%).
 
-**Exact budget:** ≤ 5 tasks × (≤ 20 calls, ≤ 8 viewports, ≤ 180 s) = **≤ 100
-model calls** plus one model load; one run per task; no retries; zero
-fallbacks; abort criteria: any `failed:traversal`, any fallback, or fewer
-than 4/5 structurally finished runs.
+**Exact budget:** five tasks run once each with the pinned Qwen3.5-4B —
+≤ 5 × (≤ 20 calls, ≤ 8 viewports, ≤ 180 s) = **≤ 100 model calls** plus one
+model load; one run per task; no retries; zero fallbacks; abort criteria:
+any exception, `failed:traversal`, `failed:infrastructure`, or schema
+fallback stops the smoke; gate: **≥ 4/5 exact selections**, zero fallbacks,
+zero orphans, no human rescue — reported, never auto-continued.
 
 Minimal variant (live HN, single run) if the dev set is deferred:
 `PYTHONPATH=src .venv/bin/python -m vision_assistant.browser_cli m022-hn`

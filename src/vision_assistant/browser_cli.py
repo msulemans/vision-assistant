@@ -888,6 +888,166 @@ def cmd_m022(args) -> int:
     return 0 if report["ok"] else 1
 
 
+def cmd_m022_dev(args) -> int:
+    """M022 development smoke: the five long-page scan tasks, one run each.
+
+    Runs only after the deterministic freeze checks pass (``--check-only``
+    for the no-model gate). One run per task; no retries; zero fallbacks
+    permitted (require_schema hard-wired). Abort criteria per the frozen
+    plan: any traversal/infrastructure failure, exception, or schema
+    fallback stops the smoke. The gate (>=4/5 exact selections) is
+    reported, never auto-continued.
+    """
+
+    from . import m022_dev as dev
+    from . import m022_scan as scan
+    from .browser_agent import model_proposer
+    from .browser_session import BrowserSession, compile_helper
+    from .runtime_llamaserver import LlamaServerAdapter
+
+    checks = dev.run_checks()
+    print("freeze checks: {} | tasks {} | manifest {}".format(
+        "OK" if checks["ok"] else "PROBLEMS", checks["tasks"],
+        checks["manifest_sha256"][:16]))
+    if not checks["ok"]:
+        print(json.dumps(checks["problems"], indent=2))
+        return 1
+    if args.check_only:
+        print(json.dumps(checks, sort_keys=True, indent=2))
+        return 0
+
+    if args.ids:
+        ids = [item.strip() for item in args.ids.split(",") if item.strip()]
+    else:
+        ids = [task.id for task in dev.DEV_TASKS]
+    missing = [item for item in ids if item not in dev.DEV_TASKS_BY_ID]
+    if missing:
+        print("unknown tasks:", ",".join(missing))
+        return 1
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = (Path(args.out_dir) if args.out_dir
+            else REPO_ROOT / "runs" / "m022" / ("m022-dev-" + stamp))
+    root.mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    raw_answers: list = []
+    schema_events: list = []
+    report = {"stage": "M022-dev", "version": dev.DEV_VERSION,
+              "run_version": scan.RUN_VERSION,
+              "manifest_sha256": checks["manifest_sha256"],
+              "site_tree": None, "port": None,
+              "ids": ids, "rows": [], "model_calls": 0,
+              "fallbacks": 0, "aborted": None, "ok": False}
+    abort_reason = None
+    adapter = None
+    server = None
+    try:
+        build = dev.build_site(site)
+        report["site_tree"] = build["tree_sha256"]
+        server = dev.DevSiteServer(site)
+        port = server.start()
+        report["port"] = port
+        helper_bin = compile_helper()
+        pin_dir = Path(args.pin_dir)
+        pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+        model = next(f for f in pin["files"] if f["role"] == "model")
+        mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+        adapter = LlamaServerAdapter(
+            pin_dir / model["name"], pin_dir / mmproj["name"],
+            ctx_size=args.ctx_size, jinja=True,
+            chat_template_kwargs={"enable_thinking": False},
+            log_path=root / "server.log")
+        proposer = model_proposer(
+            adapter, record=raw_answers, schema=scan.scan_action_schema(),
+            schema_events=schema_events, require_schema=True)
+        print("starting llama-server with the pinned model " + model["name"])
+        adapter.start()
+        for task_id in ids:
+            spec = dev.DEV_TASKS_BY_ID[task_id]
+            row = {"task": task_id, "path": spec.path, "calls": 0,
+                   "viewports": 0, "outcome": None, "ok": False}
+            session = None
+            task_root = root / task_id
+            kept = task_root / "shots-kept"
+            try:
+                session = BrowserSession(
+                    port=port, helper_bin=helper_bin,
+                    snapshot_dir=task_root / "tmp-shots")
+                session.launch()
+                session.navigate(spec.path)
+                time.sleep(0.8)
+                run = scan.run_scan(session, proposer)
+                verdict = dev.verify_dev_task(spec, run)
+                row.update(outcome=run["outcome"], calls=run["calls"],
+                           viewports=run["viewports"],
+                           selection=run["selection"], ledger=run["ledger"],
+                           verdict=verdict, ok=bool(verdict["ok"]))
+                print("task {}: {} | calls {} | selection {} | {}".format(
+                    task_id, run["outcome"], run["calls"],
+                    [entry.get("rank") for entry in run["selection"]],
+                    "OK" if verdict["ok"]
+                    else "FAIL " + "; ".join(verdict["failures"])))
+            except Exception as exc:  # noqa: BLE001 - crash-safe, zero retries
+                row.update(outcome="failed:exception",
+                           error="{}: {}".format(type(exc).__name__, exc))
+                abort_reason = "exception:{}".format(type(exc).__name__)
+            finally:
+                if (session is not None and session.snapshot_dir is not None
+                        and session.snapshot_dir.exists()
+                        and not kept.exists()):
+                    shutil.copytree(session.snapshot_dir, kept)
+                if session is not None:
+                    session.stop()
+            row["shots_kept"] = (sorted(str(path.relative_to(root))
+                                         for path in kept.glob("*.png"))
+                                 if kept.exists() else [])
+            report["model_calls"] += int(row.get("calls") or 0)
+            scan.atomic_write_json(task_root /
+                                   ("task-{}.json".format(task_id)), row)
+            report["rows"].append(row)
+            outcome = str(row.get("outcome") or "")
+            if outcome.startswith(("failed:traversal", "failed:infrastructure")):
+                abort_reason = "outcome:{}".format(outcome)
+            if abort_reason:
+                report["aborted"] = abort_reason
+                break
+    except Exception as exc:  # noqa: BLE001 - crash-safe reporting
+        report["aborted"] = "exception:{}".format(type(exc).__name__)
+        report["error"] = "{}: {}".format(type(exc).__name__, exc)
+    finally:
+        if adapter is not None:
+            adapter.stop()
+        if server is not None:
+            server.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len(
+            [line for line in check.stdout.split() if line.strip()])
+
+    report["fallbacks"] = sum(1 for event in schema_events
+                              if event == "fallback")
+    report["schema_events"] = list(schema_events)
+    report["raw_answers"] = raw_answers
+    report["finished"] = sum(1 for row in report["rows"]
+                             if row.get("outcome") == "finished")
+    report["correct"] = sum(1 for row in report["rows"] if row.get("ok"))
+    report["ok"] = bool(len(report["rows"]) == len(ids)
+                        and report["correct"] >= 4
+                        and report["fallbacks"] == 0
+                        and report["orphans"] == 0
+                        and report["aborted"] is None)
+    out = Path(args.out) if args.out else root / "summary.json"
+    scan.atomic_write_json(out, report)
+    print("gate: correct {}/{} | finished {} | fallbacks {} | orphans {} | "
+          "aborted {}".format(report["correct"], len(ids),
+                              report["finished"], report["fallbacks"],
+                              report["orphans"], report["aborted"]))
+    print("report:", out)
+    print("RESULT:", "PASS" if report["ok"] else "FAIL",
+          "(never auto-continues; results stand as measured)")
+    return 0 if report["ok"] else 1
+
+
 def cmd_task(args) -> int:
     """Run frozen browser tasks once each with the pinned model in the loop."""
 
@@ -1814,6 +1974,22 @@ def main(argv=None) -> int:
                         help="no-model loopback verification of the trusted "
                              "traversal + links machinery on the dev fixture")
     p_m022.set_defaults(func=cmd_m022)
+
+    p_m022dev = sub.add_parser(
+        "m022-dev",
+        help="M022 development smoke: five long-page scan tasks, one "
+             "pinned-model run each (frozen budgets; never auto-continues)")
+    p_m022dev.add_argument("--ids", default="",
+                           help="comma-separated task ids (default: all five)")
+    p_m022dev.add_argument("--check-only", action="store_true",
+                           help="run the deterministic freeze checks and "
+                                "exit (no model)")
+    p_m022dev.add_argument("--pin-dir", default=str(REPO_ROOT / "models" /
+                                                    "qwen3.5-4b"))
+    p_m022dev.add_argument("--ctx-size", type=int, default=8192)
+    p_m022dev.add_argument("--out-dir", default="")
+    p_m022dev.add_argument("--out", default="")
+    p_m022dev.set_defaults(func=cmd_m022_dev)
 
     args = parser.parse_args(argv)
     return args.func(args)
