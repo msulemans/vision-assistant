@@ -1,0 +1,73 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 10590.4,
+  "goal": "Compare points of ranks 4 and 5; report the winner rank.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "t09"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Building a mechanical clock from plywood\",\n    \"rank\": 4,\n    \"points\": 160,\n    \"comments\": 22,\n    \"code\": \"t11\",\n    \"author\": \"omar haddad\",\n    \"date_display\": \"Sep 17\",\n    \"count\": 6,\n    \"present\": true,\n    \"winner_rank\": 4,\n    \"stories\": [\n      {\n        \"rank\": 4,\n        \"code\": \"t11\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 846.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2753.4,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 10590.4,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 10590.4,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "t09",
+  "visited": [
+    "/news/"
+  ]
+}

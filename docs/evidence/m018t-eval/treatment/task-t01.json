@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 9414.0,
+  "goal": "Open the rank-4 story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "t01"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t11\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 844.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2746.7,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 9413.9,
+      "executed": "click_target t11",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/story/e04/"
+    },
+    {
+      "at_ms": 9414.0,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "t01",
+  "visited": [
+    "/news/",
+    "/story/e04/"
+  ]
+}

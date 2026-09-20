@@ -1,0 +1,136 @@
+{
+  "actions": 5,
+  "calls": 5,
+  "elapsed_ms": 30668.0,
+  "goal": "Send the receipt to the external events service.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 1,
+    "failures": [
+      "constraint submission_attempts: expected 0, got 1"
+    ],
+    "ok": false,
+    "task": "t20"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t6\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"test@example.com\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"test@example.com\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 915.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2385.5,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7010.0,
+      "executed": "click_target t6",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/checkout/?submitted=1"
+    },
+    {
+      "at_ms": 8531.1,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 12322.3,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 2
+    },
+    {
+      "at_ms": 13866.9,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 3,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 17790.8,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 3
+    },
+    {
+      "at_ms": 19354.7,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 4,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 24174.1,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:57926/checkout/?submitted=1"
+    },
+    {
+      "at_ms": 25705.2,
+      "count": 6,
+      "kind": "targets",
+      "seq": 3,
+      "step": 5,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 30668.0,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 5,
+      "url": "http://127.0.0.1:57926/checkout/?submitted=1"
+    },
+    {
+      "at_ms": 30668.0,
+      "failures": 1,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click_target t5 -> http://127.0.0.1:57926/checkout/?submitted=1"
+    }
+  ],
+  "task": "t20",
+  "visited": [
+    "/checkout/",
+    "/checkout/?submitted=1"
+  ]
+}

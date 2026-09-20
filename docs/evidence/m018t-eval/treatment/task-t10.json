@@ -1,0 +1,114 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 25804.5,
+  "goal": "On the rank-2 story's comments page, report the author of the oldest visible comment and the story code.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 3,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "url: expected /story/e02/comments/, got /story/e01/",
+      "answer: does not match the expected fields"
+    ],
+    "ok": false,
+    "task": "t10"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t6\"\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"A weekend with a homemade radio telescope\",\n    \"rank\": 1,\n    \"points\": 230,\n    \"comments\": 48,\n    \"code\": \"SC-eval-e01-b6c0\",\n    \"author\": \"ines duarte\",\n    \"date_display\": \"Sep 20\",\n    \"count\": 48,\n    \"present\": true,\n    \"winner_rank\": 1,\n    \"stories\": [\n      {\n        \"rank\": 1,\n        \"code\": \"SC-eval-e01-b6c0\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 771.7,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2681.3,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8902.6,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/story/e01/"
+    },
+    {
+      "at_ms": 10454.3,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 15976.7,
+      "executed": "click_target t6",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57926/story/e01/"
+    },
+    {
+      "at_ms": 17536.4,
+      "count": 8,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 25804.3,
+      "executed": "finish",
+      "kind": "action",
+      "step": 3
+    },
+    {
+      "at_ms": 25804.6,
+      "failures": 3,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t10",
+  "visited": [
+    "/news/",
+    "/story/e01/"
+  ]
+}

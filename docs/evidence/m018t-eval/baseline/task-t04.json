@@ -1,0 +1,75 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 18278.2,
+  "goal": "Use the archive redirect on the rank-6 story page and follow it to the story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "visit: no recorded visit containing /redirect/e06/"
+    ],
+    "ok": false,
+    "task": "t04"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 333,\n  \"y\": 383\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 333,\n  \"y\": 384\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 333,\n  \"y\": 384\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 822.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/story/e06/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6518.5,
+      "executed": "click 666,766",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/story/e06/"
+    },
+    {
+      "at_ms": 12348.2,
+      "executed": "click 666,768",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/story/e06/"
+    },
+    {
+      "at_ms": 18278.1,
+      "executed": "click 666,768",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57756/story/e06/"
+    },
+    {
+      "at_ms": 18278.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 666,768 -> http://127.0.0.1:57756/story/e06/"
+    }
+  ],
+  "task": "t04",
+  "visited": [
+    "/story/e06/"
+  ]
+}

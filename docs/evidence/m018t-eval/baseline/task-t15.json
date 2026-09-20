@@ -1,0 +1,75 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 18216.8,
+  "goal": "Save a draft titled \u201cHarbor notes\u201d with body \u201cTest the new cleats.\u201d",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "form_state.draft: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "t15"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 312,\n  \"y\": 178\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 312,\n  \"y\": 176\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 312,\n  \"y\": 176\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 834.0,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6521.2,
+      "executed": "click 624,356",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/draft/"
+    },
+    {
+      "at_ms": 12359.9,
+      "executed": "click 624,352",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/draft/"
+    },
+    {
+      "at_ms": 18216.8,
+      "executed": "click 624,352",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57756/draft/"
+    },
+    {
+      "at_ms": 18216.8,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 624,352 -> http://127.0.0.1:57756/draft/"
+    }
+  ],
+  "task": "t15",
+  "visited": [
+    "/draft/"
+  ]
+}

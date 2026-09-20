@@ -1,0 +1,67 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 9720.2,
+  "goal": "Compare points of ranks 4 and 5; report the winner rank.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "answer: does not match the expected fields"
+    ],
+    "ok": false,
+    "task": "t09"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Why your city's bus maps lie\",\n    \"rank\": 5,\n    \"points\": 145,\n    \"comments\": 33,\n    \"code\": \"priya nair\",\n    \"author\": \"priya nair\",\n    \"date_display\": \"Sep 16\",\n    \"count\": 33,\n    \"present\": true,\n    \"winner_rank\": 5,\n    \"stories\": [\n      {\n        \"rank\": 4,\n        \"code\": \"omar haddad\"\n      },\n      {\n        \"rank\": 5,\n        \"code\": \"priya nair\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 995.0,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/news/",
+      "width": 2560
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 9720.0,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 9720.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t09",
+  "visited": [
+    "/news/"
+  ]
+}

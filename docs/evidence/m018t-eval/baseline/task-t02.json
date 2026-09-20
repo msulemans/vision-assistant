@@ -1,0 +1,94 @@
+{
+  "actions": 5,
+  "calls": 5,
+  "elapsed_ms": 31176.8,
+  "goal": "Open the comments for the rank-1 story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/e01/comments/, got /story/e02/"
+    ],
+    "ok": false,
+    "task": "t02"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 375,\n  \"y\": 182\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 375,\n  \"y\": 180\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 375,\n  \"y\": 180\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 254,\n  \"y\": 384\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 254,\n  \"y\": 384\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 822.7,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6875.1,
+      "executed": "click 750,364",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/news/"
+    },
+    {
+      "at_ms": 12998.4,
+      "executed": "click 750,360",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/news/"
+    },
+    {
+      "at_ms": 19255.2,
+      "executed": "click 750,360",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57756/story/e02/"
+    },
+    {
+      "at_ms": 25221.7,
+      "executed": "click 508,768",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:57756/story/e02/"
+    },
+    {
+      "at_ms": 31176.7,
+      "executed": "click 508,768",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 5,
+      "url": "http://127.0.0.1:57756/story/e02/"
+    },
+    {
+      "at_ms": 31176.8,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 508,768 -> http://127.0.0.1:57756/story/e02/"
+    }
+  ],
+  "task": "t02",
+  "visited": [
+    "/news/",
+    "/story/e02/"
+  ]
+}

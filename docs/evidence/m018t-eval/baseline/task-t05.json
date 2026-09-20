@@ -1,0 +1,87 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 22430.6,
+  "goal": "Search the fixture for \u201crobotics\u201d and open the matching story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 3,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "url: expected /story/e10/, got /story/e16/",
+      "query: expected {'q': 'robotics'}, got {}"
+    ],
+    "ok": false,
+    "task": "t05"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 368,\n  \"y\": 183\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 366,\n  \"y\": 646\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"The lighthouse keepers' logbooks\",\n    \"rank\": 16,\n    \"points\": 39,\n    \"comments\": 7,\n    \"code\": \"SC-eval-e16-e560\",\n    \"author\": \"tess willows\",\n    \"date_display\": \"Sep 5\",\n    \"count\": 1,\n    \"present\": true,\n    \"winner_rank\": 16,\n    \"stories\": [\n      {\n        \"rank\": 16,\n        \"code\": \"SC-eval-e16-e560\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 816.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/search/",
+      "width": 2560
+    },
+    {
+      "at_ms": 7599.0,
+      "executed": "click 736,366",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/search/"
+    },
+    {
+      "at_ms": 14389.9,
+      "executed": "click 732,1292",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/story/e16/"
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 22430.5,
+      "executed": "finish",
+      "kind": "action",
+      "step": 3
+    },
+    {
+      "at_ms": 22430.6,
+      "failures": 3,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t05",
+  "visited": [
+    "/search/",
+    "/story/e16/"
+  ]
+}

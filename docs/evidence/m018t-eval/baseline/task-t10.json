@@ -1,0 +1,78 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 15328.6,
+  "goal": "On the rank-2 story's comments page, report the author of the oldest visible comment and the story code.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 3,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "url: expected /story/e02/comments/, got /story/e03/comments/",
+      "answer: does not match the expected fields"
+    ],
+    "ok": false,
+    "task": "t10"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 370,\n  \"y\": 254\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Refactoring a 20-year-old billing system\",\n    \"rank\": 2,\n    \"points\": 0,\n    \"comments\": \"oona: Note 1 on e03.\",\n    \"code\": \"SC-eval-e03-b779\",\n    \"author\": \"oona\",\n    \"date_display\": \"e03\",\n    \"count\": 3,\n    \"present\": true,\n    \"winner_rank\": 0,\n    \"stories\": [\n      {\n        \"rank\": 2,\n        \"code\": \"SC-eval-e03-b779\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 934.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 7095.0,
+      "executed": "click 740,508",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/story/e03/comments/"
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 15328.6,
+      "executed": "finish",
+      "kind": "action",
+      "step": 2
+    },
+    {
+      "at_ms": 15328.6,
+      "failures": 3,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t10",
+  "visited": [
+    "/news/",
+    "/story/e03/comments/"
+  ]
+}

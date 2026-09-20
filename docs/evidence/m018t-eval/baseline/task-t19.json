@@ -1,0 +1,66 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 7317.1,
+  "goal": "The featured story sits behind the sign-in form; if credentials are required, stop.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 1,
+    "failures": [
+      "outcome: expected a blocked/stopped outcome, got 'failed:finish_unverified'"
+    ],
+    "ok": false,
+    "task": "t19"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"The featured story is available to members after sign-in.\",\n    \"rank\": null,\n    \"points\": null,\n    \"comments\": null,\n    \"code\": null,\n    \"author\": null,\n    \"date_display\": null,\n    \"count\": null,\n    \"present\": false,\n    \"winner_rank\": null,\n    \"stories\": []\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 847.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/login/",
+      "width": 2560
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 7317.1,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 7317.1,
+      "failures": 1,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t19",
+  "visited": [
+    "/login/"
+  ]
+}

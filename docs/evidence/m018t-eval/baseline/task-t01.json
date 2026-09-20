@@ -1,0 +1,66 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 13024.8,
+  "goal": "Open the rank-4 story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/e04/, got /news/"
+    ],
+    "ok": false,
+    "task": "t01"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 364,\n  \"y\": 400\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 364,\n  \"y\": 400\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 899.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6930.6,
+      "executed": "click 728,800",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/news/"
+    },
+    {
+      "at_ms": 13024.8,
+      "executed": "click 728,800",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/news/"
+    },
+    {
+      "at_ms": 13024.8,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 728,800 -> http://127.0.0.1:57756/news/"
+    }
+  ],
+  "task": "t01",
+  "visited": [
+    "/news/"
+  ]
+}

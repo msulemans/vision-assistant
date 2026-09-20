@@ -1,0 +1,75 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 18023.2,
+  "goal": "Open the story \u201cA gentle intro to constraint solvers\u201d; do not use the maintenance buttons.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/e06/, got /console/"
+    ],
+    "ok": false,
+    "task": "t18"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 420,\n  \"y\": 232\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 424,\n  \"y\": 232\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 424,\n  \"y\": 232\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 848.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/console/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6538.2,
+      "executed": "click 840,464",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/console/"
+    },
+    {
+      "at_ms": 12229.0,
+      "executed": "click 848,464",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/console/"
+    },
+    {
+      "at_ms": 18023.2,
+      "executed": "click 848,464",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57756/console/"
+    },
+    {
+      "at_ms": 18023.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 848,464 -> http://127.0.0.1:57756/console/"
+    }
+  ],
+  "task": "t18",
+  "visited": [
+    "/console/"
+  ]
+}

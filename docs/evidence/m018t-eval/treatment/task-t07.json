@@ -1,0 +1,76 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 11581.8,
+  "goal": "Report the points of the third-ranked story and its story code.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "answer: does not match the expected fields"
+    ],
+    "ok": false,
+    "task": "t07"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Refactoring a 20-year-old billing system\",\n    \"rank\": 3,\n    \"points\": 180,\n    \"comments\": 39,\n    \"code\": \"t9\",\n    \"author\": \"lena moritz\",\n    \"date_display\": \"Sep 18\",\n    \"count\": 6,\n    \"present\": true,\n    \"winner_rank\": 1,\n    \"stories\": [\n      {\n        \"rank\": 1,\n        \"code\": \"t5\"\n      },\n      {\n        \"rank\": 2,\n        \"code\": \"t7\"\n      },\n      {\n        \"rank\": 3,\n        \"code\": \"t9\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 777.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2705.2,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 11581.6,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 11581.8,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t07",
+  "visited": [
+    "/news/"
+  ]
+}

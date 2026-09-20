@@ -1,0 +1,102 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 24067.4,
+  "goal": "Visit page two of the news list.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /news/page2/, got /news/"
+    ],
+    "ok": false,
+    "task": "t03"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t18\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t2\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t2\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 846.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2783.5,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8466.0,
+      "executed": "click_target t18",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/news/"
+    },
+    {
+      "at_ms": 10406.9,
+      "count": 19,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 16211.2,
+      "executed": "click_target t2",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57926/news/"
+    },
+    {
+      "at_ms": 18151.3,
+      "count": 19,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 24067.3,
+      "executed": "click_target t2",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57926/news/"
+    },
+    {
+      "at_ms": 24067.4,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click_target t2 -> http://127.0.0.1:57926/news/"
+    }
+  ],
+  "task": "t03",
+  "visited": [
+    "/news/"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 26999.0,
+  "goal": "Search the fixture for \u201crobotics\u201d and open the matching story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 3,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "url: expected /story/e10/, got /search/",
+      "query: expected {'q': 'robotics'}, got {}"
+    ],
+    "ok": false,
+    "task": "t05"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"robotics\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 776.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/search/",
+      "width": 2560
+    },
+    {
+      "at_ms": 3499.1,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 9769.2,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 1
+    },
+    {
+      "at_ms": 12407.0,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 2,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 18410.1,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 2
+    },
+    {
+      "at_ms": 21082.7,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 3,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 26998.9,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 3
+    },
+    {
+      "at_ms": 26999.0,
+      "failures": 3,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "refused_focus"
+    }
+  ],
+  "task": "t05",
+  "visited": [
+    "/search/"
+  ]
+}

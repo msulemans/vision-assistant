@@ -1,0 +1,142 @@
+{
+  "actions": 5,
+  "calls": 5,
+  "elapsed_ms": 36544.3,
+  "goal": "Set default query \u201ctelescopes\u201d, sort \u201cnewest\u201d, and per-page \u201c10\u201d; save.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "t12"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"telescopes\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t9\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t10\"\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Search preferences\",\n    \"default_query\": \"telescopes\",\n    \"sort\": \"relevance\",\n    \"per_page\": \"20\",\n    \"save\": true\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 841.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2496.4,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 8139.9,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/prefs/"
+    },
+    {
+      "at_ms": 8500.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 13538.3,
+      "executed": "type 10 chars",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57926/prefs/"
+    },
+    {
+      "at_ms": 15210.7,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 21358.3,
+      "executed": "click_target t9",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57926/prefs/"
+    },
+    {
+      "at_ms": 23034.0,
+      "count": 11,
+      "kind": "targets",
+      "seq": 4,
+      "step": 4,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 29162.2,
+      "executed": "click_target t10",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:57926/prefs/"
+    },
+    {
+      "at_ms": 30817.7,
+      "count": 11,
+      "kind": "targets",
+      "seq": 5,
+      "step": 5,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "default_query",
+        "per_page",
+        "save",
+        "sort",
+        "title"
+      ],
+      "at_ms": 36544.3,
+      "executed": "finish",
+      "kind": "action",
+      "step": 5
+    },
+    {
+      "at_ms": 36544.3,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t12",
+  "visited": [
+    "/prefs/"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 13056.4,
+  "goal": "Report the comment count of the rank-5 story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "t08"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Why your city's bus maps lie\",\n    \"rank\": 5,\n    \"points\": 145,\n    \"comments\": 33,\n    \"code\": \"t13\",\n    \"author\": \"priya nair\",\n    \"date_display\": \"Sep 16\",\n    \"count\": 33,\n    \"present\": true,\n    \"winner_rank\": 1,\n    \"stories\": [\n      {\n        \"rank\": 1,\n        \"code\": \"t5\"\n      },\n      {\n        \"rank\": 2,\n        \"code\": \"t7\"\n      },\n      {\n        \"rank\": 3,\n        \"code\": \"t9\"\n      },\n      {\n        \"rank\": 4,\n        \"code\": \"t11\"\n      },\n      {\n        \"rank\": 5,\n        \"code\": \"t13\"\n      },\n      {\n        \"rank\": 6,\n        \"code\": \"t15\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 782.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2689.1,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 13056.4,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 13056.4,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "t08",
+  "visited": [
+    "/news/"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "actions": 0,
+  "calls": 0,
+  "elapsed_ms": 824.1,
+  "goal": "Change the draft title, then cancel editing so the saved draft stays unchanged.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "t16"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 824.0,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/draft/",
+      "width": 2560
+    },
+    {
+      "already_satisfied": true,
+      "at_ms": 824.1,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "t16",
+  "visited": [
+    "/draft/"
+  ]
+}

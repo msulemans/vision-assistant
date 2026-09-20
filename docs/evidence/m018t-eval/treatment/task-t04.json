@@ -1,0 +1,94 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 17579.2,
+  "goal": "Use the archive redirect on the rank-6 story page and follow it to the story.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "visit: no recorded visit containing /redirect/e06/"
+    ],
+    "ok": false,
+    "task": "t04"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t7\"\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"A gentle intro to constraint solvers\",\n    \"rank\": 6,\n    \"points\": 130,\n    \"comments\": 28,\n    \"code\": \"SC-eval-e06-0f5b\",\n    \"author\": \"lena moritz\",\n    \"date_display\": \"Sep 15\",\n    \"count\": 28,\n    \"present\": true,\n    \"winner_rank\": null,\n    \"stories\": [\n      {\n        \"rank\": 6,\n        \"code\": \"SC-eval-e06-0f5b\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 772.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/story/e06/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2438.0,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 7804.2,
+      "executed": "click_target t7",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57926/story/e06/"
+    },
+    {
+      "at_ms": 9418.5,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 17579.2,
+      "executed": "finish",
+      "kind": "action",
+      "step": 2
+    },
+    {
+      "at_ms": 17579.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "t04",
+  "visited": [
+    "/story/e06/"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 19026.2,
+  "goal": "Fix the typo in the default query (\u201ctelescopse\u201d \u2192 \u201ctelescopes\u201d) and save.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "t14"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"type\",\n  \"text\": \"telescopes\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"telescopes\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"telescopes\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 839.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57926/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2549.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 6825.7,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 1
+    },
+    {
+      "at_ms": 8532.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 12928.8,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 2
+    },
+    {
+      "at_ms": 14607.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 19026.1,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 3
+    },
+    {
+      "at_ms": 19026.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "refused_focus"
+    }
+  ],
+  "task": "t14",
+  "visited": [
+    "/prefs/"
+  ]
+}

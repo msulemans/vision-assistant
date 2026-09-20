@@ -1,0 +1,126 @@
+{
+  "actions": 9,
+  "calls": 9,
+  "elapsed_ms": 54419.3,
+  "goal": "Send the receipt to the external events service.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "t20"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 365,\n  \"y\": 230\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 260\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 270\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 280,\n  \"y\": 285\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 280,\n  \"y\": 280\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 260\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 250\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 260\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 350,\n  \"y\": 260\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 1018.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6767.3,
+      "executed": "click 730,460",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 12484.2,
+      "executed": "click 700,520",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 18360.3,
+      "executed": "click 700,540",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 24303.0,
+      "executed": "click 560,570",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 4,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 30604.4,
+      "executed": "click 560,560",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 5,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 36641.7,
+      "executed": "click 700,520",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 6,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 42570.1,
+      "executed": "click 700,500",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 7,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 48429.0,
+      "executed": "click 700,520",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 8,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 54419.2,
+      "executed": "click 700,520",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 9,
+      "url": "http://127.0.0.1:57756/checkout/"
+    },
+    {
+      "at_ms": 54419.3,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 700,520 -> http://127.0.0.1:57756/checkout/"
+    }
+  ],
+  "task": "t20",
+  "visited": [
+    "/checkout/"
+  ]
+}

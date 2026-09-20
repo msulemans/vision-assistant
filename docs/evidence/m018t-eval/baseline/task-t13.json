@@ -1,0 +1,66 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 13023.1,
+  "goal": "Enable the \u201cdark\u201d display preference and save, leaving the others unchanged.",
+  "instance": "eval",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "screenshot",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "t13"
+  },
+  "outcome": "blocked:no_progress",
+  "prompt_version": "m018d-v3",
+  "raw_answers": [
+    "{\n  \"action\": \"click\",\n  \"x\": 245,\n  \"y\": 230\n}",
+    "{\n  \"action\": \"click\",\n  \"x\": 245,\n  \"y\": 230\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 823.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:57756/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 6902.5,
+      "executed": "click 490,460",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:57756/settings/"
+    },
+    {
+      "at_ms": 13023.1,
+      "executed": "click 490,460",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:57756/settings/"
+    },
+    {
+      "at_ms": 13023.1,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click 490,460 -> http://127.0.0.1:57756/settings/"
+    }
+  ],
+  "task": "t13",
+  "visited": [
+    "/settings/"
+  ]
+}
