@@ -1,10 +1,14 @@
 """M018A fixture news site: deterministic content and page generation.
 
-Two independent instances (``dev``, ``heldout``) share one template set but
-have different stories, authors, search matches, comments, seeds, and story
-codes. Everything is a pure function of the content constants below: building
-the same instance twice yields byte-identical trees, and ``content_hash``
-pins the hidden truth used by the task oracles.
+Three content instances share one template set but have different stories,
+authors, search matches, comments, seeds, and story codes: the frozen public
+pair ``dev`` and ``heldout`` — the M018A manifest covers exactly these two,
+so ``instances()`` keeps listing only them and its sha stays pinned — and
+``eval``, the M018T evaluation instance (frozen in
+``docs/M018T_EVAL_FREEZE.md`` before its single evaluation run).
+Everything is a pure function of the content constants below: building the
+same instance twice yields byte-identical trees, and ``content_hash`` pins
+the hidden truth used by the task oracles.
 
 Pages are dependency-free HTML (one small inline script on four demo pages).
 Nothing here touches the network: the single external-origin literal is
@@ -66,7 +70,31 @@ _HELDOUT_STORIES = (
     {"sid": "h18", "title": "Harbor cranes go electric", "points": 33, "comments": 8, "author": "mira chen", "topics": ("ports",)},
 )
 
-_INSTANCES = {"dev": _DEV_STORIES, "heldout": _HELDOUT_STORIES}
+# M018T evaluation instance (frozen in docs/M018T_EVAL_FREEZE.md before any
+# run; deliberately NOT listed by instances() so the frozen M018A manifest
+# sha stays unaffected).
+_EVAL_STORIES = (
+    {"sid": "e01", "title": "A weekend with a homemade radio telescope", "points": 230, "comments": 48, "author": "ines duarte", "topics": ("radio", "astronomy")},
+    {"sid": "e02", "title": "Open weights for tiny speech translators", "points": 205, "comments": 55, "author": "kofi mensah", "topics": ("ai", "speech")},
+    {"sid": "e03", "title": "Refactoring a 20-year-old billing system", "points": 180, "comments": 39, "author": "lena moritz", "topics": ("tooling",)},
+    {"sid": "e04", "title": "Building a mechanical clock from plywood", "points": 160, "comments": 22, "author": "omar haddad", "topics": ("woodworking",)},
+    {"sid": "e05", "title": "Why your city's bus maps lie", "points": 145, "comments": 33, "author": "priya nair", "topics": ("cities",)},
+    {"sid": "e06", "title": "A gentle intro to constraint solvers", "points": 130, "comments": 28, "author": "lena moritz", "topics": ("compilers",)},
+    {"sid": "e07", "title": "Solar kiosks in the high desert", "points": 118, "comments": 17, "author": "tess willows", "topics": ("energy",)},
+    {"sid": "e08", "title": "Training a vision model on museum scans", "points": 104, "comments": 25, "author": "kofi mensah", "topics": ("ai", "vision")},
+    {"sid": "e09", "title": "The physics of pancake flipping", "points": 96, "comments": 12, "author": "omar haddad", "topics": ("physics",)},
+    {"sid": "e10", "title": "Robotics clubs are teaching soldering again", "points": 88, "comments": 31, "author": "priya nair", "topics": ("robotics", "community")},
+    {"sid": "e11", "title": "Notes on maintaining a public radio archive", "points": 79, "comments": 15, "author": "ines duarte", "topics": ("archives",)},
+    {"sid": "e12", "title": "A minimal syntax highlighter in 200 lines", "points": 70, "comments": 9, "author": "lena moritz", "topics": ("tooling",)},
+    {"sid": "e13", "title": "Urban beekeeping, five years later", "points": 62, "comments": 14, "author": "tess willows", "topics": ("cities", "bees")},
+    {"sid": "e14", "title": "A prototype keyboard for one hand", "points": 54, "comments": 11, "author": "omar haddad", "topics": ("hardware", "keyboards")},
+    {"sid": "e15", "title": "Machine translation for field workers", "points": 47, "comments": 19, "author": "kofi mensah", "topics": ("ai", "translation")},
+    {"sid": "e16", "title": "The lighthouse keepers' logbooks", "points": 39, "comments": 7, "author": "tess willows", "topics": ("history",)},
+    {"sid": "e17", "title": "Tuning a chess engine's opening book", "points": 30, "comments": 13, "author": "priya nair", "topics": ("games",)},
+    {"sid": "e18", "title": "Fermenting hot sauce with a thermometer", "points": 24, "comments": 5, "author": "ines duarte", "topics": ("food",)},
+)
+
+_INSTANCES = {"dev": _DEV_STORIES, "heldout": _HELDOUT_STORIES, "eval": _EVAL_STORIES}
 PAGE_SIZE = 6
 COMMENTS_PER_STORY = 3
 
@@ -97,11 +125,18 @@ _SEEDS = {
             }
         },
     },
+    "eval": {
+        "t14": {"prefs": {"default_query": "telescopse"}},
+        "t16": {"draft": {"title": "Draft: bench notes", "body": "Seed body"}},
+    },
 }
 
 
 def instances() -> tuple:
-    return tuple(sorted(_INSTANCES))
+    # Frozen public pair: used by the M018A manifest and the CLI. The M018T
+    # evaluation instance ("eval") is complete in _INSTANCES but deliberately
+    # not listed here, so the frozen manifest sha is unaffected.
+    return ("dev", "heldout")
 
 
 def stories(instance: str) -> tuple:

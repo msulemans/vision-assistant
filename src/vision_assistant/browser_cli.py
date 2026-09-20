@@ -409,16 +409,28 @@ def cmd_task(args) -> int:
     from .runtime_llamaserver import LlamaServerAdapter
 
     ids = [item.strip() for item in args.ids.split(",") if item.strip()]
-    missing = [item for item in ids if item not in tasks.TASKS_BY_ID]
+    suite = getattr(args, "suite", "frozen")
+    if suite == "eval":
+        from .browser_eval import EVAL_INSTANCE, EVAL_TASKS_BY_ID
+
+        pool = EVAL_TASKS_BY_ID
+        suite_instance = EVAL_INSTANCE
+    else:
+        pool = tasks.TASKS_BY_ID
+        suite_instance = args.instance
+    missing = [item for item in ids if item not in pool]
     if missing:
         print("unknown tasks:", ",".join(missing))
         return 1
-    specs = [tasks.TASKS_BY_ID[item] for item in ids]
-    instance = args.instance
+    specs = [pool[item] for item in ids]
+    instance = suite_instance
     mode = getattr(args, "mode", "screenshot")
 
     stamp = time.strftime("%Y%m%d-%H%M%S")
-    folder = "m018t-" if mode == "target" else "loop-"
+    if suite == "eval":
+        folder = "m018t-eval-"
+    else:
+        folder = "m018t-" if mode == "target" else "loop-"
     root = Path(args.out_dir) if args.out_dir else RUNS_DIR / (folder + stamp)
     root.mkdir(parents=True, exist_ok=True)
     site = root / "site"
@@ -488,8 +500,13 @@ def cmd_task(args) -> int:
         server.stop()
 
     finished = [r for r in reports if r["outcome"] == "finished"]
+    if suite == "eval":
+        stage = "M018T-EVAL"
+    else:
+        stage = "M018T" if mode == "target" else "M018C"
     summary = {
-        "stage": "M018T" if mode == "target" else "M018C",
+        "stage": stage,
+        "suite": suite,
         "mode": mode, "instance": instance, "ids": ids,
         "finished": len(finished), "total": len(reports),
         "outcomes": {r["task"]: r["outcome"] for r in reports},
@@ -538,6 +555,8 @@ def main(argv=None) -> int:
 
     p_task = sub.add_parser("task", help="run frozen tasks once each with the pinned model")
     p_task.add_argument("--ids", required=True, help="comma-separated task ids")
+    p_task.add_argument("--suite", choices=("frozen", "eval"), default="frozen",
+                        help="task pool: the frozen 50-task suite or the M018T evaluation set")
     p_task.add_argument("--instance", choices=fixtures.instances(), default="dev")
     p_task.add_argument("--mode", choices=("screenshot", "target"), default="screenshot",
                         help="observation mode: frozen screenshot baseline or M018T target-assisted")

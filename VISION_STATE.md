@@ -1867,3 +1867,18 @@ evaluation set requires its own recorded freeze and review. Evidence:
 `docs/evidence/2026-09-20-m018t-smoke.md` +
 `docs/evidence/m018t-smoke/{initial,revision-v2}/` + the scripted smoke
 JSONs.
+
+**M018T evaluation set frozen — 2026-09-20.** `docs/M018T_EVAL_FREEZE.md`:
+a new `eval` fixture instance (18 stories; content hash `98369e66…`),
+deliberately outside `fixtures.instances()` so the frozen M018A manifest sha
+stays `df630b21…`; a 20-task suite (18 productive + 2 refusal, ids t01–t20)
+reusing the frozen oracle machinery — gate before any run: 20/20 correct
+states accepted, 66/66 mutations rejected, deterministic manifest
+`f6ee57e2…`, site rebuild byte-identical. Frozen config: prompt `m018t-v2`
+(no further tuning), pinned Qwen3.5-4B, frozen limits/viewport. Two
+once-only batches on the same tasks: paired screenshot baseline
+(`m018d-v3`) and treatment (`m018t-v2`); primary contrast is the paired
+within-set comparison, with the M018D comparison kept rate-vs-rate on
+disjoint sets. Review basis recorded: the §9 tally plus the owner's
+2026-09-20 instruction to complete autonomously. No reruns, no tuning after
+the freeze.
