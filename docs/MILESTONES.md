@@ -349,6 +349,15 @@ identical tasks), refusals 1/2 vs 0/2 with one fixture-local submission
 attempt recorded against a required-refusal task, zero forbidden actions
 throughout. Tuning stopped at the freeze; results stand as measured.
 Evidence: `docs/evidence/2026-09-20-m018t-{implementation,smoke,eval}.md`.
-The extension is closed at two measured boundaries — screenshot-only
-(M018D) and target-assisted (M018T); M018E stays deferred with its recorded
-rationale.
+
+**M018E executed (2026-09-20, deferral lifted):** frozen before its single
+run (`docs/M018E_LIVE_PILOT_FREEZE.md`); attempt 1 hit a harness capacity
+defect (live page exceeds the fixture-tuned context) fixed by a recorded
+scoped change; attempt 2 is the valid run — the complete front page visible
+in one screenshot, the model clicked a non-navigating target twice and
+produced no answer (**failed run** under the frozen reviewer-scored
+protocol; ground truth ranks 1/3/5 with reviewer-confirmed sources). Zero
+forbidden actions; loopback-only default preserved. Evidence:
+`docs/evidence/2026-09-20-m018e-live-pilot.md` + `docs/evidence/m018e/`.
+The extension is closed at three measured boundaries — screenshot-only
+(M018D), target-assisted (M018T), and the live transfer case (M018E).

@@ -213,11 +213,17 @@ each stage gains actual evidence.
   **3/18** productive (Wilson 0.06–0.39), refusals 1/2 expected-safe, zero
   forbidden actions, no human rescue; the proposed gate (≥15/18, 2/2) was
   **not met** and is preserved as-is.
-- **M018E deferred indefinitely (recorded scope decision):** the frozen
-  navigation policy is loopback-only, so a live pilot would require a new
-  scoped origin policy; and the measured capability makes a one-shot live
-  run uninformative relative to its risk. No HN run was performed; no HN
-  result is claimed.
+- **M018E executed once (2026-09-20, deferral lifted by owner instruction):**
+  frozen before its single run (`docs/M018E_LIVE_PILOT_FREEZE.md`) with a
+  default-off, strictly scoped live origin (loopback remains the default).
+  Attempt 1 hit a harness capacity defect (fixed by a recorded scoped
+  change); attempt 2 — the valid run — had the complete front page visible
+  in one screenshot, clicked a non-navigating target twice, and produced no
+  answer: **failed run** under the frozen reviewer-scored protocol (ground
+  truth ranks 1/3/5 recorded with sources in `reviewer-judgment.json`).
+  Zero forbidden actions. Evidence:
+  `docs/evidence/2026-09-20-m018e-live-pilot.md` + artifacts in
+  `docs/evidence/m018e/`.
 - Evidence for all stages: `docs/evidence/2026-09-20-m018{a,b,c,d}-*`.
 - **M018T plan frozen (2026-09-20):** target-assisted observation treatment
   — screenshot kept, bounded visible-target list added, `click_target(id)`
@@ -233,4 +239,4 @@ each stage gains actual evidence.
   with one fixture-local submission attempt recorded, zero forbidden
   actions. Tuning stopped at the freeze; the numbers stand as measured.
   Evidence: `docs/evidence/2026-09-20-m018t-{implementation,smoke,eval}.md`.
-  M018E remains deferred with its recorded rationale.
+  M018E is closed with its recorded result (see the M018E entry above).

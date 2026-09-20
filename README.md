@@ -436,8 +436,11 @@ smoke: 1/5 productive, failure classes on the record:
 M018D (frozen benchmark) is complete: **4/30 development and 3/18 held-out
 productive**, refusals 1/2 expected-safe, zero forbidden actions — the
 proposed gate is not met and is preserved as-is; the live Hacker News pilot
-(M018E) is deferred with a recorded rationale. Evidence:
-`docs/evidence/2026-09-20-m018d-benchmark.{md,json}`.
+(M018E) was later executed once under a frozen scope — with the complete
+front page visible the model clicked a non-navigating link twice and
+produced no answer (failed run, recorded as-is). Evidence:
+`docs/evidence/2026-09-20-m018d-benchmark.{md,json}`,
+`docs/evidence/2026-09-20-m018e-live-pilot.md`.
 
 M018T (target-assisted treatment) is measured: frozen plan → deterministic
 implementation (113-test sweep) → smoke 3/5 → 4/5 after one recorded

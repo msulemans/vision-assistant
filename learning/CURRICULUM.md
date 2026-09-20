@@ -380,8 +380,9 @@ evidence — all recorded, none tuned away. M018D finished the story: three
 recorded prompt iterations improved behaviour (clicking began; one dev task
 passed after a rank-semantics fix), then the frozen benchmark ran once —
 **4/30 development and 3/18 held-out productive**, zero forbidden actions,
-gate missed and preserved, live Hacker News pilot deferred with a recorded
-rationale. The lesson: build the instruments first, measure at the end, and
+gate missed and preserved, and the live Hacker News pilot was later run
+once under a frozen protocol — the model had the complete front page in one
+screenshot and produced no answer (failed run, recorded as-is). The lesson: build the instruments first, measure at the end, and
 let the boundary be the result — a 4B vision model cannot yet drive
 screenshot-only browsing reliably, and now there is evidence saying so.
 

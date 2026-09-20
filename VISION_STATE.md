@@ -3,12 +3,15 @@
 Last updated: 2026-09-20 (Australia/Sydney)
 
 Status: Original roadmap records M001 through M017 as complete (see their
-sections). M018 browser computer-use extension: M018A–D are complete with
-zero forbidden actions — the frozen benchmark measured 4/30 development and
-3/18 held-out productive success (Wilson 0.06–0.39), gate NOT met, results
-preserved as-is; M018E (live HN pilot) is deferred indefinitely with a
-recorded scope rationale. The extension is paused at a measured boundary,
-not hidden.
+sections). M018 browser computer-use extension: M018A–D complete with zero
+forbidden actions — the frozen benchmark measured 4/30 development and 3/18
+held-out productive success (Wilson 0.06–0.39), gate NOT met, results
+preserved as-is. The target-assisted treatment (M018T) is measured: paired
+fresh-set evaluation 1/18 (screenshot) vs 6/18 (target) on identical tasks.
+M018E (live HN pilot) was executed once under a frozen scope — the model,
+with the complete front page visible in one screenshot, clicked a
+non-navigating target twice and produced no answer: a failed run, recorded
+as-is. The extension is closed at three measured boundaries, not hidden.
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
@@ -1790,11 +1793,12 @@ Zero forbidden executed actions in all 50 runs; no human rescue; every guard
 fail-closed. The proposed gate (≥15/18, 2/2 refusals) is **NOT met** and is
 preserved as-is. Dominant failure class: click aim without grounding and no
 adaptation (blocked:no_progress), plus premature/mismatched answers
-(failed:finish_unverified). **M018E (live HN pilot) is deferred
-indefinitely**: the frozen navigation policy is loopback-only (external
-origins would be a new scoped change), and the measured capability makes a
-one-shot live pilot uninformative relative to its risk — a recorded scope
-decision; no HN run was performed and no HN result claimed. Evidence:
+(failed:finish_unverified). **M018E (live HN pilot) was deferred at this
+stage**: the frozen navigation policy is loopback-only (external origins
+would be a new scoped change), and the measured capability made a one-shot
+live pilot uninformative relative to its risk — a recorded scope decision;
+no HN run was performed at this stage (the deferral was later lifted by
+owner instruction; see the M018E section below). Evidence:
 `docs/evidence/2026-09-20-m018d-benchmark.{md,json}` +
 `scripts/m018d_summarize.py`.
 
@@ -1903,5 +1907,24 @@ screenshot-only (M018D) and target-assisted (M018T); the M018D comparison is
 rate-vs-rate on disjoint sets and is context only. Evidence:
 `docs/evidence/2026-09-20-m018t-eval.md` + `2026-09-20-m018t-eval.json` +
 per-task JSONs under `docs/evidence/m018t-eval/`; freeze:
-`docs/M018T_EVAL_FREEZE.md`. **No further tuning is permitted; M018E remains
-deferred with its recorded rationale.**
+`docs/M018T_EVAL_FREEZE.md`. **No further tuning is permitted** and none
+occurred.
+
+**M018E executed (2026-09-20):** the owner lifted the deferral; the pilot
+was frozen before its single run (`docs/M018E_LIVE_PILOT_FREEZE.md`): the
+default navigation policy stays loopback-only, the live origin is opt-in
+and strictly scoped (exact-host https; deterministic boundary tests),
+reviewer-scored under a frozen ground-truth protocol. Attempt 1 died on a
+harness capacity defect (live page 4109 tokens > fixture-tuned 4096 context)
+and was fixed by a recorded scoped change (pilot context 8192; fixture
+benchmarks untouched; crash-safe reports). Attempt 2 is the valid run: the
+complete front page (ranks 1–20 with points and domains) was captured in one
+screenshot, the model clicked a non-navigating target (t26) twice — the
+three kept screenshots byte-identical — and its own no-progress guard
+blocked the run. **No answer was produced: failed run** under the frozen
+classes; reviewer ground truth (correct first-three AI/ML set = ranks 1, 3,
+5, with confirmed sources) is recorded in `reviewer-judgment.json`. Zero
+forbidden actions; the live origin policy held. The fixture gains did not
+transfer to this live read-and-report shape in a single run. Evidence:
+`docs/evidence/2026-09-20-m018e-live-pilot.md` + artifacts in
+`docs/evidence/m018e/`.

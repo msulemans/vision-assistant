@@ -70,7 +70,7 @@ class LearningSiteContractTest(unittest.TestCase):
     def test_current_evidence_and_honest_boundaries_are_visible(self) -> None:
         for phrase in (
             "Roadmap · complete",
-            "459 passing · 453 product + 6 learning",
+            "467 passing · 461 product + 6 learning",
             "pinned, local",
             "Intentionally absent",
             "selection_timed_out",
