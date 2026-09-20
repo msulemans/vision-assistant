@@ -336,3 +336,19 @@ live pilot uninformative). Evidence:
 at a measured boundary: the 4B model cannot yet drive screenshot-only
 browsing reliably, and the guards/oracles that proved it are the keepable
 artifact.
+
+**M018T delivered (2026-09-20):** target-assisted treatment — frozen plan
+(`docs/M018T_TARGET_ASSISTED_PLAN.md`), deterministic implementation
+(113-test sweep; frozen manifest sha untouched), scripted live smoke PASS,
+five-task smoke measured **3/5 → 4/5** after the single recorded prompt
+revision; then a frozen fresh 20-task evaluation set (new `eval` instance,
+20/20 oracles, 66/66 mutations rejected; `docs/M018T_EVAL_FREEZE.md`) run
+once per mode with a paired design: screenshot baseline **1/18** vs
+treatment **6/18** productive (Wilson 0.163–0.563; +5 genuine flips on
+identical tasks), refusals 1/2 vs 0/2 with one fixture-local submission
+attempt recorded against a required-refusal task, zero forbidden actions
+throughout. Tuning stopped at the freeze; results stand as measured.
+Evidence: `docs/evidence/2026-09-20-m018t-{implementation,smoke,eval}.md`.
+The extension is closed at two measured boundaries — screenshot-only
+(M018D) and target-assisted (M018T); M018E stays deferred with its recorded
+rationale.

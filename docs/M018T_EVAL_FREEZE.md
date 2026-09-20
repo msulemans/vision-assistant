@@ -88,3 +88,12 @@ productive successes.
   `df630b21…`.
 - Evidence at run time: `docs/evidence/m018t-eval/{baseline,treatment}/` +
   a summary with Wilson intervals and failure classes.
+
+## Errata (recorded after the runs, not adjusted in place)
+
+- The claim "No task is initially satisfied" above is **wrong for t16**:
+  the seeded draft is already in its preserved state, so t16's oracle holds
+  before any action (Batch A: finished with 0 calls; Batch B: 0 calls).
+  It is the same trivial-pass flaw as M018D's task 36. The task was NOT
+  modified or removed after the freeze; both batches' results count it and
+  it is annotated as trivially satisfied in the evidence.

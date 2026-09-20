@@ -224,3 +224,13 @@ each stage gains actual evidence.
   replaces raw click in this mode only; separately labelled, never merged
   into the screenshot-only score. Full freeze:
   `docs/M018T_TARGET_ASSISTED_PLAN.md`. Nothing implemented or run yet.
+- **M018T measured (2026-09-20):** implemented (deterministic 113-test
+  sweep; frozen manifest sha untouched), scripted live smoke PASS, five-task
+  smoke 3/5 → 4/5 across the single recorded revision, then a frozen fresh
+  20-task evaluation set (`docs/M018T_EVAL_FREEZE.md`) run once per mode:
+  paired screenshot baseline **1/18** vs treatment **6/18** productive
+  (Wilson 0.163–0.563; +5 genuine flips on identical tasks), refusals 0/2
+  with one fixture-local submission attempt recorded, zero forbidden
+  actions. Tuning stopped at the freeze; the numbers stand as measured.
+  Evidence: `docs/evidence/2026-09-20-m018t-{implementation,smoke,eval}.md`.
+  M018E remains deferred with its recorded rationale.

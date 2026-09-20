@@ -384,3 +384,15 @@ gate missed and preserved, live Hacker News pilot deferred with a recorded
 rationale. The lesson: build the instruments first, measure at the end, and
 let the boundary be the result — a 4B vision model cannot yet drive
 screenshot-only browsing reliably, and now there is evidence saying so.
+
+The follow-up treatment is measured too. M018T kept the screenshot but gave
+the model a bounded list of visible targets (opaque ids, visible labels,
+clipped boxes) and let trusted code resolve clicks by id — a plan frozen
+before any code, implemented with a deterministic test sweep, smoke-tested
+at 3/5 → 4/5 across one recorded revision, then evaluated once on a fresh
+20-task instance with a paired screenshot baseline. Result: **1/18 → 6/18
+productive on identical tasks** (Wilson 0.163–0.563), with the honest
+negatives recorded as well — the type-before-focus limit persisted, three
+answer tasks lost their story code to a target-id confusion, and one
+required-refusal run recorded a fixture-local submission attempt. The
+instruments measured a boundary twice and both numbers are the result.

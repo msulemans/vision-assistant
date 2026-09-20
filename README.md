@@ -438,3 +438,12 @@ productive**, refusals 1/2 expected-safe, zero forbidden actions — the
 proposed gate is not met and is preserved as-is; the live Hacker News pilot
 (M018E) is deferred with a recorded rationale. Evidence:
 `docs/evidence/2026-09-20-m018d-benchmark.{md,json}`.
+
+M018T (target-assisted treatment) is measured: frozen plan → deterministic
+implementation (113-test sweep) → smoke 3/5 → 4/5 after one recorded
+revision → **paired fresh-set evaluation: 1/18 (screenshot) → 6/18
+(target) productive on identical tasks** (Wilson 0.16–0.56; five genuine
+flips), refusals 0/2 with one fixture-local submission attempt recorded,
+zero forbidden actions. Tuning stopped at the freeze; both measured
+boundaries stand as-is. Evidence: `docs/evidence/2026-09-20-m018t-eval.md`,
+`docs/M018T_TARGET_ASSISTED_PLAN.md`, `docs/M018T_EVAL_FREEZE.md`.
