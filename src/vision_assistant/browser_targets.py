@@ -256,3 +256,98 @@ def build_target_prompt(goal: str, image_w: int, image_h: int, css_w: int,
                      "first action.")
     lines.append("Reply with the NEXT action as one JSON object.")
     return "\n".join(lines)
+
+
+# =====================================================================
+# M019A task-typed contracts (plan: docs/M019_TASK_TYPED_AGENT_PLAN.md).
+# Additive only — nothing in the frozen M018T surface above changes.
+# Target references gain the ``ui:`` namespace so control references can
+# never be confused with page data, and visible role/label are classified
+# so trusted code can deny credential and submit-like controls structurally.
+# =====================================================================
+
+UI_REF_RE = re.compile(r"^ui:[1-9][0-9]{0,2}$")
+
+CREDENTIAL_MARKERS = (
+    "password", "passcode", "passphrase", "one-time code", "one time code",
+    "2fa", "two-factor", "verification code", "security code",
+    "recovery code", "api key", "secret key", "private key", "seed phrase",
+)
+
+SUBMIT_MARKERS = (
+    "submit", "save", "sign in", "sign-in", "signin", "log in", "login",
+    "sign up", "signup", "register", "create account", "checkout",
+    "place order", "confirm order", "purchase", "pay now", "delete",
+    "unsubscribe", "transfer", "withdraw", "donate",
+)
+
+
+def valid_ui_ref(value) -> bool:
+    """A typed reference: ``ui:`` + the helper target number (``ui:17``)."""
+
+    return isinstance(value, str) and UI_REF_RE.match(value) is not None
+
+
+def ui_ref_for(target_id: str) -> str:
+    """Map a helper target id (``t3``) to its typed reference (``ui:3``)."""
+
+    if not valid_target_id(target_id):
+        return ""
+    return "ui:" + target_id[1:]
+
+
+def _marker_hit(lowered: str, marker: str) -> bool:
+    if " " in marker or "-" in marker:
+        return marker in lowered
+    return re.search(r"(?<![a-z0-9])" + re.escape(marker) + r"(?![a-z0-9])",
+                     lowered) is not None
+
+
+def classify_control(role: str, label: str) -> dict:
+    """Credential/submit classification from the visible role and label."""
+
+    lowered = (label or "").lower()
+    return {
+        "credential": any(_marker_hit(lowered, m) for m in CREDENTIAL_MARKERS),
+        "submit_like": any(_marker_hit(lowered, m) for m in SUBMIT_MARKERS),
+    }
+
+
+def submit_authorized(target_ref: str, authorized_refs) -> bool:
+    """True only when the trusted task authorized this exact local save."""
+
+    return target_ref in set(authorized_refs or ())
+
+
+def render_typed_target_block(entries, model_w: int, model_h: int,
+                              shot_w: int, shot_h: int, scale: float,
+                              *, truncated: bool = False, total=None) -> str:
+    """M019 observation block: ``ui:`` references, document order, capped.
+
+    Same display-chain box math as the frozen M018T block, but references are
+    namespaced (``target_ref: "ui:N"``) and only the typed fields are shown.
+    """
+
+    lines = []
+    shown = len(entries)
+    overall = total if total is not None else shown
+    if truncated and overall > shown:
+        lines.append("Targets ({}; showing first {}).".format(overall, shown))
+    else:
+        lines.append("Targets ({}).".format(shown))
+    for entry in entries:
+        ref = ui_ref_for(entry.id)
+        if not ref:
+            continue
+        box = box_to_bounds(model_box(entry.rect, scale, shot_w, shot_h,
+                                      model_w, model_h))
+        lines.append(json.dumps({
+            "target_ref": ref,
+            "role": entry.role,
+            "label": sanitize_label(entry.label),
+            "bounds": box,
+            "enabled": bool(entry.enabled),
+        }))
+    if truncated and overall > shown:
+        lines.append("... and {} more targets not shown.".format(overall - shown))
+    return "\n".join(lines)

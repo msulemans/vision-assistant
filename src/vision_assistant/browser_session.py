@@ -33,6 +33,9 @@ DEFAULT_HELPER_BIN = REPO_ROOT / "runs" / "m018-tools" / "browser_window"
 DEFAULT_TIMEOUT_MS = 8000
 
 ACTION_COMMANDS = ("navigate", "click", "click_target", "type", "key", "scroll", "back")
+# M019A additive commands; both consume the same frozen action budget.
+TYPED_ACTION_COMMANDS = ("fill", "set_control")
+_BUDGETED_COMMANDS = ACTION_COMMANDS + TYPED_ACTION_COMMANDS
 
 
 class BrowserError(Exception):
@@ -194,7 +197,7 @@ class BrowserSession:
             raise BrowserError("closed")
         if self.unhealthy:
             raise BrowserError("unhealthy")
-        if cmd in ACTION_COMMANDS:
+        if cmd in _BUDGETED_COMMANDS:
             self._check_budgets()
         request_id = self._next_id
         self._next_id += 1
@@ -389,6 +392,112 @@ class BrowserSession:
 
     def back(self) -> str:
         reply = self._call("back")
+        return str(reply.get("url", ""))
+
+    # ------------------------------------------------- M019 semantic ops
+
+    @property
+    def observation_id(self) -> str:
+        if self.last_snapshot is None:
+            return ""
+        return "obs-{}".format(self.last_snapshot.seq)
+
+    def resolve_ref(self, ref: str):
+        """Resolve a typed ``ui:N`` reference against the current observation."""
+
+        if self.last_snapshot is None or self.last_targets is None:
+            raise BrowserError("refused_target_stale",
+                               "no current target list; observe again")
+        if self.last_targets.seq != self.last_snapshot.seq:
+            raise BrowserError("refused_target_stale", "observe again before acting")
+        if not browser_targets.valid_ui_ref(ref):
+            raise BrowserError("refused_target_stale", "malformed target_ref")
+        for entry in self.last_targets.targets:
+            if browser_targets.ui_ref_for(entry.id) == ref:
+                return entry
+        raise BrowserError("refused_target_stale", "unknown target_ref; observe again")
+
+    def _check_typed_observation(self, observation_id: str) -> None:
+        if observation_id != self.observation_id:
+            raise BrowserError("refused_target_stale", "stale observation")
+
+    def fill_field(self, ref: str, text: str, observation_id: str) -> str:
+        """Trusted focus → clear → type → read-back as one bounded operation.
+
+        Everything is checked before any command reaches the helper: stale
+        observation, credential-classified label, and role. The helper then
+        re-checks element identity, visibility, enabled state, and the live
+        ``type=password`` attribute before it focuses and writes.
+        """
+
+        entry = self.resolve_ref(ref)
+        self._check_typed_observation(observation_id)
+        info = browser_targets.classify_control(entry.role, entry.label)
+        if info["credential"]:
+            raise BrowserError("refused_credential",
+                               "credential fields are never filled")
+        if entry.role not in ("text_input", "textarea"):
+            raise BrowserError("refused_target_role", "fill_field needs a text field")
+        if not isinstance(text, str) or len(text) > tasks.MAX_TEXT_CHARS:
+            raise BrowserError("refused_focus", "text must be a short string")
+        if any(ord(char) < 32 for char in text):
+            raise BrowserError("refused_focus",
+                               "text must not contain control characters")
+        reply = self._call("fill", target=entry.id, value=text,
+                           seq=self.last_snapshot.seq)
+        read_back = str(reply.get("value", ""))
+        if read_back != text:
+            raise BrowserError("read_back_failed", "typed value did not stick")
+        return read_back
+
+    def select_option(self, ref: str, option: str, observation_id: str) -> str:
+        entry = self.resolve_ref(ref)
+        self._check_typed_observation(observation_id)
+        if entry.role != "select":
+            raise BrowserError("refused_target_role",
+                               "select_option needs a select control")
+        if (not isinstance(option, str) or not 1 <= len(option) <= 80
+                or any(ord(char) < 32 for char in option)):
+            raise BrowserError("refused_target_role",
+                               "option must be a short visible string")
+        reply = self._call("set_control", target=entry.id, mode="select",
+                           option=option, seq=self.last_snapshot.seq)
+        got = str(reply.get("value", ""))
+        if got != option:
+            raise BrowserError("read_back_failed", "selection did not stick")
+        return got
+
+    def set_toggle(self, ref: str, value: bool, observation_id: str) -> bool:
+        entry = self.resolve_ref(ref)
+        self._check_typed_observation(observation_id)
+        if entry.role not in ("checkbox", "radio"):
+            raise BrowserError("refused_target_role",
+                               "set_toggle needs a checkbox or radio")
+        if not isinstance(value, bool):
+            raise BrowserError("refused_target_role", "value must be true or false")
+        reply = self._call("set_control", target=entry.id, mode="toggle",
+                           value=value, seq=self.last_snapshot.seq)
+        got = bool(reply.get("checked", False))
+        if got != value:
+            raise BrowserError("read_back_failed", "toggle did not stick")
+        return got
+
+    def save_form(self, ref: str, observation_id: str, authorized_saves=()) -> str:
+        """Authorized fixture-local save: click the declared save control.
+
+        The task must have declared this exact ``ui:`` reference as its local
+        save; anything else fails closed before any command is sent.
+        """
+
+        entry = self.resolve_ref(ref)
+        self._check_typed_observation(observation_id)
+        if not browser_targets.submit_authorized(ref, authorized_saves):
+            raise BrowserError("refused_unauthorized_save",
+                               "this task does not authorize saving")
+        if entry.role != "button":
+            raise BrowserError("refused_target_role", "save_form needs a button")
+        reply = self._call("click_target", target=entry.id,
+                           seq=self.last_snapshot.seq)
         return str(reply.get("url", ""))
 
     @property

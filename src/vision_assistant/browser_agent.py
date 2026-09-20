@@ -19,6 +19,15 @@ M018T extension (frozen in `docs/M018T_TARGET_ASSISTED_PLAN.md`): with
 ``mode="target"`` the loop adds a bounded visible-target list per observation
 and routes clicks through ``click_target(id)``; every guard above is preserved,
 and the baseline path (the default) is unchanged.
+
+M019A addition (plan: `docs/M019_TASK_TYPED_AGENT_PLAN.md`): ``mode="typed"``
+runs a task whose trusted spec carries one of the four M019 modes
+(answer/navigate/form/stop). The model sees that mode's capability manifest,
+``ui:`` target references, structured answer schemas, and semantic form
+actions (fill/select/toggle/save, each with trusted read-back); raw
+click/type/navigate are absent, credential and unauthorized submit controls
+are denied structurally, and repeating an action on an unchanged observation
+is refused. The frozen modes above are untouched.
 """
 
 from __future__ import annotations
@@ -34,6 +43,7 @@ from . import browser_tasks as tasks
 from .pixels import fit_for_model
 
 PROMPT_VERSION = "m018d-v3"
+TYPED_PROMPT_VERSION = "m019a-v1"
 
 REFUSAL_HINTS = {
     "refused_focus": "nothing is focused — click the field first, then type",
@@ -169,6 +179,111 @@ def model_to_screenshot(x_model: int, y_model: int, model_w: int, model_h: int,
     return (min(max(x, 0), shot_w - 1), min(max(y, 0), shot_h - 1))
 
 
+def typed_action_schema(task_mode: str) -> dict:
+    """Constrained-decoding schema for one M019 mode's allowed actions."""
+
+    manifest = tasks.capability_manifest(task_mode)
+    return {
+        "type": "object",
+        "properties": {
+            "action": {"type": "string",
+                       "enum": list(manifest["allowed_actions"])},
+            "target_ref": {"type": "string"},
+            "observation_id": {"type": "string"},
+            "expected_change": {"type": "string",
+                                "enum": ["url_change", "content_change",
+                                         "no_change"]},
+            "text": {"type": "string"},
+            "option": {"type": "string"},
+            "value": {"type": "boolean"},
+            "direction": {"type": "string", "enum": ["up", "down"]},
+            "amount": {"type": "integer"},
+            "seconds": {"type": "number"},
+            "answer": {"type": "object", "additionalProperties": True},
+            "reason": {"type": "string"},
+        },
+        "required": ["action"],
+    }
+
+
+def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
+                       css_w: int, css_h: int, observation_id: str,
+                       target_block: str, history, *, budgets=None,
+                       answer_fields=(), form_fields=()) -> str:
+    """The M019 prompt: goal, mode capabilities, observation, budgets.
+
+    Field NAMES may be shown for answers and forms; never values.
+    """
+
+    manifest = tasks.capability_manifest(task_mode)
+    lines = [
+        "You control a small browser by looking at ONE screenshot per step.",
+        "Task mode: {} \u2014 trusted code limits what you may do.".format(task_mode),
+        "Goal: {}".format(goal),
+        "The screenshot you see is {}x{} pixels. Target bounds use these "
+        "pixels.".format(image_w, image_h),
+        "The browser viewport is {}x{} CSS points; you never address CSS "
+        "directly.".format(css_w, css_h),
+        "Observation: {}".format(observation_id),
+        target_block,
+    ]
+    if budgets:
+        lines.append("Budgets left: {} actions, {} looks, {} s.".format(
+            budgets.get("steps_left"), budgets.get("calls_left"),
+            budgets.get("seconds_left")))
+    if answer_fields:
+        lines.append("Answer fields (names only; values must be seen in a "
+                     "screenshot): {}".format(", ".join(answer_fields)))
+    if form_fields:
+        lines.append("Required form field names (values come from the goal): "
+                     "{}".format(", ".join(form_fields)))
+    lines.extend([
+        "Work in small, verified steps:",
+        "- Allowed actions in this mode: {}.".format(
+            ", ".join(manifest["allowed_actions"])),
+        "- Target references are 'ui:' ids valid ONLY for the observation "
+        "above; after any page change, use the NEW list.",
+        "- If an action is refused or changes nothing, do not repeat it; "
+        "choose a different action or stop.",
+        "- Never report or store a ui: reference as an answer value.",
+        "- Reply with exactly one JSON action object, no other text.",
+    ])
+    if history:
+        lines.append("Recent results (oldest first):")
+        lines.extend(history[-2:])
+    else:
+        lines.append("No actions yet. Look at the screenshot and choose the "
+                     "first action.")
+    lines.append("Reply with the NEXT action as one JSON object.")
+    return "\n".join(lines)
+
+
+def _observation_signature(shot, target_list) -> tuple:
+    """What counts as an observable change: URL + the visible target set."""
+
+    return (
+        _path_only(shot.url),
+        tuple((entry.id, entry.role, entry.label,
+               tuple(round(value, 1) for value in entry.rect),
+               bool(entry.enabled), bool(entry.focused))
+              for entry in target_list.targets),
+        int(target_list.total), bool(target_list.truncated),
+    )
+
+
+def _typed_action_signature(action: dict) -> tuple:
+    fields = ("target_ref", "text", "option", "value", "expected_change")
+    return (action.get("kind"),
+            tuple((key, action.get(key)) for key in fields if key in action))
+
+
+def _typed_entry(target_list, ref: str):
+    for entry in target_list.targets:
+        if browser_targets.ui_ref_for(entry.id) == ref:
+            return entry
+    return None
+
+
 @dataclass
 class LoopLimits:
     max_steps: int = tasks.LIMITS["max_action_steps"]
@@ -227,13 +342,23 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
     ``report["final_answer"]``.
     """
 
-    if mode not in ("screenshot", "target"):
-        raise ValueError("mode must be 'screenshot' or 'target'")
+    if mode not in ("screenshot", "target", "typed"):
+        raise ValueError("mode must be 'screenshot', 'target', or 'typed'")
     target_mode = mode == "target"
+    typed_mode = mode == "typed"
+    typed_task_mode = ""
+    if typed_mode:
+        typed_task_mode = getattr(spec, "mode", "")
+        if typed_task_mode not in tasks.TYPED_MODES:
+            raise ValueError("typed runs need a spec.mode in TYPED_MODES")
     hints = REFUSAL_HINTS
     if target_mode:
         hints = dict(REFUSAL_HINTS)
         hints.update(browser_targets.TARGET_REFUSAL_HINTS)
+    elif typed_mode:
+        hints = dict(REFUSAL_HINTS)
+        hints.update(browser_targets.TARGET_REFUSAL_HINTS)
+        hints.update(tasks.TYPED_REFUSAL_HINTS)
     limits = limits or LoopLimits()
     started = monotonic()
     steps: list = []
@@ -242,8 +367,10 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         "instance": spec.instance,
         "goal": spec.goal,
         "mode": mode,
+        "task_mode": typed_task_mode or None,
         "pilot": bool(pilot),
         "prompt_version": (browser_targets.PROMPT_VERSION if target_mode
+                           else TYPED_PROMPT_VERSION if typed_mode
                            else PROMPT_VERSION),
         "limits": {
             "max_steps": limits.max_steps, "max_calls": limits.max_calls,
@@ -256,7 +383,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         "raw_answers": [],
     }
     state = {"steps_used": 0, "calls": 0, "recoveries": 0, "last_refusal": None,
-             "infrastructure": 0}
+             "infrastructure": 0, "unchanged_streak": 0, "awaiting_change": False,
+             "sig_before_action": None, "last_action_sig": None,
+             "current_sig": None}
     finish_answer = None
     visited: list = []
     shot = None
@@ -275,6 +404,11 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             # the run must never auto-satisfy and the reviewer scores the
             # captured answer against an independently recorded listing.
             return {"ok": False, "task": spec.id, "failures": [], "pilot": True}
+        if typed_mode:
+            return tasks.verify_typed_task(spec, evaluator_state(
+                url=state.get("url", ""), answer=finish_answer,
+                server_state=server_state_provider(), visited=visited,
+                outcome=outcome))
         return tasks.verify_task(spec, evaluator_state(
             url=state.get("url", ""), answer=finish_answer,
             server_state=server_state_provider(), visited=visited, outcome=outcome))
@@ -351,7 +485,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             continue
 
         observed_targets = None
-        if target_mode:
+        if target_mode or typed_mode:
             try:
                 observed_targets = session.targets()
             except Exception as exc:  # noqa: BLE001 - typed adapter failure
@@ -369,7 +503,40 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                    count=len(observed_targets.targets), total=observed_targets.total,
                    truncated=observed_targets.truncated, seq=observed_targets.seq)
 
-        if target_mode:
+        if typed_mode:
+            observation_id = "obs-{}".format(observed_targets.seq)
+            sig = _observation_signature(shot, observed_targets)
+            if state["awaiting_change"]:
+                if sig == state["sig_before_action"]:
+                    state["unchanged_streak"] += 1
+                    record("no_change", step=state["steps_used"],
+                           unchanged_streak=state["unchanged_streak"])
+                    if state["unchanged_streak"] >= 2:
+                        return finish("blocked:no_progress",
+                                      repeated=state["last_action_sig"])
+                else:
+                    state["unchanged_streak"] = 0
+                state["awaiting_change"] = False
+            state["current_sig"] = sig
+
+        if typed_mode:
+            target_block = browser_targets.render_typed_target_block(
+                observed_targets.targets, model_w, model_h, shot.width,
+                shot.height, shot.scale, truncated=observed_targets.truncated,
+                total=observed_targets.total)
+            prompt = build_typed_prompt(
+                spec.goal, typed_task_mode, model_w, model_h, session.width,
+                session.height, observation_id, target_block, history,
+                budgets={
+                    "steps_left": max(0, limits.max_steps - state["steps_used"]),
+                    "calls_left": max(0, limits.max_calls - state["calls"]),
+                    "seconds_left": max(0, int(limits.max_seconds
+                                                - (monotonic() - started))),
+                },
+                answer_fields=tuple(sorted(
+                    (getattr(spec, "answer_schema", None) or {}).get("fields", {}))),
+                form_fields=tuple(getattr(spec, "form_fields", ())))
+        elif target_mode:
             target_block = browser_targets.render_target_block(
                 observed_targets.targets, model_w, model_h, shot.width,
                 shot.height, shot.scale, truncated=observed_targets.truncated,
@@ -395,28 +562,53 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
 
         bounds = {"width": model_w, "height": model_h, "scale": 1.0}
         raw_kind = action.get("action")
-        proposal = {"kind": _KIND_MAP.get(raw_kind, raw_kind)}
-        for key in ("x", "y", "text", "key", "direction", "amount", "url",
-                    "answer", "note", "target"):
-            if key in action:
-                proposal[key] = action[key]
-        if proposal["kind"] == "click_target":
-            if not target_mode:
-                parsed, error = None, ("click_target is not available here; "
-                                       "use click with x and y")
-            else:
-                current_ids = [entry.id for entry in observed_targets.targets]
-                parsed, error = browser_targets.validate_target_action(
-                    proposal, target_ids=current_ids)
-        elif target_mode and proposal["kind"] == "click":
-            parsed, error = None, ("raw click is not available in target mode; "
-                                   "use click_target with an id from the list")
+        if typed_mode:
+            proposal = {"kind": raw_kind}
+            for key in ("target_ref", "observation_id", "text", "option", "value",
+                        "answer", "reason", "direction", "amount", "seconds",
+                        "expected_change"):
+                if key in action:
+                    proposal[key] = action[key]
+            action_sig = _typed_action_signature(proposal)
+            if (state["unchanged_streak"] >= 1
+                    and action_sig == state["last_action_sig"]
+                    and raw_kind in tasks.MUTATING_TYPED_ACTIONS):
+                state["unchanged_streak"] += 1
+                record("proposal", step=state["steps_used"] + 1, parsed=False,
+                       error="no_observable_change", action=raw_kind)
+                history.append("no observable change: repeating {} is refused; "
+                               "choose a different action or stop".format(raw_kind))
+                if state["unchanged_streak"] >= 2:
+                    return finish("blocked:no_progress", repeated=action_sig)
+                continue
+            parsed, error = tasks.validate_typed_action(
+                proposal, mode=typed_task_mode, observation_id=observation_id,
+                targets=observed_targets.targets,
+                authorized_saves=tuple(getattr(spec, "authorized_saves", ())),
+                answer_schema=getattr(spec, "answer_schema", None))
         else:
-            if proposal["kind"] == "click":
-                # The model references the observation it just saw; the adapter
-                # re-checks freshness against its own last snapshot sequence.
-                proposal["screenshot_id"] = "seq-{}".format(shot.seq)
-            parsed, error = tasks.validate_action(proposal, viewport=bounds)
+            proposal = {"kind": _KIND_MAP.get(raw_kind, raw_kind)}
+            for key in ("x", "y", "text", "key", "direction", "amount", "url",
+                        "answer", "note", "target"):
+                if key in action:
+                    proposal[key] = action[key]
+            if proposal["kind"] == "click_target":
+                if not target_mode:
+                    parsed, error = None, ("click_target is not available here; "
+                                           "use click with x and y")
+                else:
+                    current_ids = [entry.id for entry in observed_targets.targets]
+                    parsed, error = browser_targets.validate_target_action(
+                        proposal, target_ids=current_ids)
+            elif target_mode and proposal["kind"] == "click":
+                parsed, error = None, ("raw click is not available in target mode; "
+                                       "use click_target with an id from the list")
+            else:
+                if proposal["kind"] == "click":
+                    # The model references the observation it just saw; the adapter
+                    # re-checks freshness against its own last snapshot sequence.
+                    proposal["screenshot_id"] = "seq-{}".format(shot.seq)
+                parsed, error = tasks.validate_action(proposal, viewport=bounds)
         if error:
             record("proposal", step=state["steps_used"] + 1, parsed=False,
                    error=error, action=raw_kind)
@@ -439,8 +631,37 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 executed = "click {},{}".format(sx, sy)
                 sleep(0.8)
             elif kind == "click_target":
-                session.click_target(parsed["target"])
-                executed = "click_target {}".format(parsed["target"])
+                if typed_mode:
+                    entry = _typed_entry(observed_targets, parsed["target_ref"])
+                    if entry is None:
+                        raise RuntimeError("target_ref vanished between steps")
+                    session.click_target(entry.id)
+                    executed = "click_target {}".format(parsed["target_ref"])
+                else:
+                    session.click_target(parsed["target"])
+                    executed = "click_target {}".format(parsed["target"])
+                sleep(0.8)
+            elif kind == "fill_field":
+                typed_value = session.fill_field(
+                    parsed["target_ref"], parsed["text"], parsed["observation_id"])
+                executed = "fill_field {} ({} chars)".format(
+                    parsed["target_ref"], len(typed_value))
+                sleep(0.2)
+            elif kind == "select_option":
+                chosen = session.select_option(
+                    parsed["target_ref"], parsed["option"], parsed["observation_id"])
+                executed = "select_option {} = {}".format(parsed["target_ref"], chosen)
+                sleep(0.3)
+            elif kind == "set_toggle":
+                toggled = session.set_toggle(
+                    parsed["target_ref"], parsed["value"], parsed["observation_id"])
+                executed = "set_toggle {} = {}".format(parsed["target_ref"], toggled)
+                sleep(0.3)
+            elif kind == "save_form":
+                session.save_form(
+                    parsed["target_ref"], parsed["observation_id"],
+                    authorized_saves=tuple(getattr(spec, "authorized_saves", ())))
+                executed = "save_form {}".format(parsed["target_ref"])
                 sleep(0.8)
             elif kind == "type_text":
                 typed = session.type_text(parsed["text"])
@@ -466,9 +687,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 seconds = float(parsed.get("seconds", 1))
                 sleep(min(2.0, seconds))
                 executed = "wait {}s".format(seconds)
-            elif kind == "finish":
+            elif kind in ("finish", "finish_answer"):
                 finish_answer = dict(parsed["answer"])
-                executed = "finish"
+                executed = "finish_answer" if kind == "finish_answer" else "finish"
             elif kind == "stop":
                 record("action", step=step_no, executed="stop")
                 return finish("stopped")
@@ -482,10 +703,15 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 return stop
             continue
 
+        if typed_mode:
+            state["last_action_sig"] = action_sig
+            state["sig_before_action"] = state["current_sig"]
+            state["awaiting_change"] = True
+
         state["recoveries"] = 0
         state["last_refusal"] = None
 
-        if kind == "finish":
+        if kind in ("finish", "finish_answer"):
             verdict = oracle("finished")
             record("action", step=step_no, executed="finish",
                    answer_fields=sorted(finish_answer))

@@ -13,6 +13,28 @@ with the complete front page visible in one screenshot, clicked a
 non-navigating target twice and produced no answer: a failed run, recorded
 as-is. The extension is closed at three measured boundaries, not hidden.
 
+M019 task-typed browser-agent treatment is proposed in
+`docs/M019_TASK_TYPED_AGENT_PLAN.md`. It targets the failure classes exposed by
+M018T/M018E using mode-specific capabilities, semantic form actions, structured
+answers, and no-repeat handling with the same pinned local model.
+
+M019A (deterministic contracts) is **implemented** (2026-09-20): frozen task
+modes and capability manifests (answer/navigate/form/stop), the `ui:`
+target-reference namespace (control references can never be confused with page
+data; `ui:*` values are rejected where answers are expected), mode-gated action
+validation (raw click/type/navigate absent from every typed mode), semantic
+fill/select/toggle/save operations with trusted read-back (two additive helper
+commands, `fill` + `set_control`, compiled clean; the frozen commands are
+untouched), no-repeat-on-unchanged enforcement (identical action on an
+unchanged observation is refused as `no_observable_change`; two unchanged
+actions end the task), structural credential and unauthorized-submission
+denials, and structured answer schemas with namespace checks. Evidence:
+39 new tests in `tests/test_browser_typed.py` + 10 invariants in
+`tests/test_m019_invariants.py`; focused sweep 189/189 green; deterministic
+`browser_cli m019-verify` matrix 18/18 samples. **No model run, no browser run,
+no M018 rerun; M018 scores and evidence untouched.** Next per plan: M019B
+scripted integration (not started).
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

@@ -185,6 +185,10 @@ final class Helper: NSObject, WKNavigationDelegate {
             click(id: id, req: req)
         case "click_target":
             clickTarget(id: id, req: req)
+        case "fill":
+            fillField(id: id, req: req)
+        case "set_control":
+            setControl(id: id, req: req)
         case "type":
             typeText(id: id, req: req)
         case "key":
@@ -533,6 +537,183 @@ final class Helper: NSObject, WKNavigationDelegate {
             windowNumber: window.windowNumber, context: nil,
             characters: characters, charactersIgnoringModifiers: characters,
             isARepeat: false, keyCode: keyCode)
+    }
+
+    // ------------------------------------------------ M019 semantic commands
+
+    func jsLiteral(_ text: String) -> String {
+        let wrapped = [text]
+        guard let data = try? JSONSerialization.data(withJSONObject: wrapped),
+              let joined = String(data: data, encoding: .utf8),
+              joined.count >= 2 else { return "\"\"" }
+        return String(joined.dropFirst().dropLast())
+    }
+
+    // Shared element-identity revalidation for semantic commands (fill,
+    // set_control). Coordinate-free, so moved/offscreen do not apply.
+    func validateTypedTarget(_ target: String, req: [String: Any], id: Int,
+                             done: @escaping (String) -> Void) {
+        guard !loading else { respond(id, ["ok": false, "error": "navigating"]); return }
+        guard target.range(of: "^t[1-9][0-9]{0,2}$", options: .regularExpression) != nil else {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "malformed id"]); return
+        }
+        if let requested = (req["seq"] as? NSNumber)?.intValue, requested != self.seq {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "seq_mismatch", "seq": self.seq]); return
+        }
+        guard targetMeta[target] != nil else {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "unknown_id"]); return
+        }
+        let script = """
+        (function(){var el=(window.__m018Targets||{})["\(target)"];
+        if(!el){return JSON.stringify({found:false});}
+        if(!el.isConnected){return JSON.stringify({found:true,connected:false});}
+        var cs=window.getComputedStyle(el);
+        return JSON.stringify({found:true,connected:true,
+        rendered:(el.getClientRects().length>0)&&cs.visibility!=="hidden"&&cs.visibility!=="collapse"&&cs.opacity!=="0"&&!el.closest('[aria-hidden="true"]'),
+        enabled:(!el.disabled)&&!el.matches('[aria-disabled="true"]')&&cs.pointerEvents!=="none"});})()
+        """
+        webView.evaluateJavaScript(script) { [weak self] result, _ in
+            guard let self = self else { return }
+            guard let json = result as? String,
+                  let data = json.data(using: .utf8),
+                  let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                self.respond(id, ["ok": false, "error": "targets_unreadable"]); return
+            }
+            if (info["found"] as? Bool) != true || (info["connected"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_stale",
+                                  "detail": "gone"]); return
+            }
+            if (info["rendered"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_hidden"]); return
+            }
+            if (info["enabled"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_disabled"]); return
+            }
+            done(target)
+        }
+    }
+
+    func fillField(id: Int, req: [String: Any]) {
+        guard let target = req["target"] as? String,
+              let value = req["value"] as? String else {
+            respond(id, ["ok": false, "error": "bad_request"]); return
+        }
+        if value.count > 200 { respond(id, ["ok": false, "error": "too_long"]); return }
+        validateTypedTarget(target, req: req, id: id) { [weak self] resolved in
+            guard let self = self else { return }
+            let script = """
+            (function(){var el=(window.__m018Targets||{})["\(resolved)"];
+            var t=(el.getAttribute&&el.getAttribute('type'))||'';
+            if(t.toLowerCase()==='password'){return JSON.stringify({blocked:'password'});}
+            if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA'){return JSON.stringify({blocked:'role'});}
+            el.focus();
+            if(document.activeElement!==el){return JSON.stringify({blocked:'focus'});}
+            el.value='';
+            el.dispatchEvent(new Event('input',{bubbles:true}));
+            return JSON.stringify({ok:true});})()
+            """
+            self.webView.evaluateJavaScript(script) { [weak self] result, _ in
+                guard let self = self else { return }
+                guard let json = result as? String,
+                      let data = json.data(using: .utf8),
+                      let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                    self.respond(id, ["ok": false, "error": "fill_unreadable"]); return
+                }
+                if let blocked = info["blocked"] as? String {
+                    let error = blocked == "password" ? "password_field"
+                        : blocked == "focus" ? "focus_failed" : "control_unsupported"
+                    self.respond(id, ["ok": false, "error": error]); return
+                }
+                self.sendKey(value, keyCode: 0)
+                let readScript = """
+                (function(){var el=(window.__m018Targets||{})["\(resolved)"];
+                return JSON.stringify({value:(el&&el.value)||''});})()
+                """
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+                    guard let self = self else { return }
+                    self.webView.evaluateJavaScript(readScript) { [weak self] result, _ in
+                        guard let self = self else { return }
+                        guard let json = result as? String,
+                              let data = json.data(using: .utf8),
+                              let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                            self.respond(id, ["ok": false, "error": "readback_unreadable"]); return
+                        }
+                        self.respond(id, ["ok": true, "value": (info["value"] as? String) ?? ""])
+                    }
+                }
+            }
+        }
+    }
+
+    func setControl(id: Int, req: [String: Any]) {
+        guard let target = req["target"] as? String,
+              let mode = req["mode"] as? String else {
+            respond(id, ["ok": false, "error": "bad_request"]); return
+        }
+        validateTypedTarget(target, req: req, id: id) { [weak self] resolved in
+            guard let self = self else { return }
+            if mode == "select" {
+                guard let option = req["option"] as? String,
+                      !option.isEmpty, option.count <= 80 else {
+                    self.respond(id, ["ok": false, "error": "bad_request"]); return
+                }
+                let script = """
+                (function(){var el=(window.__m018Targets||{})["\(resolved)"];
+                if(el.tagName!=='SELECT'){return JSON.stringify({blocked:'role'});}
+                var want=\(self.jsLiteral(option));var found=false;var value=null;
+                for(var i=0;i<el.options.length;i++){var opt=el.options[i];
+                if(opt.value===want||(opt.textContent||'').trim()===want){found=true;value=opt.value;break;}}
+                if(!found){return JSON.stringify({blocked:'option'});}
+                el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}));
+                return JSON.stringify({ok:true,value:el.value});})()
+                """
+                self.webView.evaluateJavaScript(script) { [weak self] result, _ in
+                    guard let self = self else { return }
+                    guard let json = result as? String,
+                          let data = json.data(using: .utf8),
+                          let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                        self.respond(id, ["ok": false, "error": "fill_unreadable"]); return
+                    }
+                    if let blocked = info["blocked"] as? String {
+                        let error = blocked == "option" ? "option_not_found"
+                            : "control_unsupported"
+                        self.respond(id, ["ok": false, "error": error]); return
+                    }
+                    self.respond(id, ["ok": true, "value": (info["value"] as? String) ?? ""])
+                }
+            } else if mode == "toggle" {
+                guard let value = req["value"] as? Bool else {
+                    self.respond(id, ["ok": false, "error": "bad_request"]); return
+                }
+                let boolLiteral = value ? "true" : "false"
+                let script = """
+                (function(){var el=(window.__m018Targets||{})["\(resolved)"];
+                var t=((el.getAttribute&&el.getAttribute('type'))||'').toLowerCase();
+                if(!(el.tagName==='INPUT'&&(t==='checkbox'||t==='radio'))){return JSON.stringify({blocked:'role'});}
+                el.checked=\(boolLiteral);
+                el.dispatchEvent(new Event('change',{bubbles:true}));
+                return JSON.stringify({ok:true,checked:!!el.checked});})()
+                """
+                self.webView.evaluateJavaScript(script) { [weak self] result, _ in
+                    guard let self = self else { return }
+                    guard let json = result as? String,
+                          let data = json.data(using: .utf8),
+                          let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                        self.respond(id, ["ok": false, "error": "fill_unreadable"]); return
+                    }
+                    if let blocked = info["blocked"] as? String {
+                        let error = blocked == "role" ? "control_unsupported" : "fill_unreadable"
+                        self.respond(id, ["ok": false, "error": error]); return
+                    }
+                    self.respond(id, ["ok": true, "checked": (info["checked"] as? Bool) ?? false])
+                }
+            } else {
+                self.respond(id, ["ok": false, "error": "bad_request"])
+            }
+        }
     }
 
     func scrollPage(id: Int, req: [String: Any]) {

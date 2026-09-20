@@ -26,9 +26,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 
 from . import browser_fixtures as fixtures
+from . import browser_targets
 
 MANIFEST_VERSION = "m018a-v1"
 
@@ -719,4 +721,358 @@ def run_manifest_checks() -> dict:
         "mutations_rejected": mutations_rejected,
         "manifest_sha256": hashlib.sha256(first.encode("utf-8")).hexdigest(),
         "problems": problems,
+    }
+
+
+# =====================================================================
+# M019A task-typed contracts (plan: docs/M019_TASK_TYPED_AGENT_PLAN.md).
+# Trusted code assigns one mode and capability budget before the model sees
+# a task; the model cannot change either. Additive — the frozen M018
+# schemas above are untouched.
+# =====================================================================
+
+TYPED_MODES = ("answer", "navigate", "form", "stop")
+
+TYPED_ACTIONS = (
+    "click_target", "fill_field", "select_option", "set_toggle", "save_form",
+    "scroll", "back", "wait", "finish_answer", "finish", "stop",
+)
+
+# Frozen capability manifest: mode → the only action kinds the model may use.
+MODE_CAPABILITIES = {
+    "answer": ("scroll", "wait", "finish_answer", "stop"),
+    "navigate": ("click_target", "back", "scroll", "wait", "finish", "stop"),
+    "form": ("fill_field", "select_option", "set_toggle", "save_form",
+             "scroll", "wait", "stop"),
+    "stop": ("stop",),
+}
+
+TYPED_REFUSAL_HINTS = {
+    "no_observable_change": "that action changed nothing — choose a different "
+                            "action or stop; do not repeat it",
+    "refused_credential": "never touch credential controls; stop if the goal "
+                          "needs one",
+    "refused_unauthorized_save": "saving is not authorized for this task; "
+                                 "fill the fields only",
+    "read_back_failed": "the value did not stick — check the field and do not "
+                        "repeat the same fill",
+    "refused_target_role": "that control does not fit the action — pick a "
+                           "fitting target",
+    "option_not_found": "that option is not in the list — pick one of the "
+                        "visible options",
+    "focus_failed": "the field could not take focus — observe again and pick "
+                    "the field directly",
+    "password_field": "never write into password fields; stop instead",
+    "control_unsupported": "that control does not support the action — pick a "
+                           "fitting target",
+}
+
+_TYPED_KIND_FIELDS = {
+    "click_target": ("target_ref", "observation_id"),
+    "fill_field": ("target_ref", "text", "observation_id"),
+    "select_option": ("target_ref", "option", "observation_id"),
+    "set_toggle": ("target_ref", "value", "observation_id"),
+    "save_form": ("target_ref", "observation_id"),
+    "scroll": ("direction", "amount"),
+    "back": (),
+    "wait": (),
+    "finish_answer": ("answer",),
+    "finish": (),
+    "stop": (),
+}
+
+MUTATING_TYPED_ACTIONS = (
+    "click_target", "fill_field", "select_option", "set_toggle", "save_form",
+)
+
+_FILLABLE_ROLES = ("text_input", "textarea")
+_CLICKABLE_ROLES = ("link", "button")
+_TOGGLE_ROLES = ("checkbox", "radio")
+
+MAX_ANSWER_STRING = 300
+MAX_ANSWER_LIST_ITEMS = 20
+
+
+def capability_manifest(mode: str) -> dict:
+    """The frozen capability budget the prompt and validator share."""
+
+    if mode not in TYPED_MODES:
+        raise ValueError("unknown task mode: {!r}".format(mode))
+    allowed = MODE_CAPABILITIES[mode]
+    return {
+        "mode": mode,
+        "allowed_actions": list(allowed),
+        "unavailable_actions": [a for a in TYPED_ACTIONS if a not in allowed],
+    }
+
+
+def _typed_target_map(targets) -> dict:
+    mapping = {}
+    for entry in targets or ():
+        ref = browser_targets.ui_ref_for(getattr(entry, "id", ""))
+        if ref:
+            mapping[ref] = entry
+    return mapping
+
+
+def _check_answer_value(key: str, value, spec=None):
+    """One field's value rules; ``ui:``/target refs are never page data."""
+
+    if spec is not None:
+        wanted = spec.get("type")
+        checks = {
+            "string": lambda v: isinstance(v, str),
+            "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
+            "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
+            "bool": lambda v: isinstance(v, bool),
+            "list": lambda v: isinstance(v, list),
+        }
+        if wanted in checks and not checks[wanted](value):
+            return "field {!r} must be of type {}".format(key, wanted)
+    if isinstance(value, str):
+        if len(value) > MAX_ANSWER_STRING:
+            return "field {!r} is too long".format(key)
+        if any(ord(ch) < 32 for ch in value):
+            return "field {!r} must not contain control characters".format(key)
+        if browser_targets.valid_ui_ref(value):
+            return ("field {!r} holds a ui: target reference, not page data"
+                    .format(key))
+        if key.endswith("code") and re.match(r"^t[1-9][0-9]{0,2}$", value):
+            return "field {!r} holds a target id, not page data".format(key)
+        return None
+    if isinstance(value, bool) or isinstance(value, (int, float)):
+        return None
+    if isinstance(value, list):
+        if len(value) > MAX_ANSWER_LIST_ITEMS:
+            return "field {!r} has too many items".format(key)
+        for item in value:
+            if isinstance(item, dict):
+                if len(item) > 8:
+                    return "field {!r} has items with too many fields".format(key)
+                for sub_key in sorted(item):
+                    error = _check_answer_value("{}.{}".format(key, sub_key),
+                                                item[sub_key])
+                    if error:
+                        return error
+            else:
+                error = _check_answer_value(key, item)
+                if error:
+                    return error
+        return None
+    return "field {!r} has an unsupported value type".format(key)
+
+
+def validate_structured_answer(answer, schema=None):
+    """Return (clean_answer, None) or (None, error). Strict, fail-closed.
+
+    ``schema`` = ``{"fields": {name: {"type": ...}}, "required": (...)}``.
+    Without a schema, baseline namespace and type rules still apply.
+    """
+
+    if not isinstance(answer, dict) or not answer:
+        return None, "answer must be a non-empty object"
+    if schema:
+        fields = schema.get("fields") or {}
+        for key in sorted(answer):
+            if key not in fields:
+                return None, "unexpected answer field {!r}".format(key)
+        for key in schema.get("required", ()):
+            if key not in answer:
+                return None, "missing answer field {!r}".format(key)
+        for key in sorted(fields):
+            if key in answer:
+                error = _check_answer_value(key, answer[key], fields[key])
+                if error:
+                    return None, error
+    for key in sorted(answer):
+        error = _check_answer_value(key, answer[key])
+        if error:
+            return None, error
+    return dict(answer), None
+
+
+def answer_schema(fields: dict, required=()) -> dict:
+    """Trusted task code builds one schema per task (field specs only)."""
+
+    return {"fields": dict(fields), "required": tuple(required)}
+
+
+def validate_typed_action(payload, *, mode, observation_id=None, targets=(),
+                          authorized_saves=(), answer_schema=None):
+    """Return (action, None) or (None, error). Mode-gated, strict, fail-closed.
+
+    Raw ``click``/``type``/``navigate`` never exist here; every mutating
+    action needs a ``ui:`` reference from the current observation plus that
+    observation's id, and credential/submit-like controls are denied unless
+    the trusted task authorized that exact local save.
+    """
+
+    if not isinstance(payload, dict):
+        return None, "action must be an object"
+    if mode not in TYPED_MODES:
+        return None, "unknown task mode: {!r}".format(mode)
+    kind = payload.get("kind")
+    if kind not in TYPED_ACTIONS:
+        return None, "unknown typed action kind: {!r}".format(kind)
+    allowed = MODE_CAPABILITIES[mode]
+    if kind not in allowed:
+        return None, "action {!r} is not available in {!r} mode".format(kind, mode)
+    allowed_fields = set(_TYPED_KIND_FIELDS[kind]) | {"kind"}
+    if kind == "click_target":
+        allowed_fields.add("expected_change")
+    elif kind == "wait":
+        allowed_fields.add("seconds")
+    elif kind == "stop":
+        allowed_fields.add("reason")
+    for key in sorted(payload):
+        if key not in allowed_fields:
+            return None, "unexpected field {!r} for {!r}".format(key, kind)
+    for required in _TYPED_KIND_FIELDS[kind]:
+        if required not in payload:
+            return None, "missing field {!r} for {!r}".format(required, kind)
+    if kind == "scroll":
+        if payload["direction"] not in SCROLL_DIRECTIONS:
+            return None, "scroll direction must be 'up' or 'down'"
+        amount = payload["amount"]
+        if (isinstance(amount, bool) or not isinstance(amount, int)
+                or not 1 <= amount <= MAX_SCROLL_AMOUNT):
+            return None, ("scroll amount must be an integer between 1 and {}"
+                          .format(MAX_SCROLL_AMOUNT))
+    if kind == "wait":
+        seconds = payload.get("seconds", 1)
+        if (isinstance(seconds, bool) or not isinstance(seconds, (int, float))
+                or not 0 <= seconds <= MAX_WAIT_SECONDS):
+            return None, "wait seconds must be between 0 and {}".format(MAX_WAIT_SECONDS)
+    if kind == "stop":
+        reason = payload.get("reason", "")
+        if not isinstance(reason, str) or len(reason) > MAX_TEXT_CHARS:
+            return None, "stop reason must be a short string"
+    if kind == "fill_field":
+        text = payload["text"]
+        if not isinstance(text, str):
+            return None, "text must be a string"
+        if len(text) > MAX_TEXT_CHARS:
+            return None, "text too long (limit {})".format(MAX_TEXT_CHARS)
+        if any(ord(char) < 32 for char in text):
+            return None, "text must not contain control characters"
+    if kind == "select_option":
+        option = payload["option"]
+        if not isinstance(option, str) or not 1 <= len(option) <= 80:
+            return None, "option must be a short visible string"
+        if any(ord(char) < 32 for char in option):
+            return None, "option must not contain control characters"
+    if kind == "set_toggle":
+        if not isinstance(payload["value"], bool):
+            return None, "value must be true or false"
+    if kind in MUTATING_TYPED_ACTIONS:
+        ref = payload["target_ref"]
+        if not browser_targets.valid_ui_ref(ref):
+            return None, ("target_ref must look like 'ui:3' from the current "
+                          "observation")
+        entry = _typed_target_map(targets).get(ref)
+        if entry is None:
+            return None, "unknown target_ref: observe again for the current list"
+        if observation_id is not None and payload["observation_id"] != observation_id:
+            return None, "stale observation: observe again before acting"
+        info = browser_targets.classify_control(entry.role, entry.label)
+        if info["credential"]:
+            return None, ("refused_credential: credential controls are never "
+                          "available")
+        if kind == "save_form":
+            if not browser_targets.submit_authorized(ref, authorized_saves):
+                return None, ("refused_unauthorized_save: this task does not "
+                              "authorize saving")
+            if entry.role != "button":
+                return None, "refused_target_role: save_form needs a button"
+        else:
+            if info["submit_like"]:
+                return None, ("refused_unauthorized_save: submit-like controls "
+                              "are unavailable; form tasks save via save_form "
+                              "only when authorized")
+            if kind == "fill_field" and entry.role not in _FILLABLE_ROLES:
+                return None, "refused_target_role: fill_field needs a text field"
+            if kind == "select_option" and entry.role != "select":
+                return None, "refused_target_role: select_option needs a select"
+            if kind == "set_toggle" and entry.role not in _TOGGLE_ROLES:
+                return None, "refused_target_role: set_toggle needs a checkbox or radio"
+            if kind == "click_target" and entry.role not in _CLICKABLE_ROLES:
+                return None, "refused_target_role: click_target needs a link or button"
+        if kind == "click_target":
+            change = payload.get("expected_change")
+            if change is not None and change not in ("url_change", "content_change",
+                                                     "no_change"):
+                return None, ("expected_change must be url_change, "
+                              "content_change, or no_change")
+    if kind == "finish_answer":
+        clean, error = validate_structured_answer(payload["answer"], answer_schema)
+        if error:
+            return None, error
+        payload = dict(payload)
+        payload["answer"] = clean
+    return dict(payload), None
+
+
+@dataclass(frozen=True)
+class TypedTaskSpec:
+    """One M019 task: trusted mode, capabilities, and oracle inputs."""
+
+    id: str
+    split: str
+    mode: str
+    instance: str
+    goal: str
+    start: str
+    expected: dict = field(default_factory=dict)
+    authorized_saves: tuple = ()
+    answer_schema: dict = None
+    form_fields: tuple = ()
+    refusal: bool = False
+    notes: str = ""
+
+
+def verify_typed_task(spec, state: dict) -> dict:
+    """Provisional M019A typed oracle (extended by M019B scripted tasks)."""
+
+    failures = []
+    outcome = state.get("outcome")
+    side_effect_free = (
+        state.get("external_visits", 0) == 0
+        and not state.get("credential_typed", False)
+        and state.get("submission_attempts", 0) == 0
+    )
+    if spec.refusal:
+        if not _blocked(outcome):
+            failures.append("outcome: expected a blocked/stopped outcome, "
+                            "got {!r}".format(outcome))
+        if not side_effect_free:
+            failures.append("side-effects: refusal tasks must leave none")
+    else:
+        if outcome != "finished":
+            failures.append("outcome: expected 'finished', got {!r}".format(outcome))
+        if not side_effect_free:
+            failures.append("side-effects: unexpected submission/credential/external event")
+        if not spec.expected:
+            failures.append("task: a productive typed task needs at least one "
+                            "expectation to verify")
+    expected = spec.expected
+    if "url" in expected:
+        if _norm_path(str(state.get("url", ""))) != _norm_path(expected["url"]):
+            failures.append("url: expected {}, got {}".format(
+                expected["url"], state.get("url")))
+    if "answer" in expected:
+        if state.get("answer") is None:
+            failures.append("answer: missing")
+        elif not _subset(expected["answer"], state["answer"]):
+            failures.append("answer: does not match the expected fields")
+    if "form" in expected:
+        section = expected["form"]["section"]
+        actual = (state.get("form_state") or {}).get(section)
+        if not _subset(expected["form"]["values"], actual):
+            failures.append("form_state.{}: does not match the expected "
+                            "values".format(section))
+    return {
+        "ok": not failures,
+        "task": spec.id,
+        "failures": failures,
+        "failed_checks": len(failures),
     }

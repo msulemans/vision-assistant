@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 
 from . import browser_fixtures as fixtures
+from . import browser_targets as bt
 from . import browser_tasks as tasks
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -603,6 +604,80 @@ def cmd_task(args) -> int:
     return 0
 
 
+def cmd_m019_verify(args) -> int:
+    """M019A deterministic self-check: capability manifests + allow/deny matrix.
+
+    No model, no browser, no fixture server: pure validation contract proof.
+    """
+
+    entry_field = bt.TargetEntry("t1", "text_input", "Query",
+                                 (0.0, 0.0, 10.0, 10.0), True, False)
+    entry_cred = bt.TargetEntry("t2", "text_input", "Password",
+                                (0.0, 0.0, 10.0, 10.0), True, False)
+    entry_save = bt.TargetEntry("t3", "button", "Save",
+                                (0.0, 0.0, 10.0, 10.0), True, False)
+    entry_link = bt.TargetEntry("t4", "link", "Story",
+                                (0.0, 0.0, 10.0, 10.0), True, False)
+    targets = (entry_field, entry_cred, entry_save, entry_link)
+    obs = "obs-1"
+
+    for mode in tasks.TYPED_MODES:
+        manifest = tasks.capability_manifest(mode)
+        print("mode {:<8} allowed: {}".format(
+            mode, ", ".join(manifest["allowed_actions"])))
+
+    samples = (
+        ("answer", {"kind": "scroll", "direction": "down", "amount": 2}, True, ()),
+        ("answer", {"kind": "click_target", "target_ref": "ui:4",
+                    "observation_id": obs}, False, ()),
+        ("navigate", {"kind": "click_target", "target_ref": "ui:4",
+                      "observation_id": obs}, True, ()),
+        ("navigate", {"kind": "finish"}, True, ()),
+        ("navigate", {"kind": "fill_field", "target_ref": "ui:1", "text": "x",
+                      "observation_id": obs}, False, ()),
+        ("form", {"kind": "fill_field", "target_ref": "ui:1", "text": "hello",
+                  "observation_id": obs}, True, ()),
+        ("form", {"kind": "fill_field", "target_ref": "ui:2", "text": "secret",
+                  "observation_id": obs}, False, ()),
+        ("form", {"kind": "fill_field", "target_ref": "ui:4", "text": "x",
+                  "observation_id": obs}, False, ()),
+        ("navigate", {"kind": "click", "x": 1, "y": 2}, False, ()),
+        ("form", {"kind": "type_text", "text": "x"}, False, ()),
+        ("form", {"kind": "navigate", "url": "/news/"}, False, ()),
+        ("form", {"kind": "save_form", "target_ref": "ui:3",
+                  "observation_id": obs}, False, ()),
+        ("form", {"kind": "save_form", "target_ref": "ui:3",
+                  "observation_id": obs}, True, ("ui:3",)),
+        ("answer", {"kind": "finish_answer",
+                     "answer": {"rank": 2, "title": "A story"}}, True, ()),
+        ("answer", {"kind": "finish_answer",
+                     "answer": {"title": "ui:4"}}, False, ()),
+        ("navigate", {"kind": "click_target", "target_ref": "ui:4",
+                      "observation_id": "obs-OLD"}, False, ()),
+        ("stop", {"kind": "stop"}, True, ()),
+        ("stop", {"kind": "click_target", "target_ref": "ui:4",
+                  "observation_id": obs}, False, ()),
+    )
+    problems = []
+    for mode, payload, expect_ok, authorized in samples:
+        _parsed, error = tasks.validate_typed_action(
+            payload, mode=mode, observation_id=obs, targets=targets,
+            authorized_saves=authorized)
+        got_ok = error is None
+        print("  {:<8} {:<13} {}".format(
+            mode, str(payload.get("kind")),
+            "allow" if got_ok else "deny  ({})".format(error)))
+        if got_ok != expect_ok:
+            problems.append("{} {}: expected {}, got {} ({})".format(
+                mode, payload.get("kind"),
+                "allow" if expect_ok else "deny",
+                "allow" if got_ok else "deny", error or "accepted"))
+    print("m019-verify: {} samples, {} problems".format(len(samples), len(problems)))
+    for problem in problems:
+        print("  PROBLEM: " + problem)
+    return 0 if not problems else 1
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="browser_cli", description="M018A fixture/browser-task stage tooling")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -668,6 +743,10 @@ def main(argv=None) -> int:
     p_hn.add_argument("--max-seconds", type=float, default=0)
     p_hn.add_argument("--out-dir", default="")
     p_hn.set_defaults(func=cmd_hn_pilot)
+
+    p_m019 = sub.add_parser("m019-verify",
+                            help="M019A deterministic capability/validation self-check (no model, no browser)")
+    p_m019.set_defaults(func=cmd_m019_verify)
 
     args = parser.parse_args(argv)
     return args.func(args)
