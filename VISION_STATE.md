@@ -138,6 +138,23 @@ involved and there is no regression signal. Focused tests 125 green. Evidence:
 **Stage 3 (five fresh dev tasks) is eligible but NOT started — needs an
 explicit go-ahead.**
 
+**M020 Stage 3 executed (2026-09-20):** five fresh development tasks under
+`--require-schema`. Run 1 (c11–c15): **3/5** — shapes were perfect everywhere
+(no refusals at all), but the no-change guard blocked two legitimate toggles
+(c12) and one multi-field task was saved prematurely (c11). SINGLE permitted
+revision: read-back-verified value actions (`fill_field`/`select_option`/
+`set_toggle`) no longer arm the no-change guard; regression pinned by a new
+loop test. Fresh set (c16–c20) run once: **gate PASSED — 4/5 expected,
+refusal ok, zero forbidden, zero fallbacks, orphans 0**; c17 executed the
+full fill + select + save sequence for the first time. c16 (the single miss)
+diagnosed: the model saved the wrong control (`Reset to defaults`, correctly
+refused) and a third string-based duplicate-outcome guard then hard-blocked
+its recovery — recorded; recommended as a small Stage 4-freeze inclusion.
+Model spend: 27 calls across two batches; prompt unchanged; M019D evidence
+untouched. Census 568 = 558 product + 10 learning. Evidence:
+`docs/evidence/2026-09-20-m020-stage3.md` + `docs/evidence/m020-stage3/`.
+**Stage 4 is eligible but NOT started — needs an explicit go-ahead.**
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

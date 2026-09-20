@@ -1,0 +1,98 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 19772.2,
+  "goal": "Update your search preferences: the default query is \"lexer\", the default category is \"stories\", and per page is 10. Save them.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'stopped'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c11"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 823.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61422/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2498.9,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 7115.3,
+      "executed": "fill_field ui:5 (5 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61422/prefs/"
+    },
+    {
+      "at_ms": 8799.6,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 13913.5,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61422/prefs/?saved=1"
+    },
+    {
+      "at_ms": 15669.5,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 19772.2,
+      "executed": "stop",
+      "kind": "action",
+      "step": 3
+    },
+    {
+      "at_ms": 19772.2,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "c11",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/",
+    "/prefs/?saved=1"
+  ]
+}

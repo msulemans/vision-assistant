@@ -1,0 +1,80 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 13394.5,
+  "goal": "Sign in to the members area to unlock the featured story.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c15"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 868.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61422/login/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2420.3,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7078.6,
+      "executed": "fill_field ui:5 (5 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61422/login/"
+    },
+    {
+      "at_ms": 8702.2,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 13394.4,
+      "executed": "fill_field ui:5 (5 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61422/login/"
+    },
+    {
+      "at_ms": 13394.6,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "repeated": "fill_field ui:5 (5 chars) -> http://127.0.0.1:61422/login/"
+    }
+  ],
+  "task": "c15",
+  "task_mode": "form",
+  "visited": [
+    "/login/"
+  ]
+}

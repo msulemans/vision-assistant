@@ -268,6 +268,14 @@ def typed_action_schema(task_mode: str) -> dict:
     return {"oneOf": branches}
 
 
+# M020 Stage 3 revision: value actions are verified by the helper's read-back
+# and have no signature-visible effect (the observation signature carries no
+# field values), so arming the no-change guard for them blocked legitimate
+# sequences (two toggles -> blocked:no_progress before the save). Only
+# actions whose effect belongs in the signature arm the guard.
+_NO_CHANGE_EXEMPT_ACTIONS = ("fill_field", "select_option", "set_toggle")
+
+
 def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
                        css_w: int, css_h: int, observation_id: str,
                        target_block: str, history, *, budgets=None,
@@ -831,7 +839,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         if typed_mode:
             state["last_action_sig"] = action_sig
             state["sig_before_action"] = state["current_sig"]
-            state["awaiting_change"] = True
+            state["awaiting_change"] = (kind not in _NO_CHANGE_EXEMPT_ACTIONS)
 
         state["recoveries"] = 0
         state["last_refusal"] = None

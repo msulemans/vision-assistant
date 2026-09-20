@@ -1,0 +1,116 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 14769.9,
+  "goal": "In display settings: turn on \"compact\" and \"dark\", turn off \"show_timestamps\". Save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c12"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 774.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61422/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2346.2,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 6899.5,
+      "executed": "set_toggle ui:5 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61422/settings/"
+    },
+    {
+      "at_ms": 8442.3,
+      "count": 9,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 8442.4,
+      "kind": "no_change",
+      "step": 1,
+      "unchanged_streak": 1
+    },
+    {
+      "at_ms": 13214.3,
+      "executed": "set_toggle ui:6 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61422/settings/"
+    },
+    {
+      "at_ms": 14769.8,
+      "count": 9,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 14769.8,
+      "kind": "no_change",
+      "step": 2,
+      "unchanged_streak": 2
+    },
+    {
+      "at_ms": 14769.9,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": [
+        "set_toggle",
+        [
+          [
+            "target_ref",
+            "ui:6"
+          ],
+          [
+            "value",
+            true
+          ]
+        ]
+      ]
+    }
+  ],
+  "task": "c12",
+  "task_mode": "form",
+  "visited": [
+    "/settings/"
+  ]
+}

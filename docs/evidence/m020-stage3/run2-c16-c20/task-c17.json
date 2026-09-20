@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 21152.5,
+  "goal": "Update your search preferences step by step. First set the default query to \"parser\". Then set the default category to \"stories\". Then save them.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c17"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 787.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61532/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2433.5,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 7275.5,
+      "executed": "fill_field ui:5 (6 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61532/prefs/"
+    },
+    {
+      "at_ms": 8978.5,
+      "count": 11,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 14034.8,
+      "executed": "select_option ui:6 = stories",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61532/prefs/"
+    },
+    {
+      "at_ms": 15721.3,
+      "count": 11,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 21152.4,
+      "executed": "save_form ui:10",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:61532/prefs/?saved=1"
+    },
+    {
+      "at_ms": 21152.5,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c17",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/",
+    "/prefs/?saved=1"
+  ]
+}

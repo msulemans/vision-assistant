@@ -15,6 +15,15 @@ both runs — `moving-target`'s `moved_probe` raced the fixture's
 `setTimeout(…, 1000)` shift twice (`got: "none"`); five typed-pipeline
 scenarios pass; no M020A code path involved. Stage 3 NOT started.
 
+**Stage 3 executed (2026-09-20):** run 1 (c11–c15) 3/5 — shapes perfect
+everywhere, but the no-change guard blocked two legitimate toggles (c12) and
+one multi-field task was saved prematurely (c11) → the single permitted
+revision (read-back-verified value actions exempt from the guard + regression
+test) → fresh set (c16–c20) run once: **gate PASSED (4/5 + refusal ok + zero
+forbidden + zero fallbacks)**. c16 diagnosis (wrong-button save refusal +
+duplicate-outcome guard hard-block) recorded for a recommended Stage 4-freeze
+inclusion. Stage 4 NOT started.
+
 ## 1. Why (measured, not assumed)
 
 M019D's form family failed 0/7. Follow-up artifact analysis

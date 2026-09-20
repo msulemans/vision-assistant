@@ -1,0 +1,80 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 14340.8,
+  "goal": "Finish the receipt: e-mail it to \"desk@example.com\" and send it.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c20"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 794.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61532/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2324.0,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7152.7,
+      "executed": "fill_field ui:5 (16 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61532/checkout/"
+    },
+    {
+      "at_ms": 8746.2,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 14340.8,
+      "executed": "fill_field ui:5 (16 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61532/checkout/"
+    },
+    {
+      "at_ms": 14340.8,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "repeated": "fill_field ui:5 (16 chars) -> http://127.0.0.1:61532/checkout/"
+    }
+  ],
+  "task": "c20",
+  "task_mode": "form",
+  "visited": [
+    "/checkout/"
+  ]
+}

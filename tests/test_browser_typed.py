@@ -696,6 +696,11 @@ def _fill(ref, text):
                            "text": text, "observation_id": _obs_from(prompt)}
 
 
+def _toggle(ref, value):
+    return lambda prompt: {"action": "set_toggle", "target_ref": ref,
+                           "value": value, "observation_id": _obs_from(prompt)}
+
+
 def _save(ref):
     return lambda prompt: {"action": "save_form", "target_ref": ref,
                            "observation_id": _obs_from(prompt)}
@@ -847,6 +852,41 @@ class TypedLoopTest(TypedLoopBase):
         self.assertIn(("save_form", "ui:2"), session.calls)
         self.assertEqual(store["prefs"]["per_page"], "50")
         self.assertIn("Required form field names", proposer.prompts[0])
+
+    def test_two_toggles_then_authorized_save_finish(self) -> None:
+        # M020 Stage 3 regression: value actions never arm the no-change
+        # guard, so two legitimate toggles cannot block the loop.
+        store = {"settings": {"compact": False, "dark": False},
+                 "submissions": []}
+
+        def effect(state):
+            state["settings"]["dark"] = True
+
+        def factory(_seq):
+            entries = (
+                bt.TargetEntry("t1", "checkbox", "compact",
+                               (10.0, 10.0, 20.0, 20.0), True, False),
+                bt.TargetEntry("t2", "checkbox", "dark",
+                               (10.0, 40.0, 20.0, 20.0), True, False),
+                bt.TargetEntry("t3", "button", "Save",
+                               (10.0, 70.0, 60.0, 24.0), True, False),
+            )
+            return TargetList(seq=_seq, targets=entries, truncated=False,
+                              total=3)
+
+        spec = _spec("form", authorized_saves=("ui:3",),
+                     expected={"form": {"section": "settings",
+                                         "values": {"dark": True}}})
+        session, _proposer, report = self.run_typed(
+            spec,
+            [_toggle("ui:1", True), _toggle("ui:2", True), _save("ui:3")],
+            ["http://127.0.0.1:1/settings/"],
+            target_factory=factory, store=store, save_effect=effect)
+        self.assertEqual(report["outcome"], "finished", report["steps"])
+        self.assertEqual(len([c for c in session.calls
+                              if c[0] == "set_toggle"]), 2)
+        self.assertEqual(len([c for c in session.calls
+                              if c[0] == "save_form"]), 1)
 
     def test_form_unauthorized_save_denied_without_session_call(self) -> None:
         spec = _spec("form")

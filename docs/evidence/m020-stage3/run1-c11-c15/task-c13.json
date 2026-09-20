@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 19807.4,
+  "goal": "Fill the draft: title \"Field notes\", body \"Observation only.\" Save the draft.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c13"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 789.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61422/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2302.7,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 6756.2,
+      "executed": "fill_field ui:5 (11 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61422/draft/"
+    },
+    {
+      "at_ms": 8274.6,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 13106.2,
+      "executed": "fill_field ui:6 (17 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61422/draft/"
+    },
+    {
+      "at_ms": 14631.8,
+      "count": 8,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 19807.4,
+      "executed": "save_form ui:7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:61422/draft/?saved=1"
+    },
+    {
+      "at_ms": 19807.4,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c13",
+  "task_mode": "form",
+  "visited": [
+    "/draft/",
+    "/draft/?saved=1"
+  ]
+}

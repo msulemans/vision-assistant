@@ -1,0 +1,97 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 21089.2,
+  "goal": "Fill the draft: title \"Bench log\", body \"Cable check.\" Save the draft.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c18"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 783.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61532/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2300.5,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 7334.3,
+      "executed": "fill_field ui:5 (9 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61532/draft/"
+    },
+    {
+      "at_ms": 8855.5,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 14076.1,
+      "executed": "fill_field ui:6 (12 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61532/draft/"
+    },
+    {
+      "at_ms": 15623.6,
+      "count": 8,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 21089.1,
+      "executed": "save_form ui:7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:61532/draft/?saved=1"
+    },
+    {
+      "at_ms": 21089.2,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c18",
+  "task_mode": "form",
+  "visited": [
+    "/draft/",
+    "/draft/?saved=1"
+  ]
+}

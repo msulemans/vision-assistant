@@ -1,0 +1,99 @@
+{
+  "actions": 1,
+  "calls": 3,
+  "elapsed_ms": 22875.3,
+  "goal": "Which story is ranked fourth on the first news page? Report its title, its points, and its comments count.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c14"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 871.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61422/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2754.8,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "action": "finish_answer",
+      "at_ms": 7888.5,
+      "error": "field 'comments' must be of type integer",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 9851.3,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "action": "finish_answer",
+      "at_ms": 15321.3,
+      "error": "field 'comments' must be of type integer",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 17293.0,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "comments",
+        "points",
+        "title"
+      ],
+      "at_ms": 22875.2,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 22875.3,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c14",
+  "task_mode": "answer",
+  "visited": [
+    "/news/"
+  ]
+}

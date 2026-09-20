@@ -1,0 +1,117 @@
+{
+  "actions": 3,
+  "calls": 4,
+  "elapsed_ms": 25128.0,
+  "goal": "In display settings: turn on \"dark\" and turn off \"show_timestamps\". Save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c16"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 827.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:61532/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2389.8,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 6691.9,
+      "executed": "set_toggle ui:6 = True",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:61532/settings/"
+    },
+    {
+      "at_ms": 8251.3,
+      "count": 9,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 12779.2,
+      "executed": "set_toggle ui:7 = False",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:61532/settings/"
+    },
+    {
+      "at_ms": 14390.4,
+      "count": 9,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "action": "save_form",
+      "at_ms": 18714.3,
+      "error": "refused_unauthorized_save: this task does not authorize saving",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 3
+    },
+    {
+      "at_ms": 20311.1,
+      "count": 9,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 25127.9,
+      "executed": "set_toggle ui:7 = False",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:61532/settings/"
+    },
+    {
+      "at_ms": 25128.0,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "set_toggle ui:7 = False -> http://127.0.0.1:61532/settings/"
+    }
+  ],
+  "task": "c16",
+  "task_mode": "form",
+  "visited": [
+    "/settings/"
+  ]
+}
