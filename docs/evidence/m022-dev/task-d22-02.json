@@ -1,0 +1,24 @@
+{
+  "calls": 20,
+  "ledger": [],
+  "ok": false,
+  "outcome": "failed:budget_calls",
+  "path": "/d22-02/",
+  "selection": [],
+  "shots_kept": [
+    "d22-02/shots-kept/shot-0002.png",
+    "d22-02/shots-kept/shot-0005.png"
+  ],
+  "task": "d22-02",
+  "verdict": {
+    "failures": [
+      "outcome: expected 'finished', got 'failed:budget_calls'",
+      "selection: expected [(2, 'vision transformers for tiny devices'), (22, 'rlhf without the human: a cautionary tale'), (34, 'ai policy: the licensing debate')], got []",
+      "evidence: selection spans 0 observation(s); at least 2 required",
+      "ledger: fewer entries than the expected selection"
+    ],
+    "ok": false,
+    "task": "d22-02"
+  },
+  "viewports": 2
+}

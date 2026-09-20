@@ -1,0 +1,110 @@
+freeze checks: OK | tasks 5 | manifest b5aea1718350d961
+starting llama-server with the pinned model Qwen3.5-4B-Q4_K_M.gguf
+  [  56.6ms] observe document_height=2434 observation=obs-1 phase=startup scroll_y=0 viewport_height=720
+  [7347.0ms] ledger admitted=[3, 7] rejected=[] size=2
+  [14165.0ms] ledger admitted=[] rejected=['duplicate_candidate', 'duplicate_candidate'] size=2
+  [20015.9ms] observe document_height=2434 fraction=0.6986 observation=obs-2 phase=advance scroll_y=503 viewport_height=720
+  [25508.9ms] action executed=no_candidates observation=obs-2
+  [31096.6ms] action executed=no_candidates observation=obs-2
+  [36708.2ms] action executed=no_candidates observation=obs-2
+  [43686.5ms] ledger admitted=[18] rejected=[] size=3
+  [49322.1ms] action executed=no_candidates observation=obs-2
+  [55092.9ms] action executed=no_candidates observation=obs-2
+  [60613.9ms] action executed=no_candidates observation=obs-2
+  [66338.4ms] action executed=no_candidates observation=obs-2
+  [71896.6ms] action executed=no_candidates observation=obs-2
+  [77450.7ms] action executed=no_candidates observation=obs-2
+  [83057.0ms] action executed=no_candidates observation=obs-2
+  [88885.4ms] action executed=no_candidates observation=obs-2
+  [94684.8ms] action executed=no_candidates observation=obs-2
+  [100795.7ms] action executed=no_candidates observation=obs-2
+  [107064.2ms] observe document_height=2434 fraction=0.6986 observation=obs-3 phase=advance scroll_y=1006 viewport_height=720
+  [112833.1ms] action executed=no_candidates observation=obs-3
+  [119084.7ms] observe document_height=2434 fraction=0.6986 observation=obs-4 phase=advance scroll_y=1509 viewport_height=720
+  [119084.8ms] terminal outcome=failed:budget_calls
+task d22-01: failed:budget_calls | calls 20 | selection [] | FAIL outcome: expected 'finished', got 'failed:budget_calls'; selection: expected [(3, 'agentbench: evaluating tool-using assistants'), (18, 'a field guide to on-device speech models'), (27, 'open weights and the economics of fine-tuning')], got []; evidence: selection spans 0 observation(s); at least 2 required; ledger: fewer entries than the expected selection
+  [  67.8ms] observe document_height=2818 observation=obs-1 phase=startup scroll_y=0 viewport_height=720
+  [10293.0ms] ledger admitted=[2, 5, 9] rejected=[] size=3
+  [16882.3ms] observe document_height=2818 fraction=0.6986 observation=obs-2 phase=advance scroll_y=503 viewport_height=720
+  [22513.4ms] action executed=no_candidates observation=obs-2
+  [28486.1ms] action executed=no_candidates observation=obs-2
+  [34424.1ms] action executed=no_candidates observation=obs-2
+  [40329.1ms] action executed=no_candidates observation=obs-2
+  [46151.3ms] action executed=no_candidates observation=obs-2
+  [51957.5ms] action executed=no_candidates observation=obs-2
+  [57866.0ms] action executed=no_candidates observation=obs-2
+  [63788.3ms] action executed=no_candidates observation=obs-2
+  [69794.1ms] action executed=no_candidates observation=obs-2
+  [75846.9ms] action executed=no_candidates observation=obs-2
+  [82231.1ms] action executed=no_candidates observation=obs-2
+  [88509.2ms] action executed=no_candidates observation=obs-2
+  [94444.6ms] action executed=no_candidates observation=obs-2
+  [100521.1ms] action executed=no_candidates observation=obs-2
+  [106611.0ms] action executed=no_candidates observation=obs-2
+  [112914.9ms] action executed=no_candidates observation=obs-2
+  [119074.1ms] action executed=no_candidates observation=obs-2
+  [125080.7ms] action executed=no_candidates observation=obs-2
+  [125080.7ms] terminal outcome=failed:budget_calls
+task d22-02: failed:budget_calls | calls 20 | selection [] | FAIL outcome: expected 'finished', got 'failed:budget_calls'; selection: expected [(2, 'vision transformers for tiny devices'), (22, 'rlhf without the human: a cautionary tale'), (34, 'ai policy: the licensing debate')], got []; evidence: selection spans 0 observation(s); at least 2 required; ledger: fewer entries than the expected selection
+  [  83.4ms] observe document_height=2626 observation=obs-1 phase=startup scroll_y=0 viewport_height=720
+  [8376.0ms] ledger admitted=[4, 8] rejected=[] size=2
+  [15146.2ms] observe document_height=2626 fraction=0.6986 observation=obs-2 phase=advance scroll_y=503 viewport_height=720
+  [21089.0ms] action executed=no_candidates observation=obs-2
+  [27214.8ms] action executed=no_candidates observation=obs-2
+  [33587.6ms] action executed=no_candidates observation=obs-2
+  [40249.3ms] observe document_height=2626 fraction=0.6986 observation=obs-3 phase=advance scroll_y=1006 viewport_height=720
+  [46078.7ms] action executed=no_candidates observation=obs-3
+  [52004.9ms] action executed=no_candidates observation=obs-3
+  [58160.2ms] action executed=no_candidates observation=obs-3
+  [64489.3ms] action executed=no_candidates observation=obs-3
+  [71140.6ms] observe document_height=2626 fraction=0.6986 observation=obs-4 phase=advance scroll_y=1509 viewport_height=720
+  [79024.0ms] ledger admitted=[31] rejected=[] size=3
+  [86426.3ms] observe document_height=2626 fraction=0.5514 observation=obs-5 phase=advance scroll_y=1711 viewport_height=720
+  [92800.2ms] action executed=no_candidates observation=obs-5
+  [99408.7ms] observe document_height=2626 fraction=0.2708 observation=obs-6 phase=advance scroll_y=1906 viewport_height=720
+  [105634.6ms] action executed=no_candidates observation=obs-6
+  [111950.5ms] action executed=no_candidates observation=obs-6
+  [118187.8ms] action executed=no_candidates observation=obs-6
+  [124411.2ms] action executed=no_candidates observation=obs-6
+  [130564.1ms] action executed=no_candidates observation=obs-6
+  [130564.1ms] terminal outcome=failed:budget_calls
+task d22-03: failed:budget_calls | calls 20 | selection [] | FAIL outcome: expected 'finished', got 'failed:budget_calls'; selection: expected [(4, 'training a chess engine with self-play'), (15, "why your phone's dictation still mishears you"), (31, 'machine learning for materials discovery')], got []; evidence: selection spans 0 observation(s); at least 2 required; ledger: fewer entries than the expected selection
+  [  78.2ms] observe document_height=3010 observation=obs-1 phase=startup scroll_y=0 viewport_height=720
+  [6122.3ms] observe document_height=3010 fraction=0.6986 observation=obs-2 phase=advance scroll_y=503 viewport_height=720
+  [13423.7ms] ledger admitted=[11] rejected=[] size=1
+  [20145.2ms] observe document_height=3010 fraction=0.6986 observation=obs-3 phase=advance scroll_y=1006 viewport_height=720
+  [26753.4ms] ledger admitted=[21] rejected=[] size=2
+  [33113.4ms] observe document_height=3010 fraction=0.6986 observation=obs-4 phase=advance scroll_y=1509 viewport_height=720
+  [38839.9ms] action executed=no_candidates observation=obs-4
+  [45095.4ms] observe document_height=3010 fraction=0.6986 observation=obs-5 phase=advance scroll_y=2012 viewport_height=720
+  [52956.6ms] ledger admitted=[41] rejected=[] size=3
+  [59725.5ms] observe document_height=3010 fraction=0.3861 observation=obs-6 phase=advance scroll_y=2290 viewport_height=720
+  [65691.0ms] action executed=recording_complete viewports=6
+  [68398.1ms] action executed=finish_selection explanation_chars=181 ranks=[11, 21, 41]
+  [68398.1ms] terminal outcome=finished
+task d22-04: finished | calls 11 | selection [11, 21, 41] | FAIL selection: expected [(1, 'sparse attention, cheap inference'), (21, 'ai safety evaluations: what they miss'), (29, 'robotics foundation models in the warehouse')], got [(11, 'standard ml in production compilers'), (21, 'ai safety evaluations: what they miss (evals.example)'), (41, 'a survey of retrieval-augmented pipelines (retrieval.example)')]
+  [  68.0ms] observe document_height=2562 observation=obs-1 phase=startup scroll_y=0 viewport_height=720
+  [8596.2ms] ledger admitted=[6, 10] rejected=[] size=2
+  [16203.2ms] ledger admitted=[] rejected=['duplicate_candidate', 'duplicate_candidate'] size=2
+  [22164.1ms] observe document_height=2562 fraction=0.6986 observation=obs-2 phase=advance scroll_y=503 viewport_height=720
+  [27511.7ms] action executed=no_candidates observation=obs-2
+  [32815.7ms] action executed=no_candidates observation=obs-2
+  [38349.6ms] action executed=no_candidates observation=obs-2
+  [43619.9ms] action executed=no_candidates observation=obs-2
+  [49318.6ms] observe document_height=2562 fraction=0.6986 observation=obs-3 phase=advance scroll_y=1006 viewport_height=720
+  [56068.0ms] ledger admitted=[24] rejected=[] size=3
+  [63686.7ms] ledger admitted=[19] rejected=[] size=4
+  [69751.9ms] action executed=no_candidates observation=obs-3
+  [76289.8ms] observe document_height=2562 fraction=0.6986 observation=obs-4 phase=advance scroll_y=1509 viewport_height=720
+  [83836.0ms] ledger admitted=[33] rejected=[] size=5
+  [90146.3ms] action executed=no_candidates observation=obs-4
+  [96501.6ms] observe document_height=2562 fraction=0.4625 observation=obs-5 phase=advance scroll_y=1842 viewport_height=720
+  [102578.5ms] action executed=no_candidates observation=obs-5
+  [108677.8ms] action executed=recording_complete viewports=5
+  [111257.4ms] action executed=finish_selection explanation_chars=169 ranks=[6, 10, 24]
+  [111257.5ms] terminal outcome=finished
+task d22-05: finished | calls 18 | selection [6, 10, 24] | FAIL selection: expected [(6, 'evaluating llm summarizers on legal text'), (24, 'the ai weather model that beat the forecasters'), (33, 'speech synthesis for endangered languages')], got [(6, 'evaluating llm summarizers on legal text (legalsum.example)'), (10, 'neural tube development, revisited (neuraltube.example)'), (24, 'the ai weather model that beat the forecasters (weather.example)')]
+gate: correct 0/5 | finished 2 | fallbacks 0 | orphans 0 | aborted None
+report: /Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m022/m022-dev-20260920-145138/summary.json
+RESULT: FAIL (never auto-continues; results stand as measured)
+EXIT=1

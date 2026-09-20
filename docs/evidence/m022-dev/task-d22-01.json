@@ -1,0 +1,26 @@
+{
+  "calls": 20,
+  "ledger": [],
+  "ok": false,
+  "outcome": "failed:budget_calls",
+  "path": "/d22-01/",
+  "selection": [],
+  "shots_kept": [
+    "d22-01/shots-kept/shot-0002.png",
+    "d22-01/shots-kept/shot-0005.png",
+    "d22-01/shots-kept/shot-0008.png",
+    "d22-01/shots-kept/shot-0011.png"
+  ],
+  "task": "d22-01",
+  "verdict": {
+    "failures": [
+      "outcome: expected 'finished', got 'failed:budget_calls'",
+      "selection: expected [(3, 'agentbench: evaluating tool-using assistants'), (18, 'a field guide to on-device speech models'), (27, 'open weights and the economics of fine-tuning')], got []",
+      "evidence: selection spans 0 observation(s); at least 2 required",
+      "ledger: fewer entries than the expected selection"
+    ],
+    "ok": false,
+    "task": "d22-01"
+  },
+  "viewports": 4
+}

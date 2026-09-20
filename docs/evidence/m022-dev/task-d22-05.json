@@ -1,0 +1,90 @@
+{
+  "calls": 18,
+  "ledger": [
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-1",
+      "rank": 6,
+      "reason": "LLM summarizers are a core AI/ML technology",
+      "title": "Evaluating LLM summarizers on legal text (legalsum.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-1",
+      "rank": 10,
+      "reason": "Neural tube development is a core AI/ML technology",
+      "title": "Neural tube development, revisited (neuraltube.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-3",
+      "rank": 24,
+      "reason": "Main subject is an AI model",
+      "title": "The AI weather model that beat the forecasters (weather.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "incidental",
+      "observation_id": "obs-3",
+      "rank": 19,
+      "reason": "LLVM is a compiler infrastructure, not an AI/ML model or research result; the title does not indicate AI/ML relevance.",
+      "title": "LLVM: a retrospective (llvm.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-4",
+      "rank": 33,
+      "reason": "Speech synthesis is a core AI/ML application",
+      "title": "Speech synthesis for endangered languages (speechsos.example)",
+      "visible_points": null
+    }
+  ],
+  "ok": false,
+  "outcome": "finished",
+  "path": "/d22-05/",
+  "selection": [
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-1",
+      "rank": 6,
+      "reason": "LLM summarizers are a core AI/ML technology",
+      "title": "Evaluating LLM summarizers on legal text (legalsum.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-1",
+      "rank": 10,
+      "reason": "Neural tube development is a core AI/ML technology",
+      "title": "Neural tube development, revisited (neuraltube.example)",
+      "visible_points": null
+    },
+    {
+      "ai_relevance": "primary",
+      "observation_id": "obs-3",
+      "rank": 24,
+      "reason": "Main subject is an AI model",
+      "title": "The AI weather model that beat the forecasters (weather.example)",
+      "visible_points": null
+    }
+  ],
+  "shots_kept": [
+    "d22-05/shots-kept/shot-0002.png",
+    "d22-05/shots-kept/shot-0005.png",
+    "d22-05/shots-kept/shot-0008.png",
+    "d22-05/shots-kept/shot-0011.png",
+    "d22-05/shots-kept/shot-0014.png"
+  ],
+  "task": "d22-05",
+  "verdict": {
+    "failures": [
+      "selection: expected [(6, 'evaluating llm summarizers on legal text'), (24, 'the ai weather model that beat the forecasters'), (33, 'speech synthesis for endangered languages')], got [(6, 'evaluating llm summarizers on legal text (legalsum.example)'), (10, 'neural tube development, revisited (neuraltube.example)'), (24, 'the ai weather model that beat the forecasters (weather.example)')]"
+    ],
+    "ok": false,
+    "task": "d22-05"
+  },
+  "viewports": 5
+}

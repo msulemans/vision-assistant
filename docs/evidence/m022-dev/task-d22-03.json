@@ -1,0 +1,28 @@
+{
+  "calls": 20,
+  "ledger": [],
+  "ok": false,
+  "outcome": "failed:budget_calls",
+  "path": "/d22-03/",
+  "selection": [],
+  "shots_kept": [
+    "d22-03/shots-kept/shot-0002.png",
+    "d22-03/shots-kept/shot-0005.png",
+    "d22-03/shots-kept/shot-0008.png",
+    "d22-03/shots-kept/shot-0011.png",
+    "d22-03/shots-kept/shot-0014.png",
+    "d22-03/shots-kept/shot-0017.png"
+  ],
+  "task": "d22-03",
+  "verdict": {
+    "failures": [
+      "outcome: expected 'finished', got 'failed:budget_calls'",
+      "selection: expected [(4, 'training a chess engine with self-play'), (15, \"why your phone's dictation still mishears you\"), (31, 'machine learning for materials discovery')], got []",
+      "evidence: selection spans 0 observation(s); at least 2 required",
+      "ledger: fewer entries than the expected selection"
+    ],
+    "ok": false,
+    "task": "d22-03"
+  },
+  "viewports": 6
+}

@@ -253,6 +253,27 @@ but NOT started — needs an explicit go-ahead**; M021 evidence and its set
 remain untouched; if the pinned 4B model cannot combine viewport evidence
 even with this ledger, a stronger model is the justified next step.
 
+**M022 development smoke executed once — RESULT: FAIL, GATE 0/5 (2026-09-20,
+run `runs/m022/m022-dev-20260920-145138`; 89 model calls, zero fallbacks,
+zero orphans, no aborts, no rescue; evidence
+`docs/evidence/2026-09-20-m022-dev-smoke.md` + `docs/evidence/m022-dev/`):**
+d22-01/02/03 exhausted the 20-call budget mid-traversal (loop-discipline
+stall: the model repeated legal `no_candidates` on one viewport instead of
+`next_viewport`, so no refusal ever fired); d22-04 finished but selected
+[11, 21, 41] vs expected [1, 21, 29] (decoy “Standard ML…” marked primary;
+rank 1 missed) and d22-05 selected [6, 10, 24] vs expected [6, 24, 33]
+(biology “Neural tube” decoy marked primary, displacing a true primary).
+**The architecture itself worked**: selections carried observation ids from
+*different viewports* (obs-2/3/5 and obs-1/3 — the cross-viewport
+accumulation M021 lacked), ledger dedup/conflict rejection fired live, and
+the ledger-only final call was handled cleanly. The remaining walls are the
+4B model's classification under decoys, exact transcription, and bounded
+loop discipline — generalist-capability walls, not evidence walls. Erratum
+recorded: failure outcomes do not attach the ledger to the task report
+(reporting gap only; no post-freeze changes). Next options: a stronger
+model under this frozen harness, or the specialist-scorer direction
+(`docs/CUA_S1_INTEGRATION_PLAN.md`, inspection-only).
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.
