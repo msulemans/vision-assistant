@@ -1,0 +1,112 @@
+{
+  "error": {
+    "detail": "no focused editable element",
+    "reason": "refused_focus"
+  },
+  "instance": "dev",
+  "model_runs": 0,
+  "ok": false,
+  "orphans": 0,
+  "phase1_url_ok": false,
+  "port": 55306,
+  "refusals": [
+    {
+      "expected": "refused_target_moved",
+      "got": "none",
+      "phase": "moved"
+    },
+    {
+      "detail": "observe again before clicking",
+      "expected": "refused_target_stale",
+      "got": "refused_target_stale",
+      "phase": "stale"
+    }
+  ],
+  "stage": "M018T",
+  "steps": [
+    {
+      "helper": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018-tools/browser_window",
+      "name": "launch",
+      "ready": true
+    },
+    {
+      "name": "navigate",
+      "to": "/news/",
+      "url": "http://127.0.0.1:55306/news/"
+    },
+    {
+      "name": "snapshot",
+      "page": "news",
+      "seq": 1
+    },
+    {
+      "count": 19,
+      "name": "targets",
+      "page": "news",
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "label": "Why database indexes are still hard",
+      "name": "click_target",
+      "page": "news",
+      "target": "t9"
+    },
+    {
+      "name": "snapshot",
+      "page": "story-d03",
+      "seq": 2,
+      "url": "http://127.0.0.1:55306/news/"
+    },
+    {
+      "name": "state",
+      "ok": false,
+      "page": "after-story-click",
+      "url": "http://127.0.0.1:55306/news/"
+    },
+    {
+      "name": "navigate",
+      "to": "/layout/",
+      "url": "http://127.0.0.1:55306/layout/"
+    },
+    {
+      "name": "snapshot",
+      "page": "layout-before-shift",
+      "seq": 3
+    },
+    {
+      "name": "click_target",
+      "outcome": "NOT_REFUSED",
+      "page": "layout",
+      "target": "t5"
+    },
+    {
+      "name": "snapshot",
+      "page": "layout-after-shift",
+      "seq": 4
+    },
+    {
+      "detail": "observe again before clicking",
+      "name": "click_target",
+      "page": "layout-stale",
+      "refused": "refused_target_stale",
+      "target": "t5"
+    },
+    {
+      "name": "navigate",
+      "to": "/search/",
+      "url": "http://127.0.0.1:55306/search/"
+    },
+    {
+      "name": "snapshot",
+      "page": "search",
+      "seq": 5
+    },
+    {
+      "detail": "no focused editable element",
+      "name": "error",
+      "reason": "refused_focus"
+    }
+  ],
+  "temp_snapshots_cleaned": true
+}

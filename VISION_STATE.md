@@ -1815,3 +1815,27 @@ held-out runs, no model runs before review, no guard relaxation, no new
 model. Smoke set frozen at development tasks 02/11/41/43/45; proceed/stop
 criteria in plan §9. **Planned only: zero code written, zero model runs
 performed; the M018A–D record and its baseline stand untouched.**
+
+**M018T implemented — deterministic gates green; scripted smoke blocked by
+locked console — 2026-09-20 (same day).** `browser_targets.py` (new pure
+module: schema, box math, sanitizer, prompt, hints), `browser_window.swift`
+(`targets` extraction + `click_target` with live re-validation),
+`browser_session.py` (`TargetList`, `targets()`, fail-closed
+`click_target()`), `browser_agent.py` (additive `mode="target"`; baseline
+path unchanged), `browser_cli.py` (`task --mode target`, scripted
+`target-smoke`), plus +43 tests: M018T sweep **113 green**, full suite now
+**450 = 444 product + 6 learning**, baseline manifest sha `df630b21…` pinned
+unchanged, helper compiles clean. The scripted live target-smoke was
+attempted twice while **the console was locked** (user away): deterministic
+layers passed (extraction 19/19 on /news/, adapter-side stale refusal with
+nothing sent, zero orphans, temp cleanup) but WebKit interactive layers did
+not process — link clicks failed to navigate, including a replay of the
+M018B known-good raw click (green when the user was present), and the
+/layout/ CSS transition did not tick (a text input did focus; a
+`setTimeout`-inserted link did appear). Recorded as **blocked on
+environment, not as a pass**. The five model smoke runs remain **not
+performed**; nothing beyond the freeze is claimed. Next: re-run the
+scripted smoke on an unlocked console (checkpoint 2), then the five dev
+smoke runs (02/11/41/43/45, once each, ≤125 calls). Evidence:
+`docs/evidence/2026-09-20-m018t-implementation.md` + two locked-console
+attempt JSONs.
