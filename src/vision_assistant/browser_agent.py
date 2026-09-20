@@ -516,7 +516,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
     state = {"steps_used": 0, "calls": 0, "recoveries": 0, "last_refusal": None,
              "infrastructure": 0, "unchanged_streak": 0, "awaiting_change": False,
              "sig_before_action": None, "last_action_sig": None,
-             "current_sig": None}
+             "value_repeat_refusals": 0, "current_sig": None}
     finish_answer = None
     visited: list = []
     shot = None
@@ -701,6 +701,22 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 if key in action:
                     proposal[key] = action[key]
             action_sig = _typed_action_signature(proposal)
+            if (raw_kind in _NO_CHANGE_EXEMPT_ACTIONS
+                    and state["last_action_sig"] is not None
+                    and action_sig == state["last_action_sig"]):
+                # A repeat of the last executed value action: the helper's
+                # read-back already verified the first execution, so the
+                # repeat is refused with a hint (previously the
+                # duplicate-outcome guard hard-blocked instead) — Stage 4
+                # revision following the c16 diagnosis.
+                state["value_repeat_refusals"] += 1
+                record("proposal", step=state["steps_used"] + 1, parsed=False,
+                       error="no_observable_change", action=raw_kind)
+                history.append("you already did that {}; choose a different "
+                               "action or stop".format(raw_kind))
+                if state["value_repeat_refusals"] >= 2:
+                    return finish("blocked:no_progress", repeated=action_sig)
+                continue
             if (state["unchanged_streak"] >= 1
                     and action_sig == state["last_action_sig"]
                     and raw_kind in tasks.MUTATING_TYPED_ACTIONS):
@@ -843,6 +859,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
 
         state["recoveries"] = 0
         state["last_refusal"] = None
+        state["value_repeat_refusals"] = 0
 
         if kind in ("finish", "finish_answer"):
             verdict = oracle("finished")
@@ -887,5 +904,6 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                            "target id from the current list")
         if verdict["ok"]:
             return finish("finished")
-        if len(outcomes) >= 2 and outcomes[-1] == outcomes[-2]:
+        if (len(outcomes) >= 2 and outcomes[-1] == outcomes[-2]
+                and kind not in _NO_CHANGE_EXEMPT_ACTIONS):
             return finish("blocked:no_progress", repeated=outcomes[-1])

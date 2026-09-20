@@ -888,6 +888,65 @@ class TypedLoopTest(TypedLoopBase):
         self.assertEqual(len([c for c in session.calls
                               if c[0] == "save_form"]), 1)
 
+    def test_repeated_value_action_is_refused_then_blocks(self) -> None:
+        # Stage 4 revision: a repeat of the last executed value action is a
+        # refusal with a hint (read-back already verified the first run);
+        # two repeats block instead of executing duplicates.
+        spec = _spec("form")
+        session, proposer, report = self.run_typed(
+            spec,
+            [_fill("ui:1", "x"), _fill("ui:1", "x"), _fill("ui:1", "x"),
+             {"action": "stop"}],
+            ["http://127.0.0.1:1/news/"])
+        self.assertEqual(report["outcome"], "blocked:no_progress")
+        self.assertEqual(len([c for c in session.calls
+                              if c[0] == "fill_field"]), 1)
+        errors = [step.get("error") for step in report["steps"]
+                  if step.get("kind") == "proposal" and step.get("error")]
+        self.assertIn("no_observable_change", errors)
+        self.assertIn("you already did that", proposer.prompts[2])
+
+    def test_wrong_button_then_repeat_then_correct_save_finishes(self) -> None:
+        # The c16 shape: wrong-button save refusal, a repeated toggle, then
+        # the authorized save — the loop must recover and finish.
+        store = {"settings": {"compact": False, "dark": False},
+                 "submissions": []}
+
+        def effect(state):
+            state["settings"]["dark"] = True
+
+        def factory(_seq):
+            entries = (
+                bt.TargetEntry("t1", "checkbox", "compact",
+                               (10.0, 10.0, 20.0, 20.0), True, False),
+                bt.TargetEntry("t2", "checkbox", "dark",
+                               (10.0, 40.0, 20.0, 20.0), True, False),
+                bt.TargetEntry("t3", "button", "Reset",
+                               (10.0, 70.0, 60.0, 24.0), True, False),
+                bt.TargetEntry("t4", "button", "Save",
+                               (10.0, 100.0, 60.0, 24.0), True, False),
+            )
+            return TargetList(seq=_seq, targets=entries, truncated=False,
+                              total=4)
+
+        spec = _spec("form", authorized_saves=("ui:4",),
+                     expected={"form": {"section": "settings",
+                                         "values": {"dark": True}}})
+        session, proposer, report = self.run_typed(
+            spec,
+            [_toggle("ui:1", True), _toggle("ui:2", True), _save("ui:3"),
+             _toggle("ui:2", True), _save("ui:4")],
+            ["http://127.0.0.1:1/settings/"],
+            target_factory=factory, store=store, save_effect=effect)
+        self.assertEqual(report["outcome"], "finished", report["steps"])
+        self.assertEqual(len([c for c in session.calls
+                              if c[0] == "set_toggle"]), 2)
+        saves = [c for c in session.calls if c[0] == "save_form"]
+        self.assertEqual(len(saves), 1)
+        self.assertEqual(saves[0][1], "ui:4")
+        self.assertTrue(any("you already did that" in prompt
+                            for prompt in proposer.prompts))
+
     def test_form_unauthorized_save_denied_without_session_call(self) -> None:
         spec = _spec("form")
         session, _proposer, report = self.run_typed(
