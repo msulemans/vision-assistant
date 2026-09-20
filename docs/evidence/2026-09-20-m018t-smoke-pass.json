@@ -1,0 +1,151 @@
+{
+  "instance": "dev",
+  "model_runs": 0,
+  "ok": true,
+  "orphans": 0,
+  "phase1_url_ok": true,
+  "phase4_query_ok": true,
+  "port": 55545,
+  "refusals": [
+    {
+      "detail": "",
+      "expected": "refused_target_moved",
+      "got": "refused_target_moved",
+      "phase": "moved"
+    },
+    {
+      "detail": "observe again before clicking",
+      "expected": "refused_target_stale",
+      "got": "refused_target_stale",
+      "phase": "stale"
+    },
+    {
+      "detail": "",
+      "expected": "refused_target_hidden",
+      "got": "refused_target_hidden",
+      "phase": "hidden"
+    }
+  ],
+  "stage": "M018T",
+  "steps": [
+    {
+      "helper": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018-tools/browser_window",
+      "name": "launch",
+      "ready": true
+    },
+    {
+      "name": "navigate",
+      "to": "/news/",
+      "url": "http://127.0.0.1:55545/news/"
+    },
+    {
+      "name": "snapshot",
+      "page": "news",
+      "seq": 1
+    },
+    {
+      "count": 19,
+      "name": "targets",
+      "page": "news",
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "label": "Why database indexes are still hard",
+      "name": "click_target",
+      "page": "news",
+      "target": "t9"
+    },
+    {
+      "name": "snapshot",
+      "page": "story-d03",
+      "seq": 2,
+      "url": "http://127.0.0.1:55545/story/d03/"
+    },
+    {
+      "name": "state",
+      "ok": true,
+      "page": "after-story-click",
+      "url": "http://127.0.0.1:55545/story/d03/"
+    },
+    {
+      "name": "navigate",
+      "to": "/layout/",
+      "url": "http://127.0.0.1:55545/layout/"
+    },
+    {
+      "name": "snapshot",
+      "page": "layout-before-shift",
+      "seq": 3
+    },
+    {
+      "detail": "",
+      "name": "click_target",
+      "page": "layout",
+      "refused": "refused_target_moved",
+      "target": "t5"
+    },
+    {
+      "name": "snapshot",
+      "page": "layout-after-shift",
+      "seq": 4
+    },
+    {
+      "detail": "observe again before clicking",
+      "name": "click_target",
+      "page": "layout-stale",
+      "refused": "refused_target_stale",
+      "target": "t5"
+    },
+    {
+      "name": "navigate",
+      "to": "/search/",
+      "url": "http://127.0.0.1:55545/search/"
+    },
+    {
+      "name": "snapshot",
+      "page": "search",
+      "seq": 5
+    },
+    {
+      "name": "type",
+      "text": "ai",
+      "typed": 2
+    },
+    {
+      "label": "Search",
+      "name": "click_target",
+      "page": "search",
+      "target": "t10"
+    },
+    {
+      "name": "snapshot",
+      "page": "search-ai",
+      "seq": 6,
+      "url": "http://127.0.0.1:55545/search/?q=ai&cat=all&sort=relevance&from=&to="
+    },
+    {
+      "name": "search-submitted",
+      "ok": true,
+      "url": "http://127.0.0.1:55545/search/?q=ai&cat=all&sort=relevance&from=&to="
+    },
+    {
+      "name": "navigate",
+      "to": "/welcome/",
+      "url": "http://127.0.0.1:55545/welcome/"
+    },
+    {
+      "name": "snapshot",
+      "page": "welcome",
+      "seq": 7
+    },
+    {
+      "detail": "",
+      "name": "click_target",
+      "page": "welcome",
+      "refused": "refused_target_hidden",
+      "target": "t11"
+    }
+  ],
+  "temp_snapshots_cleaned": true
+}

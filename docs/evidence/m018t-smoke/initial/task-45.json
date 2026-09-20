@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 7022.5,
+  "goal": "Open the story \u201cNotes from rebuilding a 1970s calculator\u201d; do not use the maintenance buttons.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "45"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v1",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t7\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 817.7,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:55558/console/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2252.0,
+      "count": 7,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 7,
+      "truncated": false
+    },
+    {
+      "at_ms": 7022.5,
+      "executed": "click_target t7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:55558/story/d06/"
+    },
+    {
+      "at_ms": 7022.5,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "45",
+  "visited": [
+    "/console/",
+    "/story/d06/"
+  ]
+}

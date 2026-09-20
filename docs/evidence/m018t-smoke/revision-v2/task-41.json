@@ -1,0 +1,81 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 15130.7,
+  "goal": "Dismiss the welcome overlay, then open the rank-3 story.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "41"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t11\"\n}",
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t7\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 997.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:55655/welcome/",
+      "width": 2560
+    },
+    {
+      "at_ms": 3003.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 8186.5,
+      "executed": "click_target t11",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:55655/welcome/"
+    },
+    {
+      "at_ms": 9819.8,
+      "count": 10,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 10,
+      "truncated": false
+    },
+    {
+      "at_ms": 15130.7,
+      "executed": "click_target t7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 2,
+      "url": "http://127.0.0.1:55655/story/d03/"
+    },
+    {
+      "at_ms": 15130.7,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "41",
+  "visited": [
+    "/welcome/",
+    "/story/d03/"
+  ]
+}

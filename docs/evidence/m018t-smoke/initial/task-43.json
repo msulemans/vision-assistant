@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 6932.3,
+  "goal": "The reading room shifts by itself; open the rank-5 link after it settles.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "43"
+  },
+  "outcome": "finished",
+  "prompt_version": "m018t-v1",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 1032.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:55558/layout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2475.4,
+      "count": 5,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 5,
+      "truncated": false
+    },
+    {
+      "at_ms": 6932.2,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:55558/story/d05/"
+    },
+    {
+      "at_ms": 6932.3,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "43",
+  "visited": [
+    "/layout/",
+    "/story/d05/"
+  ]
+}

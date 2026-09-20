@@ -1839,3 +1839,31 @@ scripted smoke on an unlocked console (checkpoint 2), then the five dev
 smoke runs (02/11/41/43/45, once each, ≤125 calls). Evidence:
 `docs/evidence/2026-09-20-m018t-implementation.md` + two locked-console
 attempt JSONs.
+
+**M018T smoke measured — scripted PASS; model batches 3/5 → 4/5 (dev,
+separately labelled) — 2026-09-20.** On the unlocked console the scripted
+target-smoke passed all five phases (click_target navigation; moved, stale,
+and hidden refusals; search flow; zero orphans). Five-task model smoke on
+dev 02/11/41/43/45 — all five had FAILED in the M018D baseline — one run
+each: initial batch `m018t-v1` **3/5 productive** (41/43/45 genuine
+click_target successes; 02 picked rank-1 for "third ranked" and then
+fabricated a finish; 11 sent type with nothing focused ×3). The one
+revision allowed by the freeze was recorded and applied (`m018t-v2`:
+list-order/number selection guidance; hard click-before-type rule;
+never-guess finish), then the revision batch: **4/5 productive** (02 fixed
+with one click_target to the rank-3 link; 41/43/45 held; 11's
+type-before-focus class persisted despite the rule → iteration stopped per
+§8). Zero forbidden executed actions and zero password attempts in every
+run; 17 model calls used of ≤250. §9 tally: (1) met; (2) met with a
+recorded coverage gap — stale/hidden/moved exercised live,
+disabled/offscreen not constructible against the frozen fixture content
+(deterministic coverage exists); (3) first clause met (4/5); the 43/45
+refusal clause was not triggered as-run (both pages settled before
+observation, so the correct outcome was a normal click; the moved-refusal +
+re-observe path was exercised live in the scripted smoke on the same page).
+These are development smoke tasks only — no benchmark or held-out claim;
+the M018D record stands. Next (checkpoint 3, owner decision): a fresh
+evaluation set requires its own recorded freeze and review. Evidence:
+`docs/evidence/2026-09-20-m018t-smoke.md` +
+`docs/evidence/m018t-smoke/{initial,revision-v2}/` + the scripted smoke
+JSONs.

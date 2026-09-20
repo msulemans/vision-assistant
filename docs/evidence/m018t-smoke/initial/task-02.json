@@ -1,0 +1,95 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 16379.5,
+  "goal": "Open the third ranked story.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'failed:finish_unverified'",
+      "url: expected /story/d03/, got /story/d01/"
+    ],
+    "ok": false,
+    "task": "02"
+  },
+  "outcome": "failed:finish_unverified",
+  "prompt_version": "m018t-v1",
+  "raw_answers": [
+    "{\n  \"action\": \"click_target\",\n  \"target\": \"t5\"\n}",
+    "{\n  \"action\": \"finish\",\n  \"answer\": {\n    \"title\": \"Show HN: A tiny toolchain for retro game ports\",\n    \"rank\": 1,\n    \"points\": 212,\n    \"comments\": 44,\n    \"code\": \"SC-dev-d01-0ddb\",\n    \"author\": \"petra lo\",\n    \"date_display\": \"Sep 20\",\n    \"count\": 1,\n    \"present\": true,\n    \"winner_rank\": 1,\n    \"stories\": [\n      {\n        \"rank\": 1,\n        \"code\": \"SC-dev-d01-0ddb\"\n      }\n    ]\n  }\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 914.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:55558/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2835.0,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8144.0,
+      "executed": "click_target t5",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:55558/story/d01/"
+    },
+    {
+      "at_ms": 9734.6,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "author",
+        "code",
+        "comments",
+        "count",
+        "date_display",
+        "points",
+        "present",
+        "rank",
+        "stories",
+        "title",
+        "winner_rank"
+      ],
+      "at_ms": 16379.4,
+      "executed": "finish",
+      "kind": "action",
+      "step": 2
+    },
+    {
+      "at_ms": 16379.5,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "failed:finish_unverified"
+    }
+  ],
+  "task": "02",
+  "visited": [
+    "/news/",
+    "/story/d01/"
+  ]
+}

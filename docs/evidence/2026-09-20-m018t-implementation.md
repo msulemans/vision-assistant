@@ -89,6 +89,11 @@ unlocked console.
 - The five smoke model runs (02/11/41/43/45) remain **not performed**;
   nothing in this document claims a capability result.
 
+> Update later the same day: the smoke was re-run on an unlocked console —
+> scripted smoke PASS; the five-task model batches measured 3/5 → 4/5
+> (initial → one recorded revision), separately labelled. See
+> `docs/evidence/2026-09-20-m018t-smoke.md`.
+
 ## Reproduction
 
 ```

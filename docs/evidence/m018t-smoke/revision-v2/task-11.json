@@ -1,0 +1,99 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 26126.1,
+  "goal": "Search the fixture for \u201cAI\u201d.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "target",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "query: expected {'q': 'ai'}, got {}"
+    ],
+    "ok": false,
+    "task": "11"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "prompt_version": "m018t-v2",
+  "raw_answers": [
+    "{\n  \"action\": \"type\",\n  \"text\": \"AI\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"AI\"\n}",
+    "{\n  \"action\": \"type\",\n  \"text\": \"AI\"\n}"
+  ],
+  "steps": [
+    {
+      "at_ms": 879.4,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:55655/search/",
+      "width": 2560
+    },
+    {
+      "at_ms": 3523.5,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 9077.8,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 1
+    },
+    {
+      "at_ms": 11677.7,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 2,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 17497.3,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 2
+    },
+    {
+      "at_ms": 20117.1,
+      "count": 28,
+      "kind": "targets",
+      "seq": 1,
+      "step": 3,
+      "total": 28,
+      "truncated": false
+    },
+    {
+      "at_ms": 26126.0,
+      "executed": null,
+      "kind": "action",
+      "refused": "refused_focus",
+      "step": 3
+    },
+    {
+      "at_ms": 26126.1,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "refused_focus"
+    }
+  ],
+  "task": "11",
+  "visited": [
+    "/search/"
+  ]
+}
