@@ -19,6 +19,9 @@ bump_seq = os.environ.get("FAKE_BUMP_SEQ", "") == "1"
 sleep_ms = int(os.environ.get("FAKE_SLEEP_MS", "0"))
 crash = os.environ.get("FAKE_CRASH", "") == "1"
 pid_path = os.environ.get("FAKE_PID", "")
+targets_json = os.environ.get("FAKE_TARGETS", "")
+target_error = os.environ.get("FAKE_TARGET_ERROR", "")
+targets_list = json.loads(targets_json) if targets_json else []
 
 if pid_path:
     with open(pid_path, "w") as fh:
@@ -80,6 +83,18 @@ for line in sys.stdin:
     elif cmd == "state":
         send({"id": rid, "ok": True, "seq": current_seq, "loading": False, "blocked": 0,
               "can_go_back": False, "url": "http://127.0.0.1:1/news/", "focused": state})
+    elif cmd == "targets":
+        send({"id": rid, "ok": True, "seq": current_seq, "total": len(targets_list),
+              "truncated": False, "targets": targets_list})
+    elif cmd == "click_target":
+        if target_error:
+            send({"id": rid, "ok": False, "error": target_error})
+        elif int(req.get("seq", -1)) != current_seq:
+            send({"id": rid, "ok": False, "error": "refused_target_stale"})
+        elif req.get("target") not in [t.get("id") for t in targets_list]:
+            send({"id": rid, "ok": False, "error": "refused_target_stale"})
+        else:
+            send({"id": rid, "ok": True, "url": "http://127.0.0.1:1/story/d03/"})
     else:
         send({"id": rid, "ok": False, "error": "unknown_command"})
 '''
@@ -93,7 +108,8 @@ class SessionBase(unittest.TestCase):
         self.fake.write_text(FAKE_HELPER, encoding="utf-8")
         self.log = self.tmp / "commands.log"
         self._env_keys = ("FAKE_LOG", "FAKE_STATE", "FAKE_SEQ", "FAKE_BUMP_SEQ",
-                          "FAKE_SLEEP_MS", "FAKE_CRASH", "FAKE_PID")
+                          "FAKE_SLEEP_MS", "FAKE_CRASH", "FAKE_PID",
+                          "FAKE_TARGETS", "FAKE_TARGET_ERROR")
         self._session = None
 
     def tearDown(self) -> None:
@@ -267,6 +283,93 @@ class SessionProtocolTest(SessionBase):
                       "CGEventPostToPid", "pyautogui", "pynput", "osascript"):
             self.assertNotIn(token, source, token)
         self.assertIn("swiftc", source)
+
+
+DEFAULT_TARGETS = json.dumps([
+    {"id": "t1", "role": "link", "label": "Story one",
+     "rect": [10, 20, 100, 20], "enabled": True, "focused": False},
+    {"id": "t2", "role": "text_input", "label": "query",
+     "rect": [10, 60, 200, 24], "enabled": True, "focused": False},
+])
+
+
+class TargetProtocolTest(SessionBase):
+    def test_targets_round_trip(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS)
+        session.snapshot()
+        listing = session.targets()
+        self.assertEqual(listing.seq, 1)
+        self.assertEqual([entry.id for entry in listing.targets], ["t1", "t2"])
+        self.assertEqual(listing.targets[0].role, "link")
+        self.assertEqual(listing.targets[0].rect, (10.0, 20.0, 100.0, 20.0))
+        self.assertFalse(listing.truncated)
+        self.assertEqual(listing.total, 2)
+        self.assertEqual(self.sent(), ["snapshot", "targets"])
+        session.stop()
+
+    def test_click_target_happy_path_sends_only_the_id(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS)
+        session.snapshot()
+        session.targets()
+        url = session.click_target("t1")
+        self.assertIn("/story/", url)
+        self.assertEqual(self.sent(), ["snapshot", "targets", "click_target"])
+        session.stop()
+
+    def test_click_target_before_targets_is_refused_without_sending(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS)
+        session.snapshot()
+        with self.assertRaises(bs.BrowserError) as caught:
+            session.click_target("t1")
+        self.assertEqual(caught.exception.reason, "refused_target_stale")
+        self.assertNotIn("click_target", self.sent())
+        session.stop()
+
+    def test_click_target_after_a_new_snapshot_is_refused_without_sending(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS)
+        session.snapshot()
+        session.targets()
+        shot = session.last_snapshot
+        session.last_snapshot = bs.Snapshot(
+            seq=shot.seq + 1, width=shot.width, height=shot.height,
+            scale=shot.scale, url=shot.url, path=shot.path)
+        with self.assertRaises(bs.BrowserError) as caught:
+            session.click_target("t1")
+        self.assertEqual(caught.exception.reason, "refused_target_stale")
+        self.assertEqual(self.sent().count("click_target"), 0)
+        session.stop()
+
+    def test_click_target_unknown_or_malformed_id_never_sent(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS)
+        session.snapshot()
+        session.targets()
+        for bad in ("t9", "xx", "T1", "", "t1 "):
+            with self.assertRaises(bs.BrowserError) as caught:
+                session.click_target(bad)
+            self.assertEqual(caught.exception.reason, "refused_target_stale", bad)
+        self.assertNotIn("click_target", self.sent())
+        session.stop()
+
+    def test_helper_side_target_refusal_passes_through_typed(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS,
+                                    FAKE_TARGET_ERROR="refused_target_moved")
+        session.snapshot()
+        session.targets()
+        with self.assertRaises(bs.BrowserError) as caught:
+            session.click_target("t1")
+        self.assertEqual(caught.exception.reason, "refused_target_moved")
+        self.assertIn("click_target", self.sent())
+        session.stop()
+
+    def test_click_target_consumes_the_step_budget(self) -> None:
+        session = self.make_session(FAKE_TARGETS=DEFAULT_TARGETS, max_steps=1)
+        session.snapshot()
+        session.targets()
+        session.click_target("t1")
+        with self.assertRaises(bs.BrowserError) as caught:
+            session.click_target("t2")
+        self.assertEqual(caught.exception.reason, "budget_steps")
+        session.stop()
 
 
 if __name__ == "__main__":

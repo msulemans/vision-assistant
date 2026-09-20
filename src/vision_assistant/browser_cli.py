@@ -208,6 +208,173 @@ def cmd_smoke(args) -> int:
     return 0 if report["ok"] and report["orphans"] == 0 else 1
 
 
+def cmd_target_smoke(args) -> int:
+    """M018T scripted live smoke: targets + click_target, no model calls.
+
+    Phases: (1) click_target navigates to the rank-3 story; (2) a target that
+    moves after observation is refused as moved; (3) a click after a new
+    snapshot is refused as stale without reaching the helper; (4) the search
+    flow click_target → type → click_target submitted end to end.
+    """
+
+    from .browser_session import BrowserError, BrowserSession, compile_helper
+    from .fixture_server import FixtureServer
+
+    instance = args.instance
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = Path(args.snapshot_dir) if args.snapshot_dir else RUNS_DIR / ("m018t-smoke-" + stamp)
+    shots = root / "shots"
+    shots.mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    fixtures.build_site(instance, site)
+    server = FixtureServer(instance, site)
+    port = server.start()
+    server.reset()
+    helper_bin = compile_helper()
+    session = BrowserSession(port=port, helper_bin=helper_bin, snapshot_dir=root / "tmp-shots")
+    report = {"stage": "M018T", "instance": instance, "port": port, "model_runs": 0,
+              "steps": [], "refusals": [], "ok": False}
+
+    def step(name: str, **data) -> None:
+        row = dict(name=name)
+        row.update(data)
+        report["steps"].append(row)
+        print("  ".join([name] + ["{}={}".format(k, v) for k, v in sorted(data.items())]))
+
+    def find_target(listing, *, role=None, label=None, contains=None):
+        for entry in listing.targets:
+            if role is not None and entry.role != role:
+                continue
+            if label is not None and entry.label != label:
+                continue
+            if contains is not None and contains not in entry.label:
+                continue
+            return entry
+        return None
+
+    def navigate_with_retry(target: str) -> str:
+        try:
+            return session.navigate(target)
+        except BrowserError as exc:
+            if exc.reason == "navigation_failed" and "-999" in exc.detail:
+                time.sleep(0.4)
+                return session.navigate(target)
+            raise
+
+    try:
+        session.launch()
+        step("launch", ready=True, helper=str(helper_bin))
+
+        # Phase 1: a target click navigates to the rank-3 story.
+        step("navigate", to="/news/", url=navigate_with_retry("/news/"))
+        news = session.snapshot(path=str(shots / "news.png"))
+        step("snapshot", page="news", seq=news.seq)
+        listing = session.targets()
+        step("targets", page="news", count=len(listing.targets),
+             total=listing.total, truncated=listing.truncated)
+        wanted = fixtures.story(instance, "d03")["title"]
+        entry = find_target(listing, role="link", label=wanted)
+        if entry is None:
+            raise BrowserError("smoke_missing_target", "rank-3 story link not listed")
+        session.click_target(entry.id)
+        step("click_target", page="news", target=entry.id, label=entry.label)
+        time.sleep(0.8)
+        after = session.state()
+        story_shot = session.snapshot(path=str(shots / "story-d03.png"))
+        step("snapshot", page="story-d03", seq=story_shot.seq, url=story_shot.url)
+        report["phase1_url_ok"] = "/story/d03/" in str(after.get("url", ""))
+        step("state", page="after-story-click", url=after.get("url"),
+             ok=report["phase1_url_ok"])
+
+        # Phase 2: the layout page shifts after observation -> moved refusal.
+        step("navigate", to="/layout/", url=navigate_with_retry("/layout/"))
+        layout = session.snapshot(path=str(shots / "layout-before-shift.png"))
+        step("snapshot", page="layout-before-shift", seq=layout.seq)
+        listing2 = session.targets()
+        go = find_target(listing2, role="link", contains="rank-5")
+        if go is None:
+            raise BrowserError("smoke_missing_target", "layout link not listed")
+        time.sleep(1.6)
+        try:
+            session.click_target(go.id)
+            report["refusals"].append({"phase": "moved",
+                                       "expected": "refused_target_moved", "got": "none"})
+            step("click_target", page="layout", target=go.id, outcome="NOT_REFUSED")
+        except BrowserError as exc:
+            report["refusals"].append({"phase": "moved",
+                                       "expected": "refused_target_moved",
+                                       "got": exc.reason, "detail": exc.detail})
+            step("click_target", page="layout", target=go.id, refused=exc.reason,
+                 detail=exc.detail)
+
+        # Phase 3: a fresh snapshot kills the old list (adapter-side, no send).
+        third = session.snapshot(path=str(shots / "layout-after-shift.png"))
+        step("snapshot", page="layout-after-shift", seq=third.seq)
+        try:
+            session.click_target(go.id)
+            report["refusals"].append({"phase": "stale",
+                                       "expected": "refused_target_stale", "got": "none"})
+            step("click_target", page="layout-stale", target=go.id, outcome="NOT_REFUSED")
+        except BrowserError as exc:
+            report["refusals"].append({"phase": "stale",
+                                       "expected": "refused_target_stale",
+                                       "got": exc.reason, "detail": exc.detail})
+            step("click_target", page="layout-stale", target=go.id, refused=exc.reason,
+                 detail=exc.detail)
+
+        # Phase 4: search flow — click_target the field, type, click_target submit.
+        step("navigate", to="/search/", url=navigate_with_retry("/search/"))
+        search = session.snapshot(path=str(shots / "search.png"))
+        step("snapshot", page="search", seq=search.seq)
+        listing3 = session.targets()
+        field = find_target(listing3, role="text_input", label="query")
+        submit = find_target(listing3, role="button", label="Search")
+        if field is None or submit is None:
+            raise BrowserError("smoke_missing_target", "search field/button not listed")
+        session.click_target(field.id)
+        time.sleep(0.2)
+        typed = session.type_text("ai")
+        step("type", text="ai", typed=typed)
+        session.click_target(submit.id)
+        step("click_target", page="search", target=submit.id, label=submit.label)
+        deadline = time.monotonic() + 4.0
+        url = ""
+        while time.monotonic() < deadline:
+            url = str(session.state().get("url", ""))
+            if "q=ai" in url:
+                break
+            time.sleep(0.2)
+        report["phase4_query_ok"] = "q=ai" in url
+        results = session.snapshot(path=str(shots / "search-ai.png"))
+        step("snapshot", page="search-ai", seq=results.seq, url=results.url)
+        step("search-submitted", url=url, ok=report["phase4_query_ok"])
+
+        refusal_ok = (len(report["refusals"]) == 2
+                      and report["refusals"][0]["got"] == "refused_target_moved"
+                      and report["refusals"][1]["got"] == "refused_target_stale")
+        report["ok"] = bool(report.get("phase1_url_ok")
+                             and report.get("phase4_query_ok") and refusal_ok)
+    except BrowserError as exc:
+        report["error"] = {"reason": exc.reason, "detail": exc.detail}
+        step("error", reason=exc.reason, detail=exc.detail)
+    finally:
+        session.stop()
+        server.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len([line for line in check.stdout.split() if line.strip()])
+        report["temp_snapshots_cleaned"] = not session.snapshot_dir.exists()
+
+    out = Path(args.out) if args.out else RUNS_DIR / ("target-smoke-{}.json".format(stamp))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    print("orphans: {}  (temp snapshot dir cleaned: {})".format(
+        report["orphans"], report["temp_snapshots_cleaned"]))
+    print("report:", out)
+    print("RESULT:", "PASS" if report["ok"] and report["orphans"] == 0 else "FAIL")
+    return 0 if report["ok"] and report["orphans"] == 0 else 1
+
+
 def cmd_task(args) -> int:
     """Run frozen browser tasks once each with the pinned model in the loop."""
 
@@ -223,9 +390,11 @@ def cmd_task(args) -> int:
         return 1
     specs = [tasks.TASKS_BY_ID[item] for item in ids]
     instance = args.instance
+    mode = getattr(args, "mode", "screenshot")
 
     stamp = time.strftime("%Y%m%d-%H%M%S")
-    root = Path(args.out_dir) if args.out_dir else RUNS_DIR / ("loop-" + stamp)
+    folder = "m018t-" if mode == "target" else "loop-"
+    root = Path(args.out_dir) if args.out_dir else RUNS_DIR / (folder + stamp)
     root.mkdir(parents=True, exist_ok=True)
     site = root / "site"
     fixtures.build_site(instance, site)
@@ -244,7 +413,14 @@ def cmd_task(args) -> int:
         log_path=root / "server.log",
     )
     raw_answers: list = []
-    proposer = model_proposer(adapter, record=raw_answers)
+    schema = None
+    if mode == "target":
+        from . import browser_targets
+
+        schema = browser_targets.TARGET_ACTION_SCHEMA
+        print("mode: target-assisted (M018T) — separately labelled, never "
+              "merged into the screenshot-only score")
+    proposer = model_proposer(adapter, record=raw_answers, schema=schema)
     limits = LoopLimits()
     if args.max_steps:
         limits.max_steps = args.max_steps
@@ -267,7 +443,8 @@ def cmd_task(args) -> int:
                 session.launch()
                 report = run_task(
                     spec, session=session, proposer=proposer,
-                    server_state_provider=server.snapshot, limits=limits)
+                    server_state_provider=server.snapshot, limits=limits,
+                    mode=mode)
             finally:
                 kept = root / ("shots-kept-" + spec.id)
                 if session.snapshot_dir.exists():
@@ -287,7 +464,8 @@ def cmd_task(args) -> int:
 
     finished = [r for r in reports if r["outcome"] == "finished"]
     summary = {
-        "stage": "M018C", "instance": instance, "ids": ids,
+        "stage": "M018T" if mode == "target" else "M018C",
+        "mode": mode, "instance": instance, "ids": ids,
         "finished": len(finished), "total": len(reports),
         "outcomes": {r["task"]: r["outcome"] for r in reports},
     }
@@ -336,6 +514,8 @@ def main(argv=None) -> int:
     p_task = sub.add_parser("task", help="run frozen tasks once each with the pinned model")
     p_task.add_argument("--ids", required=True, help="comma-separated task ids")
     p_task.add_argument("--instance", choices=fixtures.instances(), default="dev")
+    p_task.add_argument("--mode", choices=("screenshot", "target"), default="screenshot",
+                        help="observation mode: frozen screenshot baseline or M018T target-assisted")
     p_task.add_argument("--pin-dir", default=str(REPO_ROOT / "models" / "qwen3.5-4b"))
     p_task.add_argument("--ctx-size", type=int, default=4096)
     p_task.add_argument("--max-steps", type=int, default=0)
@@ -343,6 +523,13 @@ def main(argv=None) -> int:
     p_task.add_argument("--max-seconds", type=float, default=0)
     p_task.add_argument("--out-dir", default="")
     p_task.set_defaults(func=cmd_task)
+
+    p_tsmoke = sub.add_parser("target-smoke",
+                              help="M018T scripted live smoke: targets + click_target (no model)")
+    p_tsmoke.add_argument("--instance", choices=fixtures.instances(), default="dev")
+    p_tsmoke.add_argument("--snapshot-dir", default="")
+    p_tsmoke.add_argument("--out", default="")
+    p_tsmoke.set_defaults(func=cmd_target_smoke)
 
     args = parser.parse_args(argv)
     return args.func(args)

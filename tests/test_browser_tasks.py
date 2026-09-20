@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import unittest
 from pathlib import Path
@@ -185,6 +186,15 @@ class DeterminismAndInertnessTest(unittest.TestCase):
         self.assertEqual(payload["instances"]["dev"]["content_hash"],
                          fixtures.content_hash("dev"))
         self.assertEqual(len(payload["tasks"]), 50)
+
+    def test_manifest_sha_is_pinned_against_drift(self) -> None:
+        # The M018A frozen manifest (docs/evidence/2026-09-20-m018a-verify.json);
+        # the M018T treatment must not move the baseline freeze. This pin fails
+        # loudly if any frozen field (tasks, limits, viewport, hashes) drifts.
+        digest = hashlib.sha256(tasks.manifest_json().encode("utf-8")).hexdigest()
+        self.assertEqual(
+            digest,
+            "df630b21d9a0330214bb5cf01e0892ad82f589e5cb4206e81ff38af54f43d510")
 
     def test_manifest_checks_summary_is_clean(self) -> None:
         report = tasks.run_manifest_checks()

@@ -14,6 +14,11 @@ Frozen contract (recorded in VISION_STATE M018C):
   identical failures exhaust recovery, three consecutive infrastructure
   failures stop the run.
 - The loop synthesizes nothing: execution goes through the M018B adapter.
+
+M018T extension (frozen in `docs/M018T_TARGET_ASSISTED_PLAN.md`): with
+``mode="target"`` the loop adds a bounded visible-target list per observation
+and routes clicks through ``click_target(id)``; every guard above is preserved,
+and the baseline path (the default) is unchanged.
 """
 
 from __future__ import annotations
@@ -24,6 +29,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import browser_targets
 from . import browser_tasks as tasks
 from .pixels import fit_for_model
 
@@ -130,8 +136,10 @@ def extract_json_object(text: str):
     return None
 
 
-def model_proposer(adapter, record: list | None = None):
+def model_proposer(adapter, record: list | None = None, schema=None):
     """Propose one action with the pinned model (schema-constrained first)."""
+
+    use_schema = schema or ACTION_SCHEMA
 
     def _join(answer) -> str:
         return " ".join((*answer.visible, *answer.inferred, *answer.unknown))
@@ -139,7 +147,7 @@ def model_proposer(adapter, record: list | None = None):
     def propose(png_bytes: bytes, prompt: str):
         try:
             answer, timings = adapter.predict_image(png_bytes, prompt,
-                                                    json_schema=ACTION_SCHEMA)
+                                                    json_schema=use_schema)
         except Exception:  # noqa: BLE001 - fall back to prompt-only decoding
             answer, timings = adapter.predict_image(png_bytes, prompt)
         text = _join(answer)
@@ -205,9 +213,24 @@ def evaluator_state(*, url: str, answer, server_state, visited, outcome: str) ->
 
 
 def run_task(spec, *, session, proposer, server_state_provider, limits=None,
-             sleep=time.sleep, monotonic=time.monotonic, log=print) -> dict:
-    """Run one frozen task: observe → propose → execute → observe → verify."""
+             sleep=time.sleep, monotonic=time.monotonic, log=print,
+             mode="screenshot") -> dict:
+    """Run one frozen task: observe → propose → execute → observe → verify.
 
+    ``mode="screenshot"`` is the frozen M018 baseline path (unchanged by
+    default). ``mode="target"`` is the M018T target-assisted treatment: the
+    model sees the same screenshot plus a bounded visible-target list and
+    clicks by opaque id; results are labelled separately and never merged
+    into the baseline score.
+    """
+
+    if mode not in ("screenshot", "target"):
+        raise ValueError("mode must be 'screenshot' or 'target'")
+    target_mode = mode == "target"
+    hints = REFUSAL_HINTS
+    if target_mode:
+        hints = dict(REFUSAL_HINTS)
+        hints.update(browser_targets.TARGET_REFUSAL_HINTS)
     limits = limits or LoopLimits()
     started = monotonic()
     steps: list = []
@@ -215,7 +238,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         "task": spec.id,
         "instance": spec.instance,
         "goal": spec.goal,
-        "prompt_version": PROMPT_VERSION,
+        "mode": mode,
+        "prompt_version": (browser_targets.PROMPT_VERSION if target_mode
+                           else PROMPT_VERSION),
         "limits": {
             "max_steps": limits.max_steps, "max_calls": limits.max_calls,
             "max_seconds": limits.max_seconds,
@@ -316,8 +341,36 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                 return finish("failed:infrastructure", reason=str(exc))
             continue
 
-        prompt = build_loop_prompt(spec.goal, model_w, model_h, session.width,
-                                   session.height, history)
+        observed_targets = None
+        if target_mode:
+            try:
+                observed_targets = session.targets()
+            except Exception as exc:  # noqa: BLE001 - typed adapter failure
+                state["infrastructure"] += 1
+                reason = getattr(exc, "reason", type(exc).__name__)
+                record("targets", step=state["steps_used"] + 1, ok=False, reason=reason)
+                if state["infrastructure"] >= limits.max_infrastructure_failures:
+                    return finish("failed:infrastructure", reason=reason)
+                history.append("target list unavailable: {}. hint: observe again".format(reason))
+                stop = exhausted("targets_" + reason)
+                if stop:
+                    return stop
+                continue
+            record("targets", step=state["steps_used"] + 1,
+                   count=len(observed_targets.targets), total=observed_targets.total,
+                   truncated=observed_targets.truncated, seq=observed_targets.seq)
+
+        if target_mode:
+            target_block = browser_targets.render_target_block(
+                observed_targets.targets, model_w, model_h, shot.width,
+                shot.height, shot.scale, truncated=observed_targets.truncated,
+                total=observed_targets.total)
+            prompt = browser_targets.build_target_prompt(
+                spec.goal, model_w, model_h, session.width, session.height,
+                history, target_block)
+        else:
+            prompt = build_loop_prompt(spec.goal, model_w, model_h, session.width,
+                                       session.height, history)
         state["calls"] += 1
         report["calls"] = state["calls"]
         action, meta = proposer(model_bytes, prompt)
@@ -334,14 +387,27 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         bounds = {"width": model_w, "height": model_h, "scale": 1.0}
         raw_kind = action.get("action")
         proposal = {"kind": _KIND_MAP.get(raw_kind, raw_kind)}
-        for key in ("x", "y", "text", "key", "direction", "amount", "url", "answer", "note"):
+        for key in ("x", "y", "text", "key", "direction", "amount", "url",
+                    "answer", "note", "target"):
             if key in action:
                 proposal[key] = action[key]
-        if proposal["kind"] == "click":
-            # The model references the observation it just saw; the adapter
-            # re-checks freshness against its own last snapshot sequence.
-            proposal["screenshot_id"] = "seq-{}".format(shot.seq)
-        parsed, error = tasks.validate_action(proposal, viewport=bounds)
+        if proposal["kind"] == "click_target":
+            if not target_mode:
+                parsed, error = None, ("click_target is not available here; "
+                                       "use click with x and y")
+            else:
+                current_ids = [entry.id for entry in observed_targets.targets]
+                parsed, error = browser_targets.validate_target_action(
+                    proposal, target_ids=current_ids)
+        elif target_mode and proposal["kind"] == "click":
+            parsed, error = None, ("raw click is not available in target mode; "
+                                   "use click_target with an id from the list")
+        else:
+            if proposal["kind"] == "click":
+                # The model references the observation it just saw; the adapter
+                # re-checks freshness against its own last snapshot sequence.
+                proposal["screenshot_id"] = "seq-{}".format(shot.seq)
+            parsed, error = tasks.validate_action(proposal, viewport=bounds)
         if error:
             record("proposal", step=state["steps_used"] + 1, parsed=False,
                    error=error, action=raw_kind)
@@ -362,6 +428,10 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                                              model_w, model_h, shot.width, shot.height)
                 session.click(sx, sy)
                 executed = "click {},{}".format(sx, sy)
+                sleep(0.8)
+            elif kind == "click_target":
+                session.click_target(parsed["target"])
+                executed = "click_target {}".format(parsed["target"])
                 sleep(0.8)
             elif kind == "type_text":
                 typed = session.type_text(parsed["text"])
@@ -397,7 +467,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             reason = getattr(exc, "reason", type(exc).__name__)
             record("action", step=step_no, executed=None, refused=reason)
             history.append("action refused: {}. hint: {}".format(
-                reason, REFUSAL_HINTS.get(reason, "change your approach")))
+                reason, hints.get(reason, "change your approach")))
             stop = exhausted(reason)
             if stop:
                 return stop
@@ -441,6 +511,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         if kind == "click" and shot.url == prev_url:
             history.append("that click changed nothing — click a different "
                            "spot, at the center of the text you want")
+        elif kind == "click_target" and shot.url == prev_url:
+            history.append("that click changed nothing — pick a different "
+                           "target id from the current list")
         if verdict["ok"]:
             return finish("finished")
         if len(outcomes) >= 2 and outcomes[-1] == outcomes[-2]:

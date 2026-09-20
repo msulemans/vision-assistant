@@ -19,6 +19,8 @@
 //   {"id":1,"cmd":"navigate","url":"/news/"}
 //   {"id":2,"cmd":"snapshot","path":"/tmp/x.png"}
 //   {"id":3,"cmd":"click","x":220.0,"y":35.0,"seq":1}
+//   {"id":10,"cmd":"targets"}                      (M018T: visible target list)
+//   {"id":11,"cmd":"click_target","target":"t3","seq":1}
 //   {"id":4,"cmd":"type","text":"hello"}
 //   {"id":5,"cmd":"key","key":"enter"}
 //   {"id":6,"cmd":"scroll","direction":"down","amount":2}
@@ -51,6 +53,7 @@ final class Helper: NSObject, WKNavigationDelegate {
     var webView: WKWebView!
     var seq = 0
     var blocked = 0
+    var targetMeta: [String: [String: Any]] = [:]
     var loading = false
     var pendingLoadId: Int?
     var startedAt = Date()
@@ -170,8 +173,12 @@ final class Helper: NSObject, WKNavigationDelegate {
                 respond(id, ["ok": false, "error": "missing_path"]); return
             }
             snapshot(id: id, path: path)
+        case "targets":
+            targetsCommand(id: id)
         case "click":
             click(id: id, req: req)
+        case "click_target":
+            clickTarget(id: id, req: req)
         case "type":
             typeText(id: id, req: req)
         case "key":
@@ -249,13 +256,197 @@ final class Helper: NSObject, WKNavigationDelegate {
             respond(id, ["ok": false, "error": "outside_viewport"]); return
         }
         let point = NSPoint(x: x, y: Double(height) - y)
-        guard let down = mouseEvent(.leftMouseDown, at: point),
-              let up = mouseEvent(.leftMouseUp, at: point) else {
+        guard sendClickEvents(at: point) else {
             respond(id, ["ok": false, "error": "event_failed"]); return
         }
+        respond(id, ["ok": true, "url": currentURL()])
+    }
+
+    /// The single in-app click synthesis path (raw click and click_target).
+    func sendClickEvents(at point: NSPoint) -> Bool {
+        guard let down = mouseEvent(.leftMouseDown, at: point),
+              let up = mouseEvent(.leftMouseUp, at: point) else { return false }
         window.sendEvent(down)
         window.sendEvent(up)
-        respond(id, ["ok": true, "url": currentURL()])
+        return true
+    }
+
+    // ----------------------------------------------------------- M018T targets
+    // Target-assisted observation (frozen in docs/M018T_TARGET_ASSISTED_PLAN.md):
+    // a bounded list of visible actionable targets with opaque ids; clicks are
+    // resolved by trusted code against the current frame. The extraction script
+    // is compiled in — never sent over the protocol — and reads only the visible
+    // rendered surface (no values, URLs, storage, hidden content, or scripts).
+
+    let extractScript = """
+    (function(){
+    function collapse(s){return (s||"").replace(/[\\u0000-\\u001f\\u007f]+/g," ").replace(/\\s+/g," ").trim();}
+    function cap(s,n){return s.length>n?s.slice(0,n):s;}
+    function textOf(el){var t=el.innerText;if(t===undefined||t===null){t=el.textContent;}return collapse(t);}
+    function labelOf(el,role){
+    if(role==="link"||role==="button"){return cap(textOf(el),80)||"(no label)";}
+    if(role==="select"){var o=el.selectedOptions&&el.selectedOptions[0];return cap(o?collapse(o.text||o.textContent):"",80)||"(no label)";}
+    var t="";var lab=el.closest?el.closest("label"):null;
+    if(!lab&&el.id){var q=document.querySelector('label[for="'+CSS.escape(el.id)+'"]');if(q){lab=q;}}
+    if(lab){t=collapse(lab.innerText);}
+    if(!t&&(role==="text_input"||role==="textarea")&&typeof el.placeholder==="string"){t=collapse(el.placeholder);}
+    return cap(t,80)||"(no label)";
+    }
+    function roleOf(el){
+    var name=el.tagName.toLowerCase();
+    if(name==="a"){return "link";}
+    if(name==="button"){return "button";}
+    if(name==="select"){return "select";}
+    if(name==="textarea"){return "textarea";}
+    if(name==="input"){
+    var t=(el.type||"text").toLowerCase();
+    if(t==="checkbox"){return "checkbox";}
+    if(t==="radio"){return "radio";}
+    if(t==="submit"||t==="button"){return "button";}
+    if(t==="text"||t==="search"||t==="email"||t==="url"||t==="tel"||t==="number"||t==="date"||t==="month"||t==="week"||t==="time"||t==="datetime-local"){return "text_input";}
+    return null;
+    }
+    return null;
+    }
+    var els=document.querySelectorAll("a[href], button, input, select, textarea");
+    var out=[];var total=0;var w=window.innerWidth;var h=window.innerHeight;
+    window.__m018Targets={};
+    for(var i=0;i<els.length;i++){
+    var el=els[i];
+    var role=roleOf(el);
+    if(!role){continue;}
+    if(el.closest('[aria-hidden="true"]')){continue;}
+    if(el.getClientRects().length===0){continue;}
+    var cs=window.getComputedStyle(el);
+    if(cs.visibility==="hidden"||cs.visibility==="collapse"){continue;}
+    if(cs.opacity==="0"){continue;}
+    var r=el.getBoundingClientRect();
+    var x=Math.max(0,r.left);var y=Math.max(0,r.top);
+    var x2=Math.min(w,r.right);var y2=Math.min(h,r.bottom);
+    if(x2-x<2||y2-y<2){continue;}
+    total++;
+    if(out.length>=40){continue;}
+    var id="t"+(out.length+1);
+    var disabled=(!!el.disabled)||el.matches('[aria-disabled="true"]')||cs.pointerEvents==="none";
+    window.__m018Targets[id]=el;
+    out.push({id:id,role:role,label:labelOf(el,role),rect:[x,y,x2-x,y2-y],
+    enabled:!disabled,focused:document.activeElement===el});
+    }
+    return JSON.stringify({total:total,truncated:total>out.length,targets:out});
+    })()
+    """
+
+    func targetsCommand(id: Int) {
+        guard !loading else { respond(id, ["ok": false, "error": "navigating"]); return }
+        webView.evaluateJavaScript(extractScript) { [weak self] result, _ in
+            guard let self = self else { return }
+            guard let json = result as? String,
+                  let data = json.data(using: .utf8),
+                  let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let raw = info["targets"] as? [[String: Any]] else {
+                self.respond(id, ["ok": false, "error": "targets_unreadable"]); return
+            }
+            var meta: [String: [String: Any]] = [:]
+            var clean: [[String: Any]] = []
+            for item in raw {
+                guard let tId = item["id"] as? String,
+                      let role = item["role"] as? String,
+                      let rect = item["rect"] as? [NSNumber], rect.count == 4 else { continue }
+                let values = rect.map { $0.doubleValue }
+                guard values.allSatisfy({ $0.isFinite }) else { continue }
+                let label = String(((item["label"] as? String) ?? "(no label)").prefix(80))
+                meta[tId] = ["rect": values]
+                clean.append([
+                    "id": tId, "role": role, "label": label, "rect": values,
+                    "enabled": (item["enabled"] as? Bool) ?? false,
+                    "focused": (item["focused"] as? Bool) ?? false,
+                ])
+            }
+            self.targetMeta = meta
+            self.respond(id, [
+                "ok": true,
+                "seq": self.seq,
+                "total": (info["total"] as? NSNumber)?.intValue ?? clean.count,
+                "truncated": (info["truncated"] as? Bool) ?? false,
+                "targets": clean,
+            ])
+        }
+    }
+
+    func clickTarget(id: Int, req: [String: Any]) {
+        guard !loading else { respond(id, ["ok": false, "error": "navigating"]); return }
+        guard let target = req["target"] as? String,
+              target.range(of: "^t[1-9][0-9]{0,2}$", options: .regularExpression) != nil else {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "malformed id"]); return
+        }
+        let currentSeq = self.seq
+        if let requested = (req["seq"] as? NSNumber)?.intValue, requested != currentSeq {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "seq_mismatch", "seq": currentSeq]); return
+        }
+        guard let stored = targetMeta[target],
+              let storedRect = stored["rect"] as? [Double], storedRect.count == 4 else {
+            respond(id, ["ok": false, "error": "refused_target_stale",
+                         "detail": "unknown_id"]); return
+        }
+        let script = """
+        (function(){var el=(window.__m018Targets||{})["\(target)"];
+        if(!el){return JSON.stringify({found:false});}
+        var out={found:true,connected:!!el.isConnected};
+        if(!out.connected){return JSON.stringify(out);}
+        var cs=window.getComputedStyle(el);
+        out.rendered=(el.getClientRects().length>0)&&cs.visibility!=="hidden"&&cs.visibility!=="collapse"&&cs.opacity!=="0"&&!el.closest('[aria-hidden="true"]');
+        out.enabled=(!el.disabled)&&!el.matches('[aria-disabled="true"]')&&cs.pointerEvents!=="none";
+        var r=el.getBoundingClientRect();var vw=window.innerWidth;var vh=window.innerHeight;
+        var x=Math.max(0,r.left);var y=Math.max(0,r.top);
+        var x2=Math.min(vw,r.right);var y2=Math.min(vh,r.bottom);
+        out.rect=[x,y,Math.max(0,x2-x),Math.max(0,y2-y)];out.view_w=vw;out.view_h=vh;
+        return JSON.stringify(out);})()
+        """
+        webView.evaluateJavaScript(script) { [weak self] result, _ in
+            guard let self = self else { return }
+            guard let json = result as? String,
+                  let data = json.data(using: .utf8),
+                  let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                self.respond(id, ["ok": false, "error": "targets_unreadable"]); return
+            }
+            if (info["found"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_stale",
+                                  "detail": "gone"]); return
+            }
+            if (info["connected"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_stale",
+                                  "detail": "detached"]); return
+            }
+            if (info["rendered"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_hidden"]); return
+            }
+            if (info["enabled"] as? Bool) != true {
+                self.respond(id, ["ok": false, "error": "refused_target_disabled"]); return
+            }
+            guard let freshRect = info["rect"] as? [NSNumber], freshRect.count == 4 else {
+                self.respond(id, ["ok": false, "error": "targets_unreadable"]); return
+            }
+            let fresh = freshRect.map { $0.doubleValue }
+            let (fx, fy, fw, fh) = (fresh[0], fresh[1], fresh[2], fresh[3])
+            let moved = abs(fx - storedRect[0]) > 2.0 || abs(fy - storedRect[1]) > 2.0
+                || abs(fw - storedRect[2]) > 2.0 || abs(fh - storedRect[3]) > 2.0
+            if moved {
+                self.respond(id, ["ok": false, "error": "refused_target_moved"]); return
+            }
+            let cx = fx + fw / 2.0
+            let cy = fy + fh / 2.0
+            let vw = (info["view_w"] as? NSNumber)?.doubleValue ?? Double(self.width)
+            let vh = (info["view_h"] as? NSNumber)?.doubleValue ?? Double(self.height)
+            if fw < 2.0 || fh < 2.0 || cx < 0 || cy < 0 || cx >= vw || cy >= vh {
+                self.respond(id, ["ok": false, "error": "refused_target_offscreen"]); return
+            }
+            guard self.sendClickEvents(at: NSPoint(x: cx, y: Double(self.height) - cy)) else {
+                self.respond(id, ["ok": false, "error": "event_failed"]); return
+            }
+            self.respond(id, ["ok": true, "url": self.currentURL()])
+        }
     }
 
     func mouseEvent(_ type: NSEvent.EventType, at point: NSPoint) -> NSEvent? {

@@ -52,10 +52,11 @@ class SynthesisSurfaceTest(unittest.TestCase):
     def test_helper_protocol_commands_match_the_adapter(self) -> None:
         source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
         for command in ("navigate", "snapshot", "click", "type", "key", "scroll",
-                        "back", "state", "quit"):
+                        "back", "state", "quit", "targets", "click_target"):
             self.assertIn('case "{}"'.format(command), source, command)
-        self.assertEqual(bs.ACTION_COMMANDS,
-                         ("navigate", "click", "type", "key", "scroll", "back"))
+        self.assertEqual(
+            bs.ACTION_COMMANDS,
+            ("navigate", "click", "click_target", "type", "key", "scroll", "back"))
 
 
 class AdapterContractTest(unittest.TestCase):
@@ -65,10 +66,14 @@ class AdapterContractTest(unittest.TestCase):
         self.assertIn('tasks.LIMITS["max_seconds"]', source)
 
     def test_refusal_reasons_are_typed_and_stable(self) -> None:
+        # Reasons the ADAPTER itself raises (helper-side codes surface as
+        # pass-through BrowserErrors; all five target codes are pinned by
+        # TargetExtractionPrivacyTest and browser_targets.TARGET_REFUSAL_HINTS).
         reasons = (
             "refused_origin", "refused_stale", "refused_viewport",
             "refused_password", "refused_focus", "budget_steps", "budget_seconds",
             "timeout", "unhealthy", "closed", "compile_failed", "helper_not_ready",
+            "refused_target_stale",
         )
         source = (SRC / "browser_session.py").read_text(encoding="utf-8")
         for reason in reasons:
@@ -82,6 +87,34 @@ class AdapterContractTest(unittest.TestCase):
     def test_manifest_limits_still_frozen(self) -> None:
         self.assertEqual(tasks.LIMITS["max_action_steps"], 20)
         self.assertEqual(tasks.LIMITS["max_seconds"], 120)
+
+
+class TargetExtractionPrivacyTest(unittest.TestCase):
+    def _extract_script(self) -> str:
+        source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
+        start = (source.index('let extractScript = """')
+                 + len('let extractScript = """'))
+        end = source.index('"""', start)
+        return source[start:end]
+
+    def test_extraction_script_reads_only_the_visible_surface(self) -> None:
+        script = self._extract_script()
+        self.assertIn("m018Targets", script)
+        self.assertIn("getBoundingClientRect", script)
+        for token in (".value", ".href", "getAttribute(", "localStorage",
+                      "sessionStorage", "cookie", "fetch(", "XMLHttpRequest",
+                      "WebSocket", "postMessage", "innerHTML", "outerHTML",
+                      "document.write"):
+            self.assertNotIn(token, script, token)
+
+    def test_helper_carries_the_five_target_refusal_codes(self) -> None:
+        source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
+        for code in ("refused_target_stale", "refused_target_hidden",
+                     "refused_target_disabled", "refused_target_moved",
+                     "refused_target_offscreen"):
+            self.assertIn(code, source, code)
+        self.assertIn("sendClickEvents", source)
+        self.assertIn("clickTarget", source)
 
 
 if __name__ == "__main__":
