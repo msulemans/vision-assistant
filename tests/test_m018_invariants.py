@@ -117,5 +117,22 @@ class TargetExtractionPrivacyTest(unittest.TestCase):
         self.assertIn("clickTarget", source)
 
 
+class LiveScopeInvariantsTest(unittest.TestCase):
+    """M018E scoped change: the live origin is opt-in; defaults stay frozen."""
+
+    def test_live_host_flag_is_optional_and_default_is_loopback_only(self) -> None:
+        source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
+        self.assertIn('"--live-host"', source)
+        self.assertIn("liveHost", source)
+        # The frozen loopback guard token must remain in place.
+        self.assertIn("url.port == self.port", source)
+
+    def test_adapter_live_origins_default_empty(self) -> None:
+        session = bs.BrowserSession(port=1)
+        self.assertEqual(session.live_origins, ())
+        source = (SRC / "browser_session.py").read_text(encoding="utf-8")
+        self.assertIn("live_origins", source)
+
+
 if __name__ == "__main__":
     unittest.main()

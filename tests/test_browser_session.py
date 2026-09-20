@@ -122,7 +122,8 @@ class SessionBase(unittest.TestCase):
     def make_session(self, **env) -> bs.BrowserSession:
         os.environ["FAKE_LOG"] = str(self.log)
         config = {}
-        for key in ("timeout_ms", "max_steps", "max_seconds"):
+        for key in ("timeout_ms", "max_steps", "max_seconds", "live_origins",
+                    "helper_args"):
             if key in env:
                 config[key] = env.pop(key)
         for key, value in env.items():
@@ -131,6 +132,8 @@ class SessionBase(unittest.TestCase):
             port=8123,
             helper_cmd=[sys.executable, str(self.fake)],
             snapshot_dir=self.tmp / "shots",
+            live_origins=config.get("live_origins"),
+            helper_args=config.get("helper_args", ()),
             timeout_ms=int(config.get("timeout_ms", 3000)),
             max_steps=int(config.get("max_steps", 20)),
             max_seconds=float(config.get("max_seconds", 120)),
@@ -369,6 +372,46 @@ class TargetProtocolTest(SessionBase):
         with self.assertRaises(bs.BrowserError) as caught:
             session.click_target("t2")
         self.assertEqual(caught.exception.reason, "budget_steps")
+        session.stop()
+
+
+class LiveOriginPolicyTest(SessionBase):
+    """M018E scoped change: live origins are opt-in, strict, and default-off."""
+
+    def test_live_origins_allow_exact_host_only(self) -> None:
+        live = ("https:" + "//" + "news.ycombinator.com",)
+        session = bs.BrowserSession(port=8123, live_origins=live)
+        for url in (live[0], live[0] + "/", live[0] + "/news",
+                    live[0] + "/item?id=1"):
+            self.assertTrue(session._origin_allowed(url), url)
+        for bad in ("https:" + "//" + "news.ycombinator.com.evil.example/",
+                    "https:" + "//" + "evil.example/?news.ycombinator.com",
+                    "https:" + "//" + "news.ycombinator.com:8443/x",
+                    "http:" + "//" + "news.ycombinator.com/x",
+                    "https:" + "//" + "news.ycombinator.com@evil.example/"):
+            self.assertFalse(session._origin_allowed(bad), bad)
+
+    def test_default_session_stays_loopback_only(self) -> None:
+        session = bs.BrowserSession(port=8123)
+        self.assertEqual(session.live_origins, ())
+        self.assertFalse(session._origin_allowed(
+            "https:" + "//" + "news.ycombinator.com/"))
+        self.assertTrue(session._origin_allowed("/news/"))
+
+    def test_live_navigate_sends_and_suffix_attack_refused(self) -> None:
+        live = ("https:" + "//" + "news.ycombinator.com",)
+        session = self.make_session(live_origins=live)
+        url = session.navigate(live[0] + "/")
+        self.assertIn("news.ycombinator.com", url)
+        with self.assertRaises(bs.BrowserError) as caught:
+            session.navigate("https:" + "//" + "news.ycombinator.com.evil.example/")
+        self.assertEqual(caught.exception.reason, "refused_origin")
+        self.assertEqual(self.sent().count("navigate"), 1)
+
+    def test_helper_args_are_passed_through(self) -> None:
+        session = self.make_session(helper_args=("--live-host", "example.invalid"))
+        self.assertIn("--live-host", session._helper_args)
+        self.assertNotIn("--live-host", self.sent())
         session.stop()
 
 

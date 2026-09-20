@@ -15,6 +15,9 @@
 //   trusted-side script before any key event is synthesized).
 //
 // Usage: browser_window --port <fixture-port> [--width 1280] [--height 720]
+//        [--live-host <host>]   (M018E pilot scope change: when set, https://<host>
+//                                is additionally allowed; absent = loopback-only,
+//                                the frozen default. All other origins stay cancelled.)
 // Commands (one JSON object per line on stdin, one reply per line on stdout):
 //   {"id":1,"cmd":"navigate","url":"/news/"}
 //   {"id":2,"cmd":"snapshot","path":"/tmp/x.png"}
@@ -90,6 +93,9 @@ final class Helper: NSObject, WKNavigationDelegate {
 
     func allowed(_ url: URL) -> Bool {
         if url.scheme == "about" { return true }
+        if let live = liveHost, url.scheme == "https", url.host == live {
+            return url.port == nil || url.port == 443
+        }
         guard url.scheme == "http" else { return false }
         guard let host = url.host, host == "127.0.0.1" || host == "localhost" else { return false }
         return url.port == self.port
@@ -597,6 +603,7 @@ final class Helper: NSObject, WKNavigationDelegate {
 var port = 0
 var width = 1280.0
 var height = 720.0
+var liveHost: String? = nil
 var index = 1
 let arguments = CommandLine.arguments
 while index < arguments.count {
@@ -606,6 +613,7 @@ while index < arguments.count {
     case "--port": port = Int(value) ?? 0
     case "--width": width = Double(value) ?? 1280.0
     case "--height": height = Double(value) ?? 720.0
+    case "--live-host": liveHost = value.isEmpty ? nil : value
     default: break
     }
     index += 2

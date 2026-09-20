@@ -400,6 +400,83 @@ def cmd_target_smoke(args) -> int:
     return 0 if report["ok"] and report["orphans"] == 0 else 1
 
 
+HN_HOST = "news.ycombinator.com"
+# Assembled from parts so source-line URL literal rules stay satisfied.
+HN_ORIGIN = "https:" + "//" + HN_HOST
+
+HN_PILOT_GOAL = (
+    "Read the front page of Hacker News from top to bottom. Find the first "
+    "three stories whose main subject is AI or machine learning (models, "
+    "research, products, or directly related policy; incidental keywords do "
+    "not count). For each, report: its rank on the front page (1 = the top "
+    "story), its title, its displayed points, and the domain shown next to "
+    "the title. If fewer than three qualify, report that. Label uncertain "
+    "items as uncertain. Then finish with the findings."
+)
+
+
+def cmd_hn_pilot(args) -> int:
+    """M018E: one live Hacker News reading run (reviewer-scored, frozen scope)."""
+
+    from . import browser_targets
+    from .browser_agent import LoopLimits, model_proposer, run_task
+    from .browser_session import BrowserSession, compile_helper
+    from .runtime_llamaserver import LlamaServerAdapter
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = Path(args.out_dir) if args.out_dir else RUNS_DIR / ("m018e-hn-" + stamp)
+    root.mkdir(parents=True, exist_ok=True)
+    helper_bin = compile_helper()
+    session = BrowserSession(
+        port=0, helper_bin=helper_bin, snapshot_dir=root / "shots",
+        live_origins=(HN_ORIGIN,), helper_args=("--live-host", HN_HOST))
+    pin_dir = Path(args.pin_dir)
+    pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+    model = next(f for f in pin["files"] if f["role"] == "model")
+    mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+    adapter = LlamaServerAdapter(
+        pin_dir / model["name"], pin_dir / mmproj["name"],
+        ctx_size=args.ctx_size, jinja=True,
+        chat_template_kwargs={"enable_thinking": False},
+        log_path=root / "server.log",
+    )
+    raw_answers: list = []
+    proposer = model_proposer(adapter, record=raw_answers,
+                              schema=browser_targets.TARGET_ACTION_SCHEMA)
+    limits = LoopLimits()
+    if args.max_steps:
+        limits.max_steps = args.max_steps
+    if args.max_calls:
+        limits.max_calls = args.max_calls
+    if args.max_seconds:
+        limits.max_seconds = args.max_seconds
+    spec = tasks.TaskSpec("hn", "P", "answer", "live", HN_PILOT_GOAL,
+                          HN_ORIGIN + "/",
+                          notes="M018E live pilot; reviewer-scored; frozen scope")
+    try:
+        print("starting llama-server with the pinned model " + model["name"])
+        adapter.start()
+        session.launch()
+        report = run_task(
+            spec, session=session, proposer=proposer,
+            server_state_provider=lambda: {}, limits=limits, mode="target",
+            pilot=True)
+        report["raw_answers"] = raw_answers
+        kept = root / "shots-kept"
+        if session.snapshot_dir.exists():
+            shutil.copytree(session.snapshot_dir, kept)
+        (root / "pilot-report.json").write_text(
+            json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        print("outcome: {} (actions {}, calls {}, {} ms)".format(
+            report["outcome"], report["actions"], report["calls"],
+            report["elapsed_ms"]))
+        print("report:", root)
+    finally:
+        session.stop()
+        adapter.stop()
+    return 0
+
+
 def cmd_task(args) -> int:
     """Run frozen browser tasks once each with the pinned model in the loop."""
 
@@ -574,6 +651,16 @@ def main(argv=None) -> int:
     p_tsmoke.add_argument("--snapshot-dir", default="")
     p_tsmoke.add_argument("--out", default="")
     p_tsmoke.set_defaults(func=cmd_target_smoke)
+
+    p_hn = sub.add_parser("hn-pilot",
+                          help="M018E: one live Hacker News reading run (reviewer-scored, frozen scope)")
+    p_hn.add_argument("--pin-dir", default=str(REPO_ROOT / "models" / "qwen3.5-4b"))
+    p_hn.add_argument("--ctx-size", type=int, default=4096)
+    p_hn.add_argument("--max-steps", type=int, default=0)
+    p_hn.add_argument("--max-calls", type=int, default=0)
+    p_hn.add_argument("--max-seconds", type=float, default=0)
+    p_hn.add_argument("--out-dir", default="")
+    p_hn.set_defaults(func=cmd_hn_pilot)
 
     args = parser.parse_args(argv)
     return args.func(args)

@@ -214,14 +214,17 @@ def evaluator_state(*, url: str, answer, server_state, visited, outcome: str) ->
 
 def run_task(spec, *, session, proposer, server_state_provider, limits=None,
              sleep=time.sleep, monotonic=time.monotonic, log=print,
-             mode="screenshot") -> dict:
+             mode="screenshot", pilot=False) -> dict:
     """Run one frozen task: observe → propose → execute → observe → verify.
 
     ``mode="screenshot"`` is the frozen M018 baseline path (unchanged by
     default). ``mode="target"`` is the M018T target-assisted treatment: the
     model sees the same screenshot plus a bounded visible-target list and
     clicks by opaque id; results are labelled separately and never merged
-    into the baseline score.
+    into the baseline score. ``pilot=True`` is the M018E live-pilot variant:
+    there is no oracle (a reviewer scores the answer); the run never
+    auto-satisfies, and a finish is terminal with the answer captured in
+    ``report["final_answer"]``.
     """
 
     if mode not in ("screenshot", "target"):
@@ -239,6 +242,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
         "instance": spec.instance,
         "goal": spec.goal,
         "mode": mode,
+        "pilot": bool(pilot),
         "prompt_version": (browser_targets.PROMPT_VERSION if target_mode
                            else PROMPT_VERSION),
         "limits": {
@@ -266,6 +270,11 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             " ".join("{}={}".format(k, v) for k, v in sorted(data.items()))))
 
     def oracle(outcome: str) -> dict:
+        if pilot:
+            # Reviewer-scored live pilot (M018E): there is no oracle here;
+            # the run must never auto-satisfy and the reviewer scores the
+            # captured answer against an independently recorded listing.
+            return {"ok": False, "task": spec.id, "failures": [], "pilot": True}
         return tasks.verify_task(spec, evaluator_state(
             url=state.get("url", ""), answer=finish_answer,
             server_state=server_state_provider(), visited=visited, outcome=outcome))
@@ -482,6 +491,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                    answer_fields=sorted(finish_answer))
             if verdict["ok"]:
                 return finish("finished")
+            if pilot:
+                report["final_answer"] = finish_answer
+                return finish("finished", reviewer_scored=True)
             return finish("failed:finish_unverified")
 
         try:

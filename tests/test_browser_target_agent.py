@@ -282,5 +282,38 @@ class TargetGuardsTest(TargetLoopBase):
                            mode="hybrid")
 
 
+class PilotModeTest(TargetLoopBase):
+    """M018E: pilot runs have no oracle; the finish answer is captured."""
+
+    def _spec(self):
+        return tasks.TaskSpec("hn", "P", "answer", "live",
+                              "Read the front page.",
+                              "http://127.0.0.1:1/news/", notes="pilot test")
+
+    def test_pilot_finish_is_terminal_and_captures_the_answer(self) -> None:
+        session = FakeTargetSession(self.tmp, ["http://127.0.0.1:1/news/"] * 2)
+        proposer = ScriptedProposer(
+            [{"action": "finish", "answer": {"stories": ["a", "b"]}}])
+        report = agent.run_task(
+            self._spec(), session=session, proposer=proposer,
+            server_state_provider=fixtures.defaults,
+            sleep=lambda seconds: None, log=lambda *args, **kw: None,
+            mode="target", pilot=True)
+        self.assertEqual(report["outcome"], "finished")
+        self.assertTrue(report["pilot"])
+        self.assertEqual(report["final_answer"], {"stories": ["a", "b"]})
+
+    def test_pilot_never_auto_satisfies_at_startup(self) -> None:
+        session = FakeTargetSession(self.tmp, ["http://127.0.0.1:1/news/"])
+        proposer = ScriptedProposer([{"action": "stop"}])
+        report = agent.run_task(
+            self._spec(), session=session, proposer=proposer,
+            server_state_provider=fixtures.defaults,
+            sleep=lambda seconds: None, log=lambda *args, **kw: None,
+            mode="target", pilot=True)
+        self.assertEqual(report["outcome"], "stopped")
+        self.assertEqual(report["calls"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -102,11 +102,15 @@ class BrowserSession:
 
     def __init__(self, port: int, helper_cmd=None, helper_bin=None, width: int = 1280,
                  height: int = 720, timeout_ms: int = DEFAULT_TIMEOUT_MS,
-                 snapshot_dir=None, max_steps=None, max_seconds=None) -> None:
+                 snapshot_dir=None, max_steps=None, max_seconds=None,
+                 live_origins=None, helper_args=()) -> None:
         self.port = int(port)
         self.width = int(width)
         self.height = int(height)
         self.timeout_ms = int(timeout_ms)
+        # M018E scoped change: default empty = frozen loopback-only policy.
+        self.live_origins = tuple(live_origins or ())
+        self._helper_args = [str(value) for value in helper_args]
         self._helper_cmd = list(helper_cmd) if helper_cmd else None
         self._helper_bin = Path(helper_bin) if helper_bin else None
         self._proc = None
@@ -137,7 +141,7 @@ class BrowserSession:
             command = [
                 str(binary), "--port", str(self.port),
                 "--width", str(self.width), "--height", str(self.height),
-            ]
+            ] + self._helper_args
         try:
             self._proc = subprocess.Popen(
                 command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -258,6 +262,12 @@ class BrowserSession:
             if url.startswith(prefix):
                 port_part = url[len(prefix):].split("/", 1)[0]
                 return port_part == str(self.port)
+        for origin in self.live_origins:
+            # Strict boundary check: the origin itself or a path/query under
+            # it. "news.ycombinator.com.evil.example" can never match.
+            if (url == origin or url.startswith(origin + "/")
+                    or url.startswith(origin + "?")):
+                return True
         return False
 
     # -------------------------------------------------------------- actions
