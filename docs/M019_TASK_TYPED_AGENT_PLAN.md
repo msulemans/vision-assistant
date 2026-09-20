@@ -1,7 +1,8 @@
 # M019 proposal — task-typed browser agent
 
-Status: accepted; **M019A (deterministic contracts) implemented 2026-09-20** —
-no model run, no browser run, no M018 changes. M019B not started.
+Status: accepted. **M019A (deterministic contracts) implemented and M019B
+(scripted integration) gate PASSED — six scenarios, no model calls.** M019C
+not started (needs an explicit go-ahead).
 Date: 2026-09-20 (Australia/Sydney).
 
 ## Why this phase exists

@@ -348,12 +348,14 @@ class BrowserSession:
             total=int(reply.get("total", len(entries))))
         return self.last_targets
 
-    def click_target(self, target_id: str) -> str:
+    def click_target(self, target_id: str, method=None) -> str:
         """Click a listed target by opaque id; resolve and re-validate in the helper.
 
         All guards fail closed BEFORE anything is written to the helper: a
         missing/stale target list, a stale observation, a malformed or unknown
-        id, or a role outside the allowlist never reach the browser.
+        id, or a role outside the allowlist never reach the browser. M019
+        typed operations pass ``method="dom"`` for semantic activation with
+        identical guards; the frozen M018 paths keep synthesized events.
         """
 
         if self.last_snapshot is None or self.last_targets is None:
@@ -365,7 +367,10 @@ class BrowserSession:
             raise BrowserError("refused_target_stale", "malformed target id")
         if target_id not in {entry.id for entry in self.last_targets.targets}:
             raise BrowserError("refused_target_stale", "unknown target id; observe again")
-        reply = self._call("click_target", target=target_id, seq=self.last_snapshot.seq)
+        fields = {"target": target_id, "seq": self.last_snapshot.seq}
+        if method:
+            fields["method"] = str(method)
+        reply = self._call("click_target", **fields)
         return str(reply.get("url", ""))
 
     def state(self) -> dict:
@@ -497,7 +502,7 @@ class BrowserSession:
         if entry.role != "button":
             raise BrowserError("refused_target_role", "save_form needs a button")
         reply = self._call("click_target", target=entry.id,
-                           seq=self.last_snapshot.seq)
+                           seq=self.last_snapshot.seq, method="dom")
         return str(reply.get("url", ""))
 
     @property

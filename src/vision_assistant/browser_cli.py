@@ -678,6 +678,190 @@ def cmd_m019_verify(args) -> int:
     return 0 if not problems else 1
 
 
+def cmd_m019_scripted(args) -> int:
+    """M019B scripted integration: six typed scenarios on the dev fixture.
+
+    Real helper + loopback server, **zero model calls**. Productive oracles
+    must pass; both refusals must end stopped with zero forbidden side
+    effects (no submissions, no origin blocks, no raw actions).
+    """
+
+    from . import m019_scripted as scripted
+    from . import browser_agent as agent
+    from .browser_session import BrowserError, BrowserSession, compile_helper
+    from .fixture_server import FixtureServer
+
+    instance = args.instance
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = Path(args.snapshot_dir) if args.snapshot_dir else RUNS_DIR / ("m019-scripted-" + stamp)
+    shots = root / "shots"
+    shots.mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    fixtures.build_site(instance, site)
+    server = FixtureServer(instance, site)
+    port = server.start()
+    helper_bin = compile_helper()
+    session = BrowserSession(port=port, helper_bin=helper_bin,
+                             snapshot_dir=root / "tmp-shots")
+    report = {"stage": "M019B", "instance": instance, "port": port,
+              "model_calls": 0, "scenarios": [], "ok": False}
+
+    class ScriptedProposer:
+        """Deterministic stand-in for the model: fixed step factories."""
+
+        def __init__(self, steps):
+            self.steps = list(steps)
+            self.prompts = []
+
+        def __call__(self, _png_bytes, prompt):
+            self.prompts.append(prompt)
+            if not self.steps:
+                return None, {"chars": 0}
+            return self.steps.pop(0)(prompt), {"chars": 0}
+
+    try:
+        session.launch()
+        # Warm-up: macOS can consume the first mouse event of an inactive
+        # window as its activation click (observed live: clicks silently did
+        # nothing). Click the "Search" nav link until the URL actually
+        # changes (harmless: it only opens /search/); up to three attempts.
+        warmup = {"landed": False, "attempts": []}
+        for _attempt in range(3):
+            try:
+                session.navigate("/news/")
+                session.snapshot(path=str(shots / "warmup.png"))
+                listing = session.targets()
+                entry = next((item for item in listing.targets
+                              if item.label == "Search"), None)
+                if entry is None:
+                    warmup["attempts"].append("missing_target")
+                    break
+                try:
+                    session.click_target(entry.id, method="dom")
+                except BrowserError as exc:
+                    warmup["attempts"].append("refused:" + exc.reason)
+                    break
+                time.sleep(0.8)
+                state_after = session.state()
+                landed = "/search/" in str(state_after.get("url", ""))
+                warmup["attempts"].append({
+                    "landed": landed, "key": state_after.get("key"),
+                    "active": state_after.get("active")})
+                if landed:
+                    warmup["landed"] = True
+                    break
+            except BrowserError as exc:
+                warmup["attempts"].append("error:" + exc.reason)
+                break
+        report["warmup"] = warmup
+
+        for scenario in scripted.scenarios():
+            server.reset()
+            row_extra = {}
+            if scenario.name == "moving-target":
+                # Trusted-code probe (the M018T smoke mechanics): observe the
+                # layout page immediately, wait past the 1s shift, then click
+                # -> the helper must refuse the moved target.
+                probe = {"expected": "refused_target_moved", "got": None,
+                         "ok": False}
+                try:
+                    session.navigate("/layout/")
+                    session.snapshot(path=str(shots / "layout-before-shift.png"))
+                    probe_listing = session.targets()
+                    probe_entry = next(
+                        (item for item in probe_listing.targets
+                         if "rank-5" in item.label), None)
+                    if probe_entry is None:
+                        probe["got"] = "missing_target"
+                    else:
+                        time.sleep(1.6)
+                        try:
+                            session.click_target(probe_entry.id)
+                            probe["got"] = "none"
+                        except BrowserError as exc:
+                            probe["got"] = exc.reason
+                            probe["detail"] = exc.detail
+                        session.snapshot(path=str(shots / "layout-after-shift.png"))
+                except BrowserError as exc:
+                    probe["got"] = "probe_error:" + exc.reason
+                probe["ok"] = probe["got"] == "refused_target_moved"
+                row_extra["moved_probe"] = probe
+            proposer = ScriptedProposer(scenario.script)
+            run = agent.run_task(
+                scenario.spec, session=session, proposer=proposer,
+                server_state_provider=server.snapshot,
+                sleep=time.sleep, log=lambda *a, **k: None, mode="typed")
+            state = server.snapshot()
+            joined = "\n".join(proposer.prompts)
+            refusal_text = " | ".join(
+                "{} {}".format(step.get("error", ""), step.get("refused", ""))
+                for step in run["steps"]
+                if step.get("kind") in ("proposal", "action"))
+            executed = [str(step.get("executed")) for step in run["steps"]
+                        if step.get("kind") == "action" and step.get("executed")]
+            forbidden = [text for text in executed
+                         if text.startswith(("click ", "type ", "navigate ",
+                                             "press "))]
+            try:
+                blocked = int(session.state().get("blocked", 0))
+            except Exception:  # noqa: BLE001 - unknown blocking fails closed
+                blocked = -1
+            checks = {
+                "outcome": run["outcome"] in scenario.expect_outcome,
+                "oracle": (bool(run.get("oracle", {}).get("ok"))
+                           if scenario.expect_oracle_ok else True),
+                "refusals": all(needle in refusal_text
+                                for needle in scenario.required_refusals),
+                "absence": all(needle.lower() not in joined.lower()
+                               for needle in scenario.absence_checks),
+                "no_submissions": len(state.get("submissions", [])) == 0,
+                "no_forbidden_actions": not forbidden,
+                "origin_blocks": blocked == 0,
+            }
+            if "moved_probe" in row_extra:
+                checks["moved_probe"] = bool(row_extra["moved_probe"]["ok"])
+            row = {"name": scenario.name, "task": scenario.spec.id,
+                   "mode": scenario.spec.mode, "goal": scenario.spec.goal,
+                   "outcome": run["outcome"], "checks": checks,
+                   "pass": all(checks.values()),
+                   "prompts": len(proposer.prompts), "run": run}
+            row.update(row_extra)
+            report["scenarios"].append(row)
+            try:
+                if session.last_snapshot is not None:
+                    shutil.copyfile(session.last_snapshot.path,
+                                    shots / (scenario.name + ".png"))
+            except Exception:  # noqa: BLE001 - evidence copy is best effort
+                pass
+            print("{:<22} {:<22} checks={} {}".format(
+                scenario.name, run["outcome"],
+                "".join("Y" if ok else "N" for ok in checks.values()),
+                "PASS" if row["pass"] else "FAIL"))
+            if not row["pass"]:
+                print("   failed checks: {}".format(
+                    [name for name, ok in checks.items() if not ok]))
+    finally:
+        session.stop()
+        server.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len([line for line in check.stdout.split() if line.strip()])
+        report["temp_snapshots_cleaned"] = not session.snapshot_dir.exists()
+
+    report["ok"] = (len(report["scenarios"]) == 6
+                    and all(row["pass"] for row in report["scenarios"])
+                    and report["orphans"] == 0)
+    out = Path(args.out) if args.out else RUNS_DIR / ("scripted-{}.json".format(stamp))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n",
+                   encoding="utf-8")
+    print("orphans: {}  (temp snapshot dir cleaned: {})".format(
+        report["orphans"], report["temp_snapshots_cleaned"]))
+    print("report:", out)
+    print("RESULT:", "PASS" if report["ok"] else "FAIL")
+    return 0 if report["ok"] else 1
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="browser_cli", description="M018A fixture/browser-task stage tooling")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -747,6 +931,13 @@ def main(argv=None) -> int:
     p_m019 = sub.add_parser("m019-verify",
                             help="M019A deterministic capability/validation self-check (no model, no browser)")
     p_m019.set_defaults(func=cmd_m019_verify)
+
+    p_m019b = sub.add_parser("m019-scripted",
+                             help="M019B scripted integration: six typed scenarios, no model calls")
+    p_m019b.add_argument("--instance", choices=fixtures.instances(), default="dev")
+    p_m019b.add_argument("--snapshot-dir", default="")
+    p_m019b.add_argument("--out", default="")
+    p_m019b.set_defaults(func=cmd_m019_scripted)
 
     args = parser.parse_args(argv)
     return args.func(args)

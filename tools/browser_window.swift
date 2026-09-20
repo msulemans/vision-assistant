@@ -273,7 +273,24 @@ final class Helper: NSObject, WKNavigationDelegate {
     }
 
     /// The single in-app click synthesis path (raw click and click_target).
+    /// macOS consumes the first mouse event of an inactive window as its
+    /// activation click (observed live: clicks silently did nothing), so
+    /// activate + make key first; the caller also warm-clicks.
+    func ensureActive() {
+        if !NSApp.isActive {
+            if #available(macOS 14.0, *) {
+                NSApp.activate()
+            } else {
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
+        if !window.isKeyWindow {
+            window.makeKey()
+        }
+    }
+
     func sendClickEvents(at point: NSPoint) -> Bool {
+        ensureActive()
         guard let down = mouseEvent(.leftMouseDown, at: point),
               let up = mouseEvent(.leftMouseUp, at: point) else { return false }
         window.sendEvent(down)
@@ -452,10 +469,38 @@ final class Helper: NSObject, WKNavigationDelegate {
             if fw < 2.0 || fh < 2.0 || cx < 0 || cy < 0 || cx >= vw || cy >= vh {
                 self.respond(id, ["ok": false, "error": "refused_target_offscreen"]); return
             }
+            // M019 semantic activation: with "method": "dom" the validated
+            // element is activated through the DOM instead of synthesized
+            // NSEvents. Same guards above; the frozen event path (no method
+            // field) is untouched.
+            if (req["method"] as? String) == "dom" {
+                let domScript = """
+                (function(){var el=(window.__m018Targets||{})["\(target)"];
+                if(!el){return JSON.stringify({found:false});}
+                el.click();
+                return JSON.stringify({found:true});})()
+                """
+                self.webView.evaluateJavaScript(domScript) { [weak self] result, _ in
+                    guard let self = self else { return }
+                    guard let json = result as? String,
+                          let data = json.data(using: .utf8),
+                          let domInfo = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                          (domInfo["found"] as? Bool) == true else {
+                        self.respond(id, ["ok": false, "error": "refused_target_stale",
+                                          "detail": "gone"]); return
+                    }
+                    self.respond(id, ["ok": true, "url": self.currentURL(),
+                                      "key": self.window.isKeyWindow,
+                                      "active": NSApp.isActive])
+                }
+                return
+            }
             guard self.sendClickEvents(at: NSPoint(x: cx, y: Double(self.height) - cy)) else {
                 self.respond(id, ["ok": false, "error": "event_failed"]); return
             }
-            self.respond(id, ["ok": true, "url": self.currentURL()])
+            self.respond(id, ["ok": true, "url": self.currentURL(),
+                              "key": self.window.isKeyWindow,
+                              "active": NSApp.isActive])
         }
     }
 
@@ -747,6 +792,8 @@ final class Helper: NSObject, WKNavigationDelegate {
                 "blocked": self.blocked,
                 "can_go_back": self.webView.canGoBack,
                 "url": self.currentURL(),
+                "key": self.window.isKeyWindow,
+                "active": NSApp.isActive,
             ]
             if let json = result as? String,
                let data = json.data(using: .utf8),

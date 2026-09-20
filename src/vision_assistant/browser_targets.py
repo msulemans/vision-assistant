@@ -275,8 +275,8 @@ CREDENTIAL_MARKERS = (
 )
 
 SUBMIT_MARKERS = (
-    "submit", "save", "sign in", "sign-in", "signin", "log in", "login",
-    "sign up", "signup", "register", "create account", "checkout",
+    "submit", "save", "send", "sign in", "sign-in", "signin", "log in",
+    "login", "sign up", "signup", "register", "create account", "checkout",
     "place order", "confirm order", "purchase", "pay now", "delete",
     "unsubscribe", "transfer", "withdraw", "donate",
 )
@@ -297,10 +297,15 @@ def ui_ref_for(target_id: str) -> str:
 
 
 def _marker_hit(lowered: str, marker: str) -> bool:
-    if " " in marker or "-" in marker:
-        return marker in lowered
-    return re.search(r"(?<![a-z0-9])" + re.escape(marker) + r"(?![a-z0-9])",
-                     lowered) is not None
+    """Word-boundary match for single words AND phrases.
+
+    Substring matching is never used: "design in" must not fire "sign in"
+    (the M012 "AC in Subtract" lesson, extended to phrases).
+    """
+
+    return re.search(
+        r"(?<![a-z0-9])" + re.escape(marker) + r"(?![a-z0-9])",
+        lowered) is not None
 
 
 def classify_control(role: str, label: str) -> dict:

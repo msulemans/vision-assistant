@@ -610,8 +610,8 @@ class FakeTypedSession:
     def targets(self) -> TargetList:
         return self._targets()
 
-    def click_target(self, target_id: str) -> str:
-        self.calls.append(("click_target", target_id))
+    def click_target(self, target_id: str, method=None) -> str:
+        self.calls.append(("click_target", target_id, method))
         return ""
 
     def fill_field(self, ref: str, text: str, observation_id: str) -> str:
@@ -791,7 +791,7 @@ class TypedLoopTest(TypedLoopBase):
             ["http://127.0.0.1:1/news/"])
         self.assertEqual(report["outcome"], "blocked:no_progress")
         clicks = [c for c in session.calls if c[0] == "click_target"]
-        self.assertEqual(clicks, [("click_target", "t3")])
+        self.assertEqual(clicks, [("click_target", "t3", "dom")])
         errors = [step.get("error") for step in report["steps"]
                   if step.get("kind") == "proposal"]
         self.assertIn("no_observable_change", errors)
@@ -805,7 +805,7 @@ class TypedLoopTest(TypedLoopBase):
             ["http://127.0.0.1:1/news/", "http://127.0.0.1:1/story/d03/"])
         self.assertEqual(report["outcome"], "finished")
         self.assertEqual([c for c in session.calls if c[0] == "click_target"],
-                         [("click_target", "t3")])
+                         [("click_target", "t3", "dom")])
 
     def test_form_fill_and_authorized_save_finish(self) -> None:
         store = {"prefs": {"per_page": "20"}, "submissions": []}

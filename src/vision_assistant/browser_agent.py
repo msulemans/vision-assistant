@@ -284,6 +284,20 @@ def _typed_entry(target_list, ref: str):
     return None
 
 
+def _authorized_refs(spec, targets) -> tuple:
+    """Resolve ``spec.authorized_saves``: a tuple of refs or a callable.
+
+    Callables receive the current observation's TargetEntry list and return
+    the refs to authorize, so live layouts can authorize by role/label
+    without hard-coding snapshot ids.
+    """
+
+    authorized = getattr(spec, "authorized_saves", ())
+    if callable(authorized):
+        return tuple(authorized(targets))
+    return tuple(authorized)
+
+
 @dataclass
 class LoopLimits:
     max_steps: int = tasks.LIMITS["max_action_steps"]
@@ -584,7 +598,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             parsed, error = tasks.validate_typed_action(
                 proposal, mode=typed_task_mode, observation_id=observation_id,
                 targets=observed_targets.targets,
-                authorized_saves=tuple(getattr(spec, "authorized_saves", ())),
+                authorized_saves=_authorized_refs(spec, observed_targets.targets),
                 answer_schema=getattr(spec, "answer_schema", None))
         else:
             proposal = {"kind": _KIND_MAP.get(raw_kind, raw_kind)}
@@ -635,7 +649,9 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
                     entry = _typed_entry(observed_targets, parsed["target_ref"])
                     if entry is None:
                         raise RuntimeError("target_ref vanished between steps")
-                    session.click_target(entry.id)
+                    # M019 semantic activation: same helper guards, DOM click
+                    # instead of synthesized events (activation-independent).
+                    session.click_target(entry.id, method="dom")
                     executed = "click_target {}".format(parsed["target_ref"])
                 else:
                     session.click_target(parsed["target"])
@@ -660,7 +676,7 @@ def run_task(spec, *, session, proposer, server_state_provider, limits=None,
             elif kind == "save_form":
                 session.save_form(
                     parsed["target_ref"], parsed["observation_id"],
-                    authorized_saves=tuple(getattr(spec, "authorized_saves", ())))
+                    authorized_saves=_authorized_refs(spec, observed_targets.targets))
                 executed = "save_form {}".format(parsed["target_ref"])
                 sleep(0.8)
             elif kind == "type_text":

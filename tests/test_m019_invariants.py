@@ -95,6 +95,17 @@ class HelperCommandsTest(unittest.TestCase):
                       "refused_target_disabled"):
             self.assertIn(error, source, error)
 
+    def test_dom_activation_is_opt_in_and_guarded(self) -> None:
+        source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
+        self.assertIn('req["method"] as? String) == "dom"', source)
+        self.assertIn("el.click()", source)
+        self.assertIn("ensureActive", source)
+        session_src = (SRC / "browser_session.py").read_text(encoding="utf-8")
+        self.assertIn("def click_target(self, target_id: str, method=None)", session_src)
+        self.assertIn('method="dom"', session_src)
+        agent_src = (SRC / "browser_agent.py").read_text(encoding="utf-8")
+        self.assertIn('method="dom"', agent_src)
+
     def test_frozen_target_commands_are_untouched(self) -> None:
         source = (TOOLS / "browser_window.swift").read_text(encoding="utf-8")
         for command in ("navigate", "snapshot", "click", "type", "key", "scroll",
@@ -105,6 +116,7 @@ class HelperCommandsTest(unittest.TestCase):
         self.assertIn("password", bt.CREDENTIAL_MARKERS)
         self.assertIn("submit", bt.SUBMIT_MARKERS)
         self.assertIn("save", bt.SUBMIT_MARKERS)
+        self.assertIn("send", bt.SUBMIT_MARKERS)
         self.assertIn("checkout", bt.SUBMIT_MARKERS)
 
 

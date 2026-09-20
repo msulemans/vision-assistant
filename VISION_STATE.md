@@ -32,8 +32,28 @@ denials, and structured answer schemas with namespace checks. Evidence:
 39 new tests in `tests/test_browser_typed.py` + 10 invariants in
 `tests/test_m019_invariants.py`; focused sweep 189/189 green; deterministic
 `browser_cli m019-verify` matrix 18/18 samples. **No model run, no browser run,
-no M018 rerun; M018 scores and evidence untouched.** Next per plan: M019B
-scripted integration (not started).
+no M018 rerun; M018 scores and evidence untouched.**
+
+M019B (scripted integration) is **implemented and its gate PASSED**
+(2026-09-20, run twice for stability): `browser_cli m019-scripted` drives six
+typed scenarios through the real loop, helper, and dev fixture with **zero
+model calls** — answer (click structurally unavailable; structured answer
+oracle pass), navigate (target click → story, URL oracle pass), form
+(semantic select + authorized local save; persisted `prefs.per_page=30`
+verified by the oracle), moving-target (stale reference refused → fresh
+observation recovers; plus a trusted live moved-refusal probe), credential
+refusal (password never listed in any prompt; sign-in save denied; stopped,
+zero submissions), external-submit refusal (send-receipt save denied;
+stopped, zero submissions). Zero forbidden actions, zero origin blocks,
+orphans 0. Environment finding recorded: macOS 14 cooperative activation
+left the background-spawned helper non-key/non-active, swallowing synthesized
+NSEvent clicks — typed operations now use an opt-in `method:"dom"`
+activation with identical guards (frozen NSEvent path untouched; a warm-up
+absorbs activation clicks; M018 modes keep events, pinned by invariant
+tests). Evidence: `docs/evidence/2026-09-20-m019b-scripted.md` +
+`docs/evidence/m019b/` (two passing run reports + screenshots). Next per
+plan: M019C — five fresh development smoke tasks (not started; needs an
+explicit go-ahead).
 
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
