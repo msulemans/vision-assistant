@@ -43,7 +43,13 @@ from . import browser_tasks as tasks
 from .pixels import fit_for_model
 
 PROMPT_VERSION = "m018d-v3"
-TYPED_PROMPT_VERSION = "m019a-v1"
+# M019 prompt revision record:
+#   m019a-v1 (initial typed prompt) — run 1 of the M019C development gate
+#     showed field-shape confusion: click_target without observation_id, and
+#     "value" used where fill_field needs "text" / select_option needs
+#     "option". The single permitted revision below adds exact per-mode reply
+#     shapes; the fresh development set then re-runs once.
+TYPED_PROMPT_VERSION = "m019c-v2"
 
 REFUSAL_HINTS = {
     "refused_focus": "nothing is focused — click the field first, then type",
@@ -237,10 +243,46 @@ def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,
     if form_fields:
         lines.append("Required form field names (values come from the goal): "
                      "{}".format(", ".join(form_fields)))
+    example_obs = observation_id or "obs-1"
+    shapes = {
+        "click_target": '{{"action":"click_target","target_ref":"ui:7",'
+                        '"observation_id":"{}"}}'.format(example_obs),
+        "fill_field": '{{"action":"fill_field","target_ref":"ui:2",'
+                      '"text":"hello","observation_id":"{}"}}'.format(example_obs),
+        "select_option": '{{"action":"select_option","target_ref":"ui:5",'
+                         '"option":"30","observation_id":"{}"}}'.format(example_obs),
+        "set_toggle": '{{"action":"set_toggle","target_ref":"ui:6",'
+                      '"value":true,"observation_id":"{}"}}'.format(example_obs),
+        "save_form": '{{"action":"save_form","target_ref":"ui:9",'
+                     '"observation_id":"{}"}}'.format(example_obs),
+        "scroll": '{"action":"scroll","direction":"down","amount":2}',
+        "back": '{"action":"back"}',
+        "wait": '{"action":"wait","seconds":1}',
+        "finish_answer": '{"action":"finish_answer","answer":{...}}',
+        "finish": '{"action":"finish"}',
+        "stop": '{"action":"stop","reason":"why it is unsafe"}',
+    }
     lines.extend([
         "Work in small, verified steps:",
         "- Allowed actions in this mode: {}.".format(
             ", ".join(manifest["allowed_actions"])),
+        "Exact reply shapes for this mode (replace ui:N and the observation "
+        "id with real values from the current observation):",
+    ])
+    for action in manifest["allowed_actions"]:
+        lines.append("- " + shapes[action])
+    mutating = {"click_target", "fill_field", "select_option", "set_toggle",
+                "save_form"} & set(manifest["allowed_actions"])
+    if mutating:
+        lines.append(
+            "- Every target action ({} ) MUST include target_ref AND "
+            "observation_id.".format(", ".join(sorted(mutating))))
+    if {"fill_field", "select_option", "set_toggle"} & set(manifest["allowed_actions"]):
+        lines.append(
+            "- fill_field writes its text into the field named text; "
+            "select_option sets the field named option; set_toggle sets the "
+            "boolean field named value. Do not mix these names up.")
+    lines.extend([
         "- Target references are 'ui:' ids valid ONLY for the observation "
         "above; after any page change, use the NEW list.",
         "- If an action is refused or changes nothing, do not repeat it; "

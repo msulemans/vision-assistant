@@ -746,7 +746,7 @@ class TypedLoopTest(TypedLoopBase):
         self.assertEqual(report["outcome"], "finished")
         self.assertEqual(report["mode"], "typed")
         self.assertEqual(report["task_mode"], "answer")
-        self.assertEqual(report["prompt_version"], "m019a-v1")
+        self.assertEqual(report["prompt_version"], agent.TYPED_PROMPT_VERSION)
         prompt = proposer.prompts[0]
         self.assertIn("Task mode: answer", prompt)
         self.assertIn("Allowed actions in this mode: scroll, wait, "
@@ -755,6 +755,26 @@ class TypedLoopTest(TypedLoopBase):
         self.assertIn("Answer fields (names only", prompt)
         self.assertIn("rank, title", prompt)
         self.assertNotIn(("click", 0, 0), session.calls)
+
+    def test_typed_prompt_includes_exact_action_shapes(self) -> None:
+        entries = (
+            bt.TargetEntry("t2", "text_input", "Query",
+                           (0.0, 0.0, 10.0, 10.0), True, False),
+            bt.TargetEntry("t5", "select", "20",
+                           (0.0, 0.0, 10.0, 10.0), True, False),
+        )
+        block = bt.render_typed_target_block(entries, 1280, 720, 2560, 1440, 2.0)
+        form_prompt = agent.build_typed_prompt(
+            "g", "form", 1280, 720, 1280, 720, "obs-4", block, [])
+        self.assertIn('"action":"fill_field","target_ref":"ui:2",'
+                      '"text":"hello","observation_id":"obs-4"', form_prompt)
+        self.assertIn('"action":"select_option","target_ref":"ui:5",'
+                      '"option":"30"', form_prompt)
+        self.assertIn("field named text", form_prompt)
+        answer_prompt = agent.build_typed_prompt(
+            "g", "answer", 1280, 720, 1280, 720, "obs-4", block, [])
+        self.assertIn('"action":"finish_answer"', answer_prompt)
+        self.assertNotIn("fill_field", answer_prompt)
 
     def test_answer_mode_click_is_structurally_unavailable(self) -> None:
         spec = _spec("answer")

@@ -1,0 +1,133 @@
+{
+  "actions": 4,
+  "calls": 5,
+  "elapsed_ms": 35726.7,
+  "goal": "Open the story titled \"A tour of abandoned canal locks\" \u2014 it is on a later page of the news list.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c09"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 804.0,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59780/news/page2/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2659.4,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8404.4,
+      "executed": "click_target ui:7",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:59780/story/d08/"
+    },
+    {
+      "at_ms": 9960.6,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "action": "back",
+      "at_ms": 13766.4,
+      "error": "unexpected field 'observation_id' for 'back'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 15376.0,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 19877.3,
+      "executed": "back",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:59780/news/page2/"
+    },
+    {
+      "at_ms": 21831.1,
+      "count": 19,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 27765.3,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 3,
+      "url": "http://127.0.0.1:59780/news/page3//"
+    },
+    {
+      "at_ms": 29723.0,
+      "count": 19,
+      "kind": "targets",
+      "seq": 4,
+      "step": 4,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 35726.1,
+      "executed": "click_target ui:11",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 4,
+      "url": "http://127.0.0.1:59780/story/d16/"
+    },
+    {
+      "at_ms": 35726.7,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c09",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/page2/",
+    "/story/d08/",
+    "/news/page3//",
+    "/story/d16/"
+  ]
+}

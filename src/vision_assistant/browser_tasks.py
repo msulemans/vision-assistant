@@ -1059,6 +1059,9 @@ def verify_typed_task(spec, state: dict) -> dict:
         if _norm_path(str(state.get("url", ""))) != _norm_path(expected["url"]):
             failures.append("url: expected {}, got {}".format(
                 expected["url"], state.get("url")))
+    for needle in expected.get("visit_contains", ()):
+        if not any(needle in str(url) for url in state.get("visited", [])):
+            failures.append("visit: no recorded visit containing {}".format(needle))
     if "answer" in expected:
         if state.get("answer") is None:
             failures.append("answer: missing")
