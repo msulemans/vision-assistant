@@ -27,8 +27,12 @@
 //   {"id":4,"cmd":"type","text":"hello"}
 //   {"id":5,"cmd":"key","key":"enter"}
 //   {"id":6,"cmd":"scroll","direction":"down","amount":2}
-//                    (optional "method":"dom" = M021 in-page scrolling,
-//                     activation-independent; absent = frozen key path)
+//                    (optional "method":"dom" = M021/M022 in-page scrolling,
+//                     activation-independent; a fractional amount = viewport
+//                     fractions for trusted 70% traversal steps; absent
+//                     method keeps the frozen integer key path)
+//   {"id":12,"cmd":"links"}                       (M022: laid-out links with
+//                    row index + label + href — trusted DOM metadata)
 //   {"id":7,"cmd":"back"}
 //   {"id":8,"cmd":"state"}
 //   {"id":9,"cmd":"quit"}
@@ -197,6 +201,8 @@ final class Helper: NSObject, WKNavigationDelegate {
             pressKey(id: id, req: req)
         case "scroll":
             scrollPage(id: id, req: req)
+        case "links":
+            linksCommand(id: id)
         case "back":
             webView.goBack()
             respond(id, ["ok": true, "url": currentURL()])
@@ -766,21 +772,23 @@ final class Helper: NSObject, WKNavigationDelegate {
     func scrollPage(id: Int, req: [String: Any]) {
         guard !loading else { respond(id, ["ok": false, "error": "navigating"]); return }
         let direction = (req["direction"] as? String) ?? ""
-        let amount = (req["amount"] as? NSNumber)?.intValue ?? 0
+        let amountValue = (req["amount"] as? NSNumber)?.doubleValue ?? 0
         guard direction == "up" || direction == "down" else {
             respond(id, ["ok": false, "error": "bad_direction"]); return
         }
-        guard amount >= 1 && amount <= 10 else {
-            respond(id, ["ok": false, "error": "bad_amount"]); return
-        }
-        // M021 read-only scope: optional in-page scrolling (`method:"dom"`),
-        // independent of window activation — no synthesized events at all.
-        // Absent method keeps the frozen key-event path unchanged.
+        // M021/M022 read-only scope: optional in-page scrolling
+        // (`method:"dom"`), independent of window activation — no
+        // synthesized events at all. Fractional amounts are viewport
+        // fractions (trusted traversal steps). The frozen key path keeps
+        // its strict integer 1..10 contract.
         let method = (req["method"] as? String) ?? "keys"
         if method == "dom" {
+            guard amountValue > 0 && amountValue <= 10 else {
+                respond(id, ["ok": false, "error": "bad_amount"]); return
+            }
             let sign = direction == "down" ? 1 : -1
             let script = """
-            (function(){var d=\(sign)*\(amount)*Math.max(1,Math.round(window.innerHeight));window.scrollBy(0,d);return JSON.stringify({scrollY:Math.round(window.scrollY||0)});})()
+            (function(){var d=\(sign)*\(amountValue)*Math.max(1,Math.round(window.innerHeight));window.scrollBy(0,d);return JSON.stringify({scrollY:Math.round(window.scrollY||0)});})()
             """
             webView.evaluateJavaScript(script) { [weak self] result, _ in
                 guard let self = self else { return }
@@ -789,17 +797,51 @@ final class Helper: NSObject, WKNavigationDelegate {
                       let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                     self.respond(id, ["ok": false, "error": "scroll_unreadable"]); return
                 }
-                self.respond(id, ["ok": true, "pages": amount, "method": "dom",
+                self.respond(id, ["ok": true, "pages": amountValue, "method": "dom",
                                   "scrollY": (info["scrollY"] as? Int) ?? 0])
             }
             return
         }
+        guard amountValue.truncatingRemainder(dividingBy: 1) == 0,
+              amountValue >= 1, amountValue <= 10 else {
+            respond(id, ["ok": false, "error": "bad_amount"]); return
+        }
+        let amount = Int(amountValue)
         let (characters, keyCode) = direction == "down" ? specialKeys["page_down"]! : specialKeys["page_up"]!
         for _ in 0..<amount {
             sendKey(characters, keyCode: keyCode)
             usleep(25000)
         }
         respond(id, ["ok": true, "pages": amount])
+    }
+
+    func linksCommand(id: Int) {
+        // M022 trusted metadata: laid-out links with their nearest <tr> row
+        // index, visible label text, and href. Never rendered into any model
+        // prompt; used only by trusted post-selection mapping.
+        let script = """
+        (function(){var out=[];var links=document.querySelectorAll('a[href]');
+        for(var i=0;i<links.length;i++){var el=links[i];var r=el.getBoundingClientRect();
+        if(r.width<=0||r.height<=0){continue;}
+        var tr=el.closest('tr');var row=-1;
+        if(tr&&tr.parentNode){row=Array.prototype.indexOf.call(tr.parentNode.children,tr);}
+        var label=(el.textContent||'').replace(/\\s+/g,' ').trim();
+        if(label.length>200){label=label.slice(0,200);}
+        var href=el.getAttribute('href')||'';if(href.length>500){href=href.slice(0,500);}
+        out.push({row:row,label:label,href:href});if(out.length>=300){break;}}
+        return JSON.stringify({links:out,truncated:out.length>=300});})()
+        """
+        webView.evaluateJavaScript(script) { [weak self] result, _ in
+            guard let self = self else { return }
+            guard let json = result as? String,
+                  let data = json.data(using: .utf8),
+                  let info = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                self.respond(id, ["ok": false, "error": "links_unreadable"]); return
+            }
+            self.respond(id, ["ok": true,
+                              "links": (info["links"] as? [[String: Any]]) ?? [],
+                              "truncated": (info["truncated"] as? Bool) ?? false])
+        }
     }
 
     func state(id: Int) {

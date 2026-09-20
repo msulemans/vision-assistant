@@ -394,13 +394,43 @@ class BrowserSession:
     def press_key(self, key: str) -> None:
         self._call("key", key=key)
 
-    def scroll(self, direction: str, amount: int, method=None) -> int:
-        fields = {"direction": direction, "amount": int(amount)}
+    def scroll(self, direction: str, amount, method=None):
+        """Scroll the page; returns the helper-reported page count/fraction.
+
+        ``amount`` stays untouched (int for the frozen key path; a float is
+        meaningful only with ``method="dom"``, where it is a viewport
+        fraction — M022 trusted 70% traversal steps).
+        """
+
+        fields = {"direction": direction, "amount": amount}
         chosen = method or self.scroll_method
         if chosen:
             fields["method"] = str(chosen)
         reply = self._call("scroll", **fields)
-        return int(reply.get("pages", 0))
+        return reply.get("pages", 0)
+
+    def links(self) -> dict:
+        """Trusted DOM metadata: laid-out links as {row, label, href} rows.
+
+        Used only by trusted post-selection mapping (M022); callers must
+        never render these values into a model prompt.
+        """
+
+        reply = self._call("links")
+        rows = []
+        for item in reply.get("links") or []:
+            if not isinstance(item, dict):
+                continue
+            label = item.get("label")
+            href = item.get("href")
+            if not isinstance(label, str) or not isinstance(href, str):
+                continue
+            try:
+                row = int(item.get("row", -1))
+            except (TypeError, ValueError):
+                row = -1
+            rows.append({"row": row, "label": label[:200], "href": href[:500]})
+        return {"links": rows, "truncated": bool(reply.get("truncated"))}
 
     def back(self) -> str:
         reply = self._call("back")

@@ -221,6 +221,38 @@ synthesis** — a model-capability wall, not safety or harness. One run,
 results stand as measured; this set is never reused for tuning. Evidence:
 `docs/evidence/2026-09-20-m021-hn-transfer.md` + `docs/evidence/m021-hn/`.
 
+**M022 Phase 1 executed (2026-09-20): multi-viewport evidence accumulation,
+implemented and deterministically verified — no model, no live site, no M021
+rerun** (plan/freeze: `docs/M022_EVIDENCE_LEDGER_PLAN.md`). The treatment
+directly targets the M021-measured wall (cross-viewport evidence):
+`scan` mode + `src/vision_assistant/m022_scan.py` — trusted traversal (start
+at y=0; the model's `next_viewport` carries no amount; fixed ≤70% steps with
+≥30% overlap, DOM scrolling; max 8 viewports; observation_id/scroll_y/
+viewport/document height recorded per viewport; skipped ranges, unchanged
+viewports and layout shifts fail closed as `failed:traversal`); per-viewport
+extraction limited to `record_candidates`/`no_candidates` (candidate =
+rank/title/visible_points/ai_relevance/reason + the CURRENT observation_id;
+click/type/forms/submissions are not in the action set or the exact `oneOf`
+schema); a three-phase machine (scanning → recording → ledger-only final
+with a 1×1 placeholder image) so the last viewport is recorded with its
+screenshot while the confirmation call sees only the bounded ledger; a
+trusted evidence ledger that preserves per-field observation ids and
+rejects stale observations, duplicates (rank+normalized title) and
+conflicts (rank reuse / title moves) without overwriting; trusted completion
+(sort by rank, select the lowest three `primary` candidates; the final
+`ranks` must equal the trusted selection exactly — nothing can be added);
+and a post-selection trusted title→HN-item-link mapping from generic DOM
+link rows (new helper `links` command + float `method:"dom"` scroll) whose
+data is labelled trusted metadata and never enters a prompt (canary-tested).
+30 new deterministic tests (all 11 required proofs); focused sweep 223
+green incl. every audit/invariant module; scripted no-model loopback check
+PASS (helper + dev fixture: 19 link rows, top/end validation, zero orphans).
+Census **636 = 626 product + 10 learning**. The five-task development smoke
+(fresh long-page dev set, ≤100 calls total, one run per task) is **eligible
+but NOT started — needs an explicit go-ahead**; M021 evidence and its set
+remain untouched; if the pinned 4B model cannot combine viewport evidence
+even with this ledger, a stronger model is the justified next step.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

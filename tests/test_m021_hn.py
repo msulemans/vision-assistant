@@ -457,7 +457,8 @@ class ScrollDeliveryTest(unittest.TestCase):
     def test_m021_cli_sessions_use_dom_scrolling(self) -> None:
         source = (Path(bs.REPO_ROOT) / "src" / "vision_assistant" /
                   "browser_cli.py").read_text(encoding="utf-8")
-        section = source.split("def cmd_m021")[1].split("def main(")[0]
+        section = source.split("def cmd_m021")[1].split(
+            "def _m022_scripted_check")[0]
         self.assertEqual(section.count('scroll_method="dom"'), 2)
 
 

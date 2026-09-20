@@ -641,6 +641,253 @@ def cmd_m021(args) -> int:
     return 0 if report["ok"] else 1
 
 
+def _m022_scripted_check(args) -> int:
+    """No-model loopback verification of the M022 trusted machinery.
+
+    Runs against the local dev fixture only (no network, no model): navigate,
+    capture, trusted links metadata, one trusted 70% traversal step, and the
+    traversal validator. Writes a small JSON report.
+    """
+
+    from . import m022_scan as scan
+    from .browser_session import BrowserSession, compile_helper
+    from .fixture_server import FixtureServer
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = (Path(args.out_dir) if args.out_dir
+            else REPO_ROOT / "runs" / "m022" / ("m022-scripted-" + stamp))
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "shots").mkdir(parents=True, exist_ok=True)
+    site = root / "site"
+    fixtures.build_site("dev", site)
+    server = FixtureServer("dev", site)
+    port = server.start()
+    report = {"stage": "M022-scripted", "model_runs": 0, "steps": [],
+              "ok": False}
+    session = BrowserSession(port=port, helper_bin=compile_helper(),
+                             snapshot_dir=root / "tmp-shots",
+                             scroll_method="dom")
+    traversal = scan.ViewportTraversal()
+
+    def page_values() -> dict:
+        page = (session.state() or {}).get("page") or {}
+        return {"scroll_y": int(page.get("scrollY") or 0),
+                "viewport_height": int(page.get("innerHeight") or 0),
+                "document_height": int(page.get("scrollHeight") or 0)}
+
+    try:
+        session.launch()
+        session.navigate("/news/")
+        time.sleep(0.8)
+        shot = session.snapshot(path=str(root / "shots" / "viewport-1.png"))
+        values = page_values()
+        traversal.begin(scroll_y=values["scroll_y"],
+                        viewport_height=values["viewport_height"],
+                        document_height=values["document_height"],
+                        observation_id="obs-{}".format(shot.seq), seq=shot.seq)
+        report["steps"].append({"step": "begin", **values,
+                                "complete": traversal.complete})
+        links = session.links()
+        report["steps"].append({"step": "links", "rows": len(links["links"]),
+                                "truncated": links["truncated"]})
+        report["links_ok"] = len(links["links"]) > 0
+        fraction = traversal.next_fraction()
+        if fraction is None:
+            report["steps"].append({"step": "advance",
+                                    "skipped": "already at document end"})
+            report["overlap_ok"] = True
+        else:
+            pages = session.scroll("down", fraction, method="dom")
+            time.sleep(0.4)
+            shot2 = session.snapshot(path=str(root / "shots" / "viewport-2.png"))
+            values2 = page_values()
+            traversal.advance(scroll_y=values2["scroll_y"],
+                              viewport_height=values2["viewport_height"],
+                              document_height=values2["document_height"],
+                              observation_id="obs-{}".format(shot2.seq),
+                              seq=shot2.seq)
+            allowed = int(0.7 * values["viewport_height"]) + 2
+            report["overlap_ok"] = (
+                values2["scroll_y"] - values["scroll_y"] <= allowed)
+            report["steps"].append({"step": "advance", **values2,
+                                    "fraction": round(fraction, 4),
+                                    "pages_reported": pages,
+                                    "complete": traversal.complete})
+        report["ok"] = bool(report["links_ok"] and report["overlap_ok"])
+    except Exception as exc:  # noqa: BLE001 - scripted diagnostics
+        report["error"] = "{}: {}".format(type(exc).__name__, exc)
+    finally:
+        session.stop()
+        server.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len(
+            [line for line in check.stdout.split() if line.strip()])
+        report["ok"] = bool(report["ok"] and report["orphans"] == 0)
+    out = root / "scripted-report.json"
+    scan.atomic_write_json(out, report)
+    print("scripted check: links {} | overlap {} | orphans {}".format(
+        report.get("links_ok"), report.get("overlap_ok"), report["orphans"]))
+    print("report:", out)
+    print("RESULT:", "PASS" if report["ok"] else "FAIL")
+    return 0 if report["ok"] else 1
+
+
+def cmd_m022(args) -> int:
+    """M022: multi-viewport scan of the live Hacker News front page.
+
+    Trusted traversal (fixed 70% steps, max 8 viewports, fail-closed gap and
+    repeat detection) + structured evidence ledger + trusted selection. The
+    model may only record candidates, advance, record nothing, and confirm
+    the selection from the bounded ledger. Phase 1 ships this command
+    WITHOUT executing the live run: it runs only after the freeze is
+    committed and the owner approves. ``--scripted-check`` runs the no-model
+    loopback verification instead.
+    """
+
+    from . import m022_scan as scan
+    from .browser_agent import model_proposer
+    from .browser_session import BrowserSession, compile_helper
+    from .runtime_llamaserver import LlamaServerAdapter
+
+    if getattr(args, "scripted_check", False):
+        return _m022_scripted_check(args)
+
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    root = (Path(args.out_dir) if args.out_dir
+            else REPO_ROOT / "runs" / "m022" / ("m022-hn-" + stamp))
+    root.mkdir(parents=True, exist_ok=True)
+    report = {
+        "stage": "M022", "run_version": scan.RUN_VERSION,
+        "goal": scan.GOAL, "classification_rule": scan.CLASSIFICATION_RULE,
+        "start_url": scan.START_URL, "reviewer_scored": True,
+        "ctx_size": args.ctx_size, "goal_sha256": scan.goal_sha256(),
+        "limits": {"max_viewports": scan.MAX_VIEWPORTS,
+                   "max_calls": scan.MAX_CALLS,
+                   "max_seconds": scan.MAX_SECONDS},
+        "outcome": None, "fallbacks": 0, "schema_events": [],
+        "ok": False, "orphans": None, "started_at": scan.utc_now(),
+    }
+    session = None
+    adapter = None
+    run = None
+    raw_answers: list = []
+    schema_events: list = []
+    observed_at = ""
+    try:
+        helper_bin = compile_helper()
+        report["helper"] = str(helper_bin)
+
+        # Phase A: trusted pre-run reviewer capture (M021 protocol).
+        reviewer_dir = root / "reviewer"
+        reviewer_dir.mkdir(parents=True, exist_ok=True)
+        capture = BrowserSession(
+            port=0, helper_bin=helper_bin, snapshot_dir=root / "tmp-capture",
+            live_origins=(scan.HN_ORIGIN,),
+            helper_args=("--live-host", scan.HN_HOST),
+            scroll_method="dom")
+        files = []
+        try:
+            capture.launch()
+            capture.navigate(scan.START_URL)
+            time.sleep(1.5)
+            for index in range(1, args.reviewer_pages + 1):
+                shot = capture.snapshot(path=str(
+                    reviewer_dir / "snapshot-{:02d}.png".format(index)))
+                files.append({"file": "snapshot-{:02d}.png".format(index),
+                              "seq": shot.seq, "url": shot.url})
+                if index < args.reviewer_pages:
+                    capture.scroll("down", 1)
+                    time.sleep(0.6)
+        finally:
+            capture.stop()
+        report["reviewer"] = {
+            "captured_at": scan.utc_now(), "url": scan.START_URL,
+            "files": files,
+            "note": "trusted pre-run capture; never enters the model prompt",
+        }
+
+        # Phase B: the single scan run.
+        pin_dir = Path(args.pin_dir)
+        pin = json.loads((pin_dir / "pin.json").read_text(encoding="utf-8"))
+        model = next(f for f in pin["files"] if f["role"] == "model")
+        mmproj = next(f for f in pin["files"] if f["role"] == "mmproj")
+        adapter = LlamaServerAdapter(
+            pin_dir / model["name"], pin_dir / mmproj["name"],
+            ctx_size=args.ctx_size, jinja=True,
+            chat_template_kwargs={"enable_thinking": False},
+            log_path=root / "server.log")
+        proposer = model_proposer(
+            adapter, record=raw_answers, schema=scan.scan_action_schema(),
+            schema_events=schema_events, require_schema=True)
+        session = BrowserSession(
+            port=0, helper_bin=helper_bin, snapshot_dir=root / "shots",
+            live_origins=(scan.HN_ORIGIN,),
+            helper_args=("--live-host", scan.HN_HOST),
+            scroll_method="dom")
+        print("starting llama-server with the pinned model " + model["name"])
+        adapter.start()
+        session.launch()
+        session.navigate(scan.START_URL)
+        time.sleep(1.5)
+        observed_at = scan.utc_now()
+        run = scan.run_scan(session, proposer,
+                            now=(lambda: observed_at) if observed_at else None)
+    except Exception as exc:  # noqa: BLE001 - crash-safe reporting
+        run = {"outcome": "failed:exception",
+               "error": "{}: {}".format(type(exc).__name__, exc)}
+    finally:
+        kept = root / "shots-kept"
+        if (session is not None and session.snapshot_dir is not None
+                and session.snapshot_dir.exists() and not kept.exists()):
+            shutil.copytree(session.snapshot_dir, kept)
+        if session is not None:
+            session.stop()
+        if adapter is not None:
+            adapter.stop()
+        check = subprocess.run(["pgrep", "-f", "m018-tools/browser_window"],
+                               capture_output=True, text=True)
+        report["orphans"] = len(
+            [line for line in check.stdout.split() if line.strip()])
+
+    if run is not None:
+        report["run"] = run
+        report["outcome"] = run.get("outcome")
+        report["model_calls"] = int(run.get("calls", 0))
+        report["viewports"] = int(run.get("viewports", 0))
+        report["ledger"] = run.get("ledger", [])
+        report["selection"] = run.get("selection", [])
+        result = run.get("result")
+        if isinstance(result, dict):
+            report["result_file"] = "result.json"
+            scan.atomic_write_json(root / "result.json", result)
+        else:
+            report["result_file"] = None
+    report["schema_events"] = list(schema_events)
+    report["fallbacks"] = sum(1 for event in schema_events
+                              if event == "fallback")
+    report["raw_answers"] = raw_answers
+    report["observed_at"] = observed_at or None
+    kept = root / "shots-kept"
+    report["screenshots"] = (sorted(str(path.relative_to(root))
+                                     for path in kept.glob("*.png"))
+                             if kept.exists() else [])
+    report["ok"] = bool(report["outcome"] == "finished"
+                        and report["fallbacks"] == 0
+                        and report["orphans"] == 0)
+    scan.atomic_write_json(root / "report.json", report)
+    print("outcome: {} | calls {} | viewports {} | fallbacks {} | orphans {}"
+          .format(report["outcome"], report.get("model_calls", 0),
+                  report.get("viewports", 0), report["fallbacks"],
+                  report["orphans"]))
+    print("reviewer: verify the ledger and trusted selection against the "
+          "reviewer captures AFTER the run (API/article pages post-run only)")
+    print("report:", root)
+    print("RESULT:", "RUN OK — reviewer scoring pending" if report["ok"]
+          else "RUN ISSUE (see report.json)")
+    return 0 if report["ok"] else 1
+
+
 def cmd_task(args) -> int:
     """Run frozen browser tasks once each with the pinned model in the loop."""
 
@@ -1549,6 +1796,24 @@ def main(argv=None) -> int:
                              "the reviewer")
     p_m021.add_argument("--out-dir", default="")
     p_m021.set_defaults(func=cmd_m021)
+
+    p_m022 = sub.add_parser(
+        "m022-hn",
+        help="M022: multi-viewport scan of the live Hacker News front page "
+             "(trusted traversal + evidence ledger); the live run happens "
+             "only after the freeze is committed")
+    p_m022.add_argument("--pin-dir", default=str(REPO_ROOT / "models" /
+                                                  "qwen3.5-4b"))
+    p_m022.add_argument("--ctx-size", type=int, default=8192,
+                        help="frozen pilot context: 8192")
+    p_m022.add_argument("--reviewer-pages", type=int, default=3,
+                        help="trusted pre-run front-page captures kept for "
+                             "the reviewer")
+    p_m022.add_argument("--out-dir", default="")
+    p_m022.add_argument("--scripted-check", action="store_true",
+                        help="no-model loopback verification of the trusted "
+                             "traversal + links machinery on the dev fixture")
+    p_m022.set_defaults(func=cmd_m022)
 
     args = parser.parse_args(argv)
     return args.func(args)
