@@ -1,8 +1,11 @@
 # M021 — read-only live Hacker News transfer (answer mode): freeze record
 
-Status: **Phase 1 harness FROZEN (2026-09-20). The single live run is ready
-but NOT executed** — it runs only after this freeze is committed, once, and
-nothing auto-continues.
+Status: **Phase 1 harness FROZEN (2026-09-20); the single live run was
+executed once on 2026-09-20 — RESULT: FAIL on correctness** (structurally
+valid answer, but the model reported ranks 27/29 with `found: 2` while the
+true top three were ranks 1/6/8; every run-hygiene gate passed). Evidence:
+`docs/evidence/2026-09-20-m021-hn-transfer.md` + `docs/evidence/m021-hn/`.
+Results stand as measured; this set is never reused for tuning.
 
 This is a separately labelled treatment of the M018E failure, not a retry:
 M018E stays preserved as the old failed baseline (screenshot-only loop, the
@@ -92,8 +95,11 @@ away.
 ## Reviewer protocol (frozen)
 
 1. **Before the model run**, trusted code captures the front page with its
-   own helper (no model): `reviewer/snapshot-01..03.png` + `snapshot.json`
-   (URL + UTC timestamp), covering the full list via page-down scrolls.
+   own helper (no model): `reviewer/snapshot-01..03.png`, covering the full
+   list via page-down scrolls; the reviewer fields (URL + UTC timestamp +
+   file list) are recorded in `report.json["reviewer"]` (erratum: an early
+   draft of this doc listed a separate `snapshot.json`; recorded
+   post-run in the evidence doc).
 2. **After the agent run only**, the reviewer may consult the HN API or
    article pages, solely for scoring.
 3. **Reviewer data never enters the model prompt** — the capture lives in

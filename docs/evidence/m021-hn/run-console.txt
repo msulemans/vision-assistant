@@ -1,0 +1,25 @@
+Console transcript of the single M021 live run (2026-09-20, user terminal),
+kept verbatim as captured:
+
+$ PYTHONPATH=src .venv/bin/python -m vision_assistant.browser_cli m021-hn
+starting llama-server with the pinned model Qwen3.5-4B-Q4_K_M.gguf
+  [2166.7ms] observe height=1440 step=0 url=https://news.ycombinator.com/ width=2560
+  [5498.2ms] page scroll_height=1218 scroll_y=0 step=1 viewport_height=720
+  [8810.3ms] action executed=scroll down 5 oracle_ok=False step=1 url=https://news.ycombinator.com/
+  [9469.4ms] page scroll_height=1218 scroll_y=498 step=2 viewport_height=720
+  [13019.6ms] action executed=scroll down 3 oracle_ok=False step=2 url=https://news.ycombinator.com/
+  [13650.6ms] page scroll_height=1218 scroll_y=498 step=3 viewport_height=720
+  [17567.2ms] action executed=scroll down 3 oracle_ok=False step=3 url=https://news.ycombinator.com/
+  [18190.6ms] page scroll_height=1218 scroll_y=498 step=4 viewport_height=720
+  [26124.2ms] proposal action=finish_answer error={}: ranks must strictly increase (front-page  parsed=False step=4
+  [26736.8ms] page scroll_height=1218 scroll_y=498 step=4 viewport_height=720
+  [30621.7ms] action executed=scroll down 2 oracle_ok=False step=4 url=https://news.ycombinator.com/
+  [31248.0ms] page scroll_height=1218 scroll_y=498 step=5 viewport_height=720
+  [34657.4ms] action executed=None refused=budget_scrolls step=5
+  [35284.6ms] page scroll_height=1218 scroll_y=498 step=6 viewport_height=720
+  [40667.0ms] action answer_fields=['found', 'stories'] executed=finish step=6
+  [40667.0ms] terminal failures=0 oracle_ok=True outcome=finished
+outcome: finished | calls 7 | scrolls 4 | fallbacks 0 | orphans 0
+reviewer: score result.json against reviewer/ AFTER the run (HN API/article pages post-run only; never in the prompt)
+report: /Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m021/m021-hn-20260920-143047
+RESULT: RUN OK — reviewer scoring pending

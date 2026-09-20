@@ -1,0 +1,18 @@
+{
+  "found": 2,
+  "observed_at": "2026-09-20T04:30:54Z",
+  "stories": [
+    {
+      "rank": 27,
+      "reason": "Main subject is AI image generation",
+      "title": "Can you tell which images are AI-generated?",
+      "url": "labtoagi.com"
+    },
+    {
+      "rank": 29,
+      "reason": "Main subject is a computer vision AI model",
+      "title": "Show HN: CUA-S1 \u2013 A System One Model for Computer Use",
+      "url": "github.com/trycua"
+    }
+  ]
+}

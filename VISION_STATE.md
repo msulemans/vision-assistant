@@ -202,6 +202,25 @@ is ready but NOT executed** — it requires the committed freeze (this
 commit) and an explicit go-ahead; if it fails, the honest next step is a
 stronger model, not more guard/prompt churn on this set.
 
+**M021 executed once — RESULT: FAIL on correctness; run hygiene perfect
+(2026-09-20, run `runs/m021/m021-hn-20260920-143047`):** the model returned
+a structurally valid answer after 7 calls / 4 scrolls (zero fallbacks, zero
+forbidden actions, zero orphans, no rescue) — but it answered **from the
+page bottom**: ranks 27 & 29 with `found: 2`, while the true top-three AI/ML
+stories were **#1 Exfiltrate Your Weights, #6 Brood War Bench, #8
+AI-generated posters don't have to be horrible** — all visible in its first
+screenshot (byte-identical `24b99d5f…` to the trusted reviewer capture;
+correct stories 0/3; the count claim false). New behavior recorded: after
+the validator refused its first (misordered 27/29/26) finish, the model
+"fixed" ordering by DELETING a story rather than sorting — turning an
+ordering error into a false short-count. Its first move (`scroll down 5`)
+jumped straight to the page bottom of the 1,218 px page and it never
+re-read the top. The M018E clicking failure is **gone** (read-only actions
+only; zero interaction attempts); the remaining wall is **cross-screenshot
+synthesis** — a model-capability wall, not safety or harness. One run,
+results stand as measured; this set is never reused for tuning. Evidence:
+`docs/evidence/2026-09-20-m021-hn-transfer.md` + `docs/evidence/m021-hn/`.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.
