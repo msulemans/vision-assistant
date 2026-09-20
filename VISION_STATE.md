@@ -90,6 +90,15 @@ emission, not safety. Results stand as measured; the evaluation is never used
 for tuning. Next: a separately approved model comparison (not started).
 Evidence: `docs/evidence/2026-09-20-m019d-eval.md` + `docs/evidence/m019d/`.
 
+Follow-up review (2026-09-20, no new runs): `docs/NEXT_EXPERIMENT_OPTIONS.md`
+(**draft, awaiting owner review; nothing approved or started**) sharpens the
+diagnosis — the typed lane already used schema-constrained decoding
+(`browser_cli.py:885`; request accounting shows 45 generations = 45 model
+calls, no fallback), the recorded M019D refusals are 27 unexpected-field
+(21 form + 6 refusal tasks) plus 5 type (all self-corrected), and it proposes
+**exact per-action schemas** as the next freeze candidate — ahead of the model
+comparison, which stays second priority.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.
