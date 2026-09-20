@@ -8,6 +8,13 @@ this phase.** Every model gate below requires a separate explicit go-ahead,
 mirroring the M019 stage discipline. The M019D results stand exactly as
 measured, and the frozen e01–e20 set is never reused.
 
+**Stage 2 executed (2026-09-20):** schema-acceptance probe **PASS** (one call,
+`schema_events == ["schema"]`, 0 fallbacks, reply exactly one branch, validator
+ok — `docs/evidence/2026-09-20-m020-stage2.md`); no-model scripted gate 5/6 in
+both runs — `moving-target`'s `moved_probe` raced the fixture's
+`setTimeout(…, 1000)` shift twice (`got: "none"`); five typed-pipeline
+scenarios pass; no M020A code path involved. Stage 3 NOT started.
+
 ## 1. Why (measured, not assumed)
 
 M019D's form family failed 0/7. Follow-up artifact analysis

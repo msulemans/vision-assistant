@@ -125,6 +125,19 @@ fatal with no unconstrained retry (`m019-dev`/`m019-eval`; task rows report
 stages 2–4) are NOT started — each needs an explicit go-ahead.** M019D
 evidence, scores, and the frozen e01–e20 set are untouched and never reused.
 
+**M020 Stage 2 executed (2026-09-20):** the bounded schema-acceptance probe
+PASSED — the pinned runtime accepts the exact `oneOf` +
+`additionalProperties:false` schema: ONE model call (1 attempt / 1
+generation), `schema_events == ["schema"]`, 0 fallbacks, and the reply was
+exactly the `fill_field` branch (no cross-talk fields; validator ok). The
+no-model scripted gate: 5/6 in BOTH runs — the long-standing `moving-target`
+`moved_probe` timing race (fixture `setTimeout` 1 s layout shift vs the
+probe's fixed 1.6 s sleep) fired twice (`got: "none"`); no M020A code path is
+involved and there is no regression signal. Focused tests 125 green. Evidence:
+`docs/evidence/2026-09-20-m020-stage2.md` + `docs/evidence/m020-stage2/`.
+**Stage 3 (five fresh dev tasks) is eligible but NOT started — needs an
+explicit go-ahead.**
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

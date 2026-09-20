@@ -1,0 +1,32 @@
+{
+  "branch_matches": 1,
+  "cross_talk_fields": [],
+  "error": null,
+  "fallbacks": 0,
+  "generations": 1,
+  "goal": "Enter hello into the search query preference field on this page.",
+  "matched_branch": "fill_field",
+  "mode": "form",
+  "model_calls": 1,
+  "observation": {
+    "seq": 1,
+    "targets": 11,
+    "url": "http://127.0.0.1:61274/prefs/"
+  },
+  "orphans": 0,
+  "page": "/prefs/",
+  "raw_keys": [
+    "action",
+    "observation_id",
+    "target_ref",
+    "text"
+  ],
+  "raw_reply": "{\"action\": \"fill_field\", \"observation_id\": \"obs-1\", \"target_ref\": \"ui:5\", \"text\": \"hello\"}",
+  "require_schema": true,
+  "schema_events": [
+    "schema"
+  ],
+  "stage": "M020-S2",
+  "validator": "ok",
+  "verdict": "PASS"
+}
