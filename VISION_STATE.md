@@ -99,6 +99,17 @@ calls, no fallback), the recorded M019D refusals are 27 unexpected-field
 **exact per-action schemas** as the next freeze candidate — ahead of the model
 comparison, which stays second priority.
 
+Postscript (same day): the full-suite discovery run behind that memo found and
+fixed one latent regression — the frozen M015 audit flagged
+`browser_agent._path_only` (bare scheme separator; present since M018C commit
+`af926da`; the audit modules had never been in a focused sweep). The helper
+now strips explicit loopback prefixes (new parity test in
+`test_browser_agent.py`). Full discovery afterwards: **555 tests, OK — the
+first complete green discovery run of the M019 tree**. Test-count figures
+corrected to **555 = 545 product + 10 learning** (the previous "544 = 538 + 6"
+was stale). Lesson: closure sweeps must include `test_m015_invariants` +
+`test_package_cli`.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

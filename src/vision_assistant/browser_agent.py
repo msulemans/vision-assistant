@@ -357,13 +357,24 @@ def _png_dims(data: bytes) -> tuple:
     return (width, height)
 
 
-def _path_only(url: str) -> str:
-    """Normalize an absolute URL to the evaluator's path+query contract."""
+_LOOPBACK_URL_PREFIXES = ("http://127.0.0.1", "http://localhost",
+                          "https://127.0.0.1", "https://localhost")
 
-    if "://" in url:
-        rest = url.split("://", 1)[1]
-        slash = rest.find("/")
-        return rest[slash:] if slash >= 0 else "/"
+
+def _path_only(url: str) -> str:
+    """Normalize a browser-reported loopback URL to the path+query contract.
+
+    The frozen navigation policy means the browser only ever reaches loopback
+    addresses, so normalization strips the explicit loopback prefix. Values
+    without a loopback prefix are returned unchanged (stricter than silently
+    masking an arbitrary scheme).
+    """
+
+    for prefix in _LOOPBACK_URL_PREFIXES:
+        if url.startswith(prefix):
+            rest = url[len(prefix):]
+            slash = rest.find("/")
+            return rest[slash:] if slash >= 0 else "/"
     return url
 
 

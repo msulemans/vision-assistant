@@ -162,3 +162,29 @@ PYTHONPATH=src .venv/bin/python -m vision_assistant.browser_cli m019-scripted   
 # then (only after a committed freeze): fresh dev tasks with the pinned model,
 # then one frozen run on the new set — exact commands defined in that freeze doc.
 ```
+
+## 7. Postscript — full-suite regression (added after the memo's first commit)
+
+The full-suite discovery run performed for this memo found **4 failing tests,
+all one root cause**: the frozen M015 offline audit flagged
+`browser_agent._path_only` (a bare scheme separator in its source) — present
+since the M018C commit `af926da` and never caught, because the audit modules
+were not part of any focused sweep.
+
+Fixed behavior-preservingly: the helper now strips the **explicit loopback
+prefixes** (the only absolute URLs the loopback-only browser can produce);
+non-loopback absolute URLs pass through unchanged instead of being silently
+masked; parity for the loopback domain is pinned by a new test
+(`test_browser_agent.test_path_only_normalizes_loopback_urls`).
+
+Full discovery afterwards: **555 tests, 258.8s — OK, 0 failures, 0 errors**
+(the first complete green discovery run of the M019 tree).
+
+The published test-count figures were also stale by one stage: the real
+census is **555 = 545 product + 10 learning** (the site and its pin previously
+said "544 = 538 + 6"); corrected on the landing chip, the learning page, and
+the site pin.
+
+Lesson recorded: closure sweeps must include the audit modules
+(`test_m015_invariants`, `test_package_cli`) — the focused-sweep pattern let a
+frozen-invariant break sit unnoticed for half a day.

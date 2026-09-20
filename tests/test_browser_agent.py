@@ -240,6 +240,18 @@ class PromptAndMappingTest(unittest.TestCase):
             {"action": "click", "x": 1, "y": 2})
         self.assertIsNone(agent.extract_json_object("no object here [1,2]"))
 
+    def test_path_only_normalizes_loopback_urls(self) -> None:
+        self.assertEqual(agent._path_only("http://127.0.0.1:59986/prefs/"),
+                         "/prefs/")
+        self.assertEqual(agent._path_only("http://127.0.0.1:59986"), "/")
+        self.assertEqual(agent._path_only("http://127.0.0.1:59986/a?b=c#d"),
+                         "/a?b=c#d")
+        self.assertEqual(agent._path_only("https://localhost:1/p?q#f"),
+                         "/p?q#f")
+        self.assertEqual(agent._path_only("/search/"), "/search/")
+        self.assertEqual(agent._path_only("https://example.com/x"),
+                         "https://example.com/x")
+
     def test_agent_module_is_inert(self) -> None:
         source = Path(agent.__file__).read_text(encoding="utf-8")
         for token in ("subprocess", "NSEvent", "sendEvent", "CGEvent",
