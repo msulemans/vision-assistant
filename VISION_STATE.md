@@ -274,6 +274,25 @@ recorded: failure outcomes do not attach the ledger to the task report
 model under this frozen harness, or the specialist-scorer direction
 (`docs/CUA_S1_INTEGRATION_PLAN.md`, inspection-only).
 
+**Execution plan + scope amendment (2026-09-20, owner-directed):**
+`docs/EXECUTION_PLAN.md` defines the short-box rules that end the multi-hour
+cycles (freeze-first; one model gate per step; stop-on-fail — a failed gate
+ends the step with evidence and no rescue runs; focused tests only; no
+live-site checks in dev loops; no mid-run scope additions; ≤ 2-hour boxes)
+and the time-boxed remaining road: (1) the Cua-S1 **four-task** spike
+(≈ 2 h box; Arm A baseline ≤ 80 vision calls, Arm B zero vision calls; gate
+B ≥ 3/4 and ≥ Arm A, zero unsafe actions, ≤ 100 ms/decision), (2) a
+packaging step (results table, architecture diagram, failure analysis,
+reproduce commands), (3) only if (1) passes, the Verified Form Copilot
+product slice. `docs/CUA_S1_INTEGRATION_PLAN.md` is amended to four
+existing tasks (c16/c17/c18/c20; fresh c21 dropped, no new authoring) and
+records **Laya as a deferred candidate** (no install/download/integration/
+benchmark during the spike; one mention in the final evidence report; a
+fail stops the line before Laya is considered). Both source posts were
+retrieved and verified on 2026-09-20 (the Cua "System One Models" release
+post; the "show your work" prior-art post — Jev ≈ Laya). One go-ahead
+starts the two-hour box.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

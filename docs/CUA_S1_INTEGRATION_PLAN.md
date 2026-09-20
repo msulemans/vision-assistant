@@ -7,6 +7,18 @@ the official model page (`cua-ai/cua-s1-forms`), the dataset page
 `libs/cua-s1/python/src/cua_s1/planner.py` + `pyproject.toml` in the
 trycua/cua repository.
 
+> **Amendment (2026-09-20, owner-directed).** The spike is scoped to a
+> **two-hour box** and **four existing development form tasks — c16, c17,
+> c18, c20** (the fresh c21 is dropped from this spike; it can be re-added
+> later if the result warrants a wider check). **Laya** is recorded as a
+> deferred candidate (see below) — do not install, download, integrate,
+> benchmark, or compare it during this spike; it may be mentioned once, in
+> the final evidence report, as a possible later component. Outcome
+> routing: pass ⇒ next slice is **Verified Form Copilot**; fail ⇒ stop and
+> report before considering Laya or any other model. Family note from the
+> release post: CUA-S1 is a family of "System One Models"; only
+> CUA-S1-FORMS is in scope here.
+
 ## What Cua-S1 is (inspected facts)
 
 - **A one-pass option scorer, not a generator.** A byte-level transformer
@@ -97,7 +109,7 @@ session op with read-back → oracle (verify_typed_task)  — UNCHANGED
   set, writes `decisions.json` (`{task, element, options, probabilities,
   argmax}`) using only the repository's synthetic data. Because the fixture
   layouts are deterministic, scoring once per field set is exact — the
-  five-task experiment consumes a pinned `decisions.json`; live scoring is
+  four-task experiment consumes a pinned `decisions.json`; live scoring is
   a later step.
 - **`src/vision_assistant/cua_s1_provider.py`** (stdlib-only, scanned by
   the frozen M015 audit): consumes an injected `scorer` callable (or the
@@ -133,19 +145,19 @@ session op with read-back → oracle (verify_typed_task)  — UNCHANGED
 - **Frozen lanes stay frozen:** `m019-eval`, `m020-eval`, `m021-hn`,
   `m022-*` are untouched; the eval sets are never used for this comparison.
 
-## The experiment (five existing form tasks — the only approved scope)
+## The experiment (four existing form tasks — the only approved scope)
 
-Available dev form tasks in the repo today: **c16** (settings-toggles:
-toggles + save), **c17** (prefs-sequential: fill + select + save), **c18**
-(draft-fills: input + textarea + save), **c20** (checkout-refusal: form-mode
-refusal/safe-stop). One fresh dev task (**c21**: one select + one toggle +
-authorized save) is authored + deterministically frozen first, in the same
-style as the M022 dev set, to make five.
+Amended to four (2026-09-20): the development form tasks that already
+exist — **c16** (settings-toggles: toggles + save), **c17**
+(prefs-sequential: fill + select + save), **c18** (draft-fills: input +
+textarea + save), **c20** (checkout-refusal: form-mode refusal/safe-stop).
+No new task authoring in this spike (the fresh c21 is dropped; it can be
+re-added later if the result warrants a wider check).
 
 - **Arm A (baseline, re-measured once):** current vision 4B proposer on
-  the five tasks with the current frozen harness — ≤ 5 runs × ≤ 20 calls
-  ≤ **100 model calls** + one model load.
-- **Arm B (treatment):** `--decision-provider cua-s1` on the same five
+  the four tasks with the current frozen harness — ≤ 4 runs × ≤ 20 calls
+  ≤ **80 model calls** + one model load.
+- **Arm B (treatment):** `--decision-provider cua-s1` on the same four
   tasks, one run each — **zero vision-model calls**; one Cua-S1 forward
   pass per element (CPU, milliseconds, 2.8 MB).
 - One run per task per arm; no tuning between arms; identical fixtures,
@@ -154,13 +166,13 @@ style as the M022 dev set, to make five.
   refusals + `read_back_failed` + oracle mismatch), skipped fields,
   per-decision latency and end-to-end time, unsafe actions (must be zero in
   both arms), schema fallbacks (zero), orphans (zero).
-- **Measurable success criteria (proceed/no-proceed):** treatment completes
-  **≥ 4/5** and **≥ baseline**, with **zero unsafe actions** and **zero
-  unauthorized submissions** in both arms; Cua-S1 decision latency
-  **≤ 100 ms/element** on CPU; skipped-fields ≤ baseline. Met ⇒ proceed to
-  the "Verified Form Copilot" vertical slice (document → extract →
-  decide → verify → approve); not met ⇒ stop and report, no iterations on
-  the five-task set.
+- **Measurable success criteria (proceed/no-proceed, four tasks):**
+  treatment completes **≥ 3/4** and **≥ baseline**, with **zero unsafe
+  actions** and **zero unauthorized submissions** in both arms; Cua-S1
+  decision latency **≤ 100 ms/element** on CPU; skipped-fields ≤ baseline.
+  Met ⇒ proceed to the "Verified Form Copilot" vertical slice (document →
+  extract → decide → verify → approve); not met ⇒ stop and report, no
+  iterations on the task set.
 
 ## Dependencies and isolation
 
@@ -179,8 +191,8 @@ style as the M022 dev set, to make five.
 Everything is additive. Rollback = delete `scripts/cua_s1_*.py`,
 `src/vision_assistant/cua_s1_provider.py`,
 `tests/test_cua_s1_provider.py`, the `models/cua-s1-forms` directory, the
-separate venv, the `--decision-provider` flag (+ the new c21 dev task) —
-returning the repository to the exact pre-integration state. No frozen
+separate venv, and the `--decision-provider` flag — returning the
+repository to the exact pre-integration state. No frozen
 file, schema, policy, executor, or oracle is modified; no persistent state
 exists outside `runs/` and the pinnable model directory.
 
@@ -196,7 +208,28 @@ exists outside `runs/` and the pinnable model directory.
 - Small published real-world eval (196 decisions) — this is a research
   prototype comparison, not a certification.
 
+## Deferred candidates (recorded; no work in this spike)
+
+- **Laya** (`convaiinnovations/laya`; ~421M parameters, ~808 MB,
+  Apache-2.0 code/weights per its public pages): a general text/JSON
+  *decision* model exposing `choice` / `score` / `noul` operations.
+  Identified from the 2026-09-20 "Jev prior art" discussion; recorded as a
+  deferred candidate for **classification, routing, and confidence-based
+  escalation** (e.g. judging whether a story is primarily AI-related or
+  whether a request needs human approval). It would need its own labeled
+  dataset and temperature calibration, so it must not be installed,
+  downloaded, integrated, benchmarked, or compared during this spike.
+  Mention it once, in the final evidence report, as a possible later
+  component.
+- **Later CUA-S1 family members** ("System One Models" per the release
+  post): only CUA-S1-FORMS is in scope; sibling checkpoints are deferred
+  until the four-task experiment reports.
+- **Stronger generalist vision model (8B–14B) under the frozen M020/M022
+  harnesses:** the fair test if the 4B line is reopened; needs its own
+  pin + freeze (`docs/NEXT_EXPERIMENT_OPTIONS.md`, option A).
+
 ## Stop point
 
-Nothing beyond this document was done. Any installation, download, code, or
-model run requires an explicit go-ahead.
+Nothing beyond this document was done (amendment included). Any
+installation, download, code, or model run requires an explicit go-ahead —
+one go-ahead starts the two-hour box end-to-end.
