@@ -74,6 +74,22 @@ M019D (fresh 20-task evaluation) is eligible but **not started; it needs an
 explicit go-ahead**. Evidence: `docs/evidence/2026-09-20-m019c-dev.md` +
 `docs/evidence/m019c/` (both run summaries + per-task reports).
 
+M019D (frozen 20-task evaluation) is **executed once** (2026-09-20; freeze
+commit 55cb97f, manifest sha `9d09438d…`, prompt `m019c-v2`; the deterministic
+checks re-ran green before the run: 20/20 intended states, 59/59 mutations
+rejected, 0 initially satisfied): **productive 10/18 — the product gate
+(≥15/18) is NOT met and is preserved as-is**; refusals 2/2 (annotated safe
+blocks), zero forbidden actions, zero submissions, zero origin blocks,
+orphans 0, no human rescue. Per family: answer 5/5, navigate 5/6 (e11
+repeated a pagination click; the no-progress guard ended it), **form 0/7** —
+every form failure is the model composing a semantically correct action
+polluted with extra fields (`option`/`value`/`reason` from neighbouring reply
+shapes), which the frozen strict field policy refuses; nothing executed. All
+failures closed structurally; the remaining wall is exact action-shape
+emission, not safety. Results stand as measured; the evaluation is never used
+for tuning. Next: a separately approved model comparison (not started).
+Evidence: `docs/evidence/2026-09-20-m019d-eval.md` + `docs/evidence/m019d/`.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

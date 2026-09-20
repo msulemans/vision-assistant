@@ -1,0 +1,98 @@
+{
+  "actions": 1,
+  "calls": 3,
+  "elapsed_ms": 21426.5,
+  "goal": "Report the title of the story ranked fourth on this page and how many comments it has.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e02"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 840.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2715.7,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "action": "finish_answer",
+      "at_ms": 7610.5,
+      "error": "field 'comments' must be of type integer",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 9510.6,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "action": "finish_answer",
+      "at_ms": 14431.8,
+      "error": "field 'comments' must be of type integer",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 16369.5,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "comments",
+        "title"
+      ],
+      "at_ms": 21426.5,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 21426.5,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e02",
+  "task_mode": "answer",
+  "visited": [
+    "/news/"
+  ]
+}

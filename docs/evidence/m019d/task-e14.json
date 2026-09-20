@@ -1,0 +1,100 @@
+{
+  "actions": 0,
+  "calls": 3,
+  "elapsed_ms": 20922.1,
+  "goal": "In your search preferences, hide already-seen stories and set the default category to stories, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "e14"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 855.5,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2523.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "select_option",
+      "at_ms": 7282.6,
+      "error": "unexpected field 'reason' for 'select_option'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 9050.1,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "set_toggle",
+      "at_ms": 14063.0,
+      "error": "unexpected field 'reason' for 'set_toggle'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 15738.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "set_toggle",
+      "at_ms": 20922.0,
+      "error": "unexpected field 'reason' for 'set_toggle'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 20922.1,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "invalid_action"
+    }
+  ],
+  "task": "e14",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/"
+  ]
+}

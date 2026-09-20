@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 6774.7,
+  "goal": "Follow the archive redirect to the story it points to.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e10"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 791.5,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/redirect/d07/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2270.5,
+      "count": 5,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 5,
+      "truncated": false
+    },
+    {
+      "at_ms": 6774.6,
+      "executed": "click_target ui:5",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:59986/story/d07/"
+    },
+    {
+      "at_ms": 6774.7,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e10",
+  "task_mode": "navigate",
+  "visited": [
+    "/redirect/d07/",
+    "/story/d07/"
+  ]
+}

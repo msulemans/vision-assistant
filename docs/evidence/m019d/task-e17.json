@@ -1,0 +1,100 @@
+{
+  "actions": 0,
+  "calls": 3,
+  "elapsed_ms": 21978.7,
+  "goal": "In display settings, turn compact mode on and save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "e17"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 797.7,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2333.6,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "action": "set_toggle",
+      "at_ms": 7389.4,
+      "error": "unexpected field 'reason' for 'set_toggle'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 8927.2,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "action": "set_toggle",
+      "at_ms": 14858.0,
+      "error": "unexpected field 'reason' for 'set_toggle'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 16419.7,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "action": "set_toggle",
+      "at_ms": 21978.6,
+      "error": "unexpected field 'reason' for 'set_toggle'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 21978.7,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "invalid_action"
+    }
+  ],
+  "task": "e17",
+  "task_mode": "form",
+  "visited": [
+    "/settings/"
+  ]
+}

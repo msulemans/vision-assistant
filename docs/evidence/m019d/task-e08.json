@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 8382.5,
+  "goal": "Open the story titled \"Baking bread with a PID controller\".",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e08"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 787.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/news/page3/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2708.9,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8382.5,
+      "executed": "click_target ui:15",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:59986/story/d18/"
+    },
+    {
+      "at_ms": 8382.5,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e08",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/page3/",
+    "/story/d18/"
+  ]
+}

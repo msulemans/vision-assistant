@@ -450,3 +450,16 @@ flips), refusals 0/2 with one fixture-local submission attempt recorded,
 zero forbidden actions. Tuning stopped at the freeze; both measured
 boundaries stand as-is. Evidence: `docs/evidence/2026-09-20-m018t-eval.md`,
 `docs/M018T_TARGET_ASSISTED_PLAN.md`, `docs/M018T_EVAL_FREEZE.md`.
+
+M019 (task-typed treatment) is implemented through its frozen evaluation:
+deterministic contracts (capability modes, `ui:` namespace, semantic form
+operations with read-back, no-repeat enforcement, credential/submission
+denial) → scripted integration gate PASSED (six scenarios, no model calls)
+→ five-task development gate criteria met (4/5; the single documented prompt
+revision `m019c-v2`) → frozen 20-task evaluation executed once: **10/18
+productive** (answer 5/5, navigate 5/6, form 0/7 — correct actions refused
+for extra fields), refusals 2/2 safe-blocked, **zero forbidden actions**,
+no human rescue. The 15/18 gate was not met and the results stand as
+measured. Evidence: `docs/evidence/2026-09-20-m019b-scripted.md`,
+`docs/evidence/2026-09-20-m019c-dev.md`,
+`docs/evidence/2026-09-20-m019d-eval.md`, `docs/M019_EVAL_FREEZE.md`.

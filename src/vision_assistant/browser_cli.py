@@ -1028,6 +1028,7 @@ def cmd_m019_eval(args) -> int:
     """
 
     from . import m019_eval as evaluation
+    from .browser_session import compile_helper
     from .fixture_server import FixtureServer
     from .runtime_llamaserver import LlamaServerAdapter
 

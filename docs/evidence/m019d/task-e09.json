@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 7761.1,
+  "goal": "Open the author page for june park.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e09"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 790.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/search/?q=june",
+      "width": 2560
+    },
+    {
+      "at_ms": 2518.4,
+      "count": 14,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 14,
+      "truncated": false
+    },
+    {
+      "at_ms": 7761.1,
+      "executed": "click_target ui:14",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 1,
+      "url": "http://127.0.0.1:59986/author/june-park/"
+    },
+    {
+      "at_ms": 7761.1,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e09",
+  "task_mode": "navigate",
+  "visited": [
+    "/search/?q=june",
+    "/author/june-park/"
+  ]
+}

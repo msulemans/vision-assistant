@@ -361,3 +361,20 @@ forbidden actions; loopback-only default preserved. Evidence:
 `docs/evidence/2026-09-20-m018e-live-pilot.md` + `docs/evidence/m018e/`.
 The extension is closed at three measured boundaries — screenshot-only
 (M018D), target-assisted (M018T), and the live transfer case (M018E).
+
+**M019 delivered (2026-09-20):** task-typed browser-agent treatment, frozen
+stage by stage — M019A deterministic contracts (modes, capability
+manifests, `ui:` namespace, semantic form operations with read-back,
+no-repeat, credential/submission denial, `m019-verify` 18/18); M019B
+scripted integration gate PASSED (six typed scenarios live, zero model
+calls, semantic DOM activation); M019C development gate criteria met
+(**4/5 expected**, refusal safe, zero forbidden; the single documented
+prompt revision `m019c-v2` plus a fresh five-task set); M019D frozen 20-task
+evaluation executed once: **10/18 productive** (answer 5/5, navigate 5/6,
+form 0/7 — the model composes semantically correct actions polluted with
+extra fields; strict validation refuses; nothing executes), refusals 2/2
+safe-blocked (annotated), zero forbidden actions, no human rescue. The
+product gate (≥15/18) is **NOT met and preserved as-is**; results stand and
+the frozen set is never used for tuning. Evidence:
+`docs/evidence/2026-09-20-m019{b-scripted,c-dev,d-eval}.md`; freeze:
+`docs/M019_EVAL_FREEZE.md`.

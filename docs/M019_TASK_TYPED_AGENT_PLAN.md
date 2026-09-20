@@ -1,10 +1,12 @@
 # M019 proposal — task-typed browser agent
 
 Status: accepted. **M019A (deterministic contracts) implemented; M019B
-(scripted integration) gate PASSED; M019C (development gate) criteria MET —
-4/5 expected, refusal safe, zero forbidden, with the single documented prompt
-revision `m019c-v2` used and a fresh five-task set run once.** M019D is
-eligible but not started (needs an explicit go-ahead).
+(scripted integration) gate PASSED; M019C (development gate) criteria MET
+with the single documented prompt revision `m019c-v2`; M019D (frozen 20-task
+evaluation) executed once — productive 10/18, the ≥15/18 product gate NOT met,
+results preserved as measured; refusals 2/2 safe, zero forbidden actions.**
+The next experiment is a separately approved model comparison, not further
+prompt iteration (not started).
 Date: 2026-09-20 (Australia/Sydney).
 
 ## Why this phase exists

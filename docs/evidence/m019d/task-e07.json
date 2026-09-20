@@ -1,0 +1,81 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 14975.9,
+  "goal": "Open the comments page for the story titled \"Solar storage costs fell again this year\".",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e07"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 790.7,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/news/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2679.9,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8346.5,
+      "executed": "click_target ui:13",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:59986/story/d05/"
+    },
+    {
+      "at_ms": 9993.2,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 14975.8,
+      "executed": "click_target ui:6",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 2,
+      "url": "http://127.0.0.1:59986/story/d05/comments/"
+    },
+    {
+      "at_ms": 14975.9,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e07",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/",
+    "/story/d05/",
+    "/story/d05/comments/"
+  ]
+}

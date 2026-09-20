@@ -1,0 +1,63 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 6452.3,
+  "goal": "Report the title of the first story in these search results.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e04"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 838.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/search/?q=robotics",
+      "width": 2560
+    },
+    {
+      "at_ms": 2344.0,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "answer_fields": [
+        "title"
+      ],
+      "at_ms": 6452.2,
+      "executed": "finish",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 6452.3,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "e04",
+  "task_mode": "answer",
+  "visited": [
+    "/search/?q=robotics"
+  ]
+}

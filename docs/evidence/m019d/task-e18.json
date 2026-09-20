@@ -1,0 +1,100 @@
+{
+  "actions": 0,
+  "calls": 3,
+  "elapsed_ms": 23783.4,
+  "goal": "In your search preferences, set the default query to \"cache\" and sort by newest, then save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:recovery_exhausted'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "e18"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 807.5,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2433.8,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 8387.7,
+      "error": "unexpected field 'amount' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 10081.1,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 15894.7,
+      "error": "unexpected field 'reason' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 17545.3,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 23783.4,
+      "error": "unexpected field 'amount' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 23783.4,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "invalid_action"
+    }
+  ],
+  "task": "e18",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/"
+  ]
+}

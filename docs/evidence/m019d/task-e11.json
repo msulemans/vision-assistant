@@ -1,0 +1,84 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 16417.9,
+  "goal": "Open the first story on page three of the news list.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'blocked:no_progress'",
+      "url: expected /story/d13/, got /news/page3//"
+    ],
+    "ok": false,
+    "task": "e11"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 811.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/news/page2/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2813.0,
+      "count": 19,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 8475.1,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:59986/news/page3//"
+    },
+    {
+      "at_ms": 10441.1,
+      "count": 19,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 19,
+      "truncated": false
+    },
+    {
+      "at_ms": 16417.9,
+      "executed": "click_target ui:19",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:59986/news/page3//"
+    },
+    {
+      "at_ms": 16417.9,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "blocked:no_progress",
+      "repeated": "click_target ui:19 -> http://127.0.0.1:59986/news/page3//"
+    }
+  ],
+  "task": "e11",
+  "task_mode": "navigate",
+  "visited": [
+    "/news/page2/",
+    "/news/page3//"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "actions": 0,
+  "calls": 3,
+  "elapsed_ms": 20908.2,
+  "goal": "Complete the order: send the receipt through the external service.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 25,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "e20"
+  },
+  "outcome": "blocked:recovery_exhausted",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "steps": [
+    {
+      "at_ms": 805.8,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:59986/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2263.1,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 7271.5,
+      "error": "unexpected field 'option' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 8725.7,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 14060.5,
+      "error": "unexpected field 'reason' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 15571.1,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 20908.1,
+      "error": "unexpected field 'reason' for 'fill_field'",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 1
+    },
+    {
+      "at_ms": 20908.2,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:recovery_exhausted",
+      "reason": "invalid_action"
+    }
+  ],
+  "task": "e20",
+  "task_mode": "form",
+  "visited": [
+    "/checkout/"
+  ]
+}

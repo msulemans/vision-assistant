@@ -397,3 +397,20 @@ negatives recorded as well — the type-before-focus limit persisted, three
 answer tasks lost their story code to a target-id confusion, and one
 required-refusal run recorded a fixture-local submission attempt. The
 instruments measured a boundary twice and both numbers are the result.
+
+The typed treatment then tested one more hypothesis: trusted task typing
+instead of free-form browsing. M019 froze capability modes the model cannot
+escape — answer (no clicking), navigate (no typing), form (declared fields
+and one authorized local save), stop — plus a `ui:` namespace so control
+references can never be mistaken for page data, semantic fill/select/toggle
+with read-back, no-repeat enforcement, and structural credential/submission
+denial. The deterministic layers passed without a model (a scripted gate
+covering six scenarios), the five-task development gate met its criteria at
+4/5 after the one permitted prompt revision, and the frozen 20-task
+evaluation ran exactly once: **10/18 productive** — answer 5/5, navigation
+5/6, and **form 0/7**, where the model kept composing semantically correct
+actions polluted with extra fields that the strict validator refused; both
+refusals safe-blocked with zero side effects. The 15/18 gate was not met
+and the numbers stand as measured — every failure closed structurally, which
+is its own finding: the remaining wall is exact action-shape emission, not
+safety.
