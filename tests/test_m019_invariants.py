@@ -41,12 +41,16 @@ class ModeContractTest(unittest.TestCase):
                 self.assertIsNotNone(error)
 
     def test_typed_schema_enum_matches_the_manifest(self) -> None:
+        # M020: the union schema became exact per-action branches; the intent
+        # (branches in manifest order; no raw x/y coordinates) is unchanged.
         for mode in tasks.TYPED_MODES:
             schema = agent.typed_action_schema(mode)
-            self.assertEqual(schema["properties"]["action"]["enum"],
-                             list(tasks.MODE_CAPABILITIES[mode]))
-            self.assertNotIn("x", schema["properties"])
-            self.assertNotIn("y", schema["properties"])
+            actions = [branch["properties"]["action"]["enum"][0]
+                       for branch in schema["oneOf"]]
+            self.assertEqual(actions, list(tasks.MODE_CAPABILITIES[mode]))
+            for branch in schema["oneOf"]:
+                self.assertNotIn("x", branch["properties"])
+                self.assertNotIn("y", branch["properties"])
 
 
 class SourceSurfacesTest(unittest.TestCase):

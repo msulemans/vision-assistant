@@ -110,6 +110,21 @@ corrected to **555 = 545 product + 10 learning** (the previous "544 = 538 + 6"
 was stale). Lesson: closure sweeps must include `test_m015_invariants` +
 `test_package_cli`.
 
+M020 (exact-shape constrained decoding; plan
+`docs/M020_EXACT_SHAPE_PLAN.md`) is **implemented at the deterministic layer
+(M020A)** (2026-09-20, on the owner's "continue" following the options memo;
+no model, browser, benchmark, or live-site run): `typed_action_schema`
+replaced the permissive union with **exact per-action `oneOf` branches**
+(each branch: only that action's fields, `required` mirroring the validator,
+`additionalProperties: false`); the proposer records `schema`/`fallback`
+events per model call and `--require-schema` makes a failed schema request
+fatal with no unconstrained retry (`m019-dev`/`m019-eval`; task rows report
+`fallbacks`). One M019 structural pin was revised to the per-action form
+(same intent); `browser_cli m019-verify` is still 18/18 clean; focused sweep
+187 green; census 567 = 557 product + 10 learning. **Model gates (plan
+stages 2–4) are NOT started — each needs an explicit go-ahead.** M019D
+evidence, scores, and the frozen e01–e20 set are untouched and never reused.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

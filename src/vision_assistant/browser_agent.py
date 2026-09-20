@@ -152,8 +152,15 @@ def extract_json_object(text: str):
     return None
 
 
-def model_proposer(adapter, record: list | None = None, schema=None):
-    """Propose one action with the pinned model (schema-constrained first)."""
+def model_proposer(adapter, record: list | None = None, schema=None,
+                   schema_events: list | None = None,
+                   require_schema: bool = False):
+    """Propose one action with the pinned model (schema-constrained first).
+
+    ``schema_events`` gets ``"schema"`` or ``"fallback"`` per model call;
+    ``require_schema`` makes a failed schema request fatal — no unconstrained
+    retry happens (fail-closed for evaluated runs).
+    """
 
     use_schema = schema or ACTION_SCHEMA
 
@@ -164,8 +171,16 @@ def model_proposer(adapter, record: list | None = None, schema=None):
         try:
             answer, timings = adapter.predict_image(png_bytes, prompt,
                                                     json_schema=use_schema)
-        except Exception:  # noqa: BLE001 - fall back to prompt-only decoding
+        except Exception as exc:  # noqa: BLE001 - fallback policy below
+            if schema_events is not None:
+                schema_events.append("fallback")
+            if require_schema:
+                raise RuntimeError(
+                    "schema-constrained call failed: {}".format(exc)) from exc
             answer, timings = adapter.predict_image(png_bytes, prompt)
+        else:
+            if schema_events is not None:
+                schema_events.append("schema")
         text = _join(answer)
         if record is not None:
             record.append(text)
@@ -185,31 +200,72 @@ def model_to_screenshot(x_model: int, y_model: int, model_w: int, model_h: int,
     return (min(max(x, 0), shot_w - 1), min(max(y, 0), shot_h - 1))
 
 
+# M020: per-action exact branches. The raw wire key stays ``action`` (the loop
+# renames it to ``kind`` before validation); each branch carries exactly that
+# action's fields, requires what the validator requires, and forbids extras so
+# cross-talk fields (the measured M019D form wall) are not expressible.
+_TYPED_SCHEMA_FIELDS = {
+    "click_target": (
+        {"target_ref": {"type": "string"},
+         "observation_id": {"type": "string"}},
+        {"expected_change": {"type": "string",
+                             "enum": ["url_change", "content_change",
+                                      "no_change"]}},
+    ),
+    "fill_field": (
+        {"target_ref": {"type": "string"}, "text": {"type": "string"},
+         "observation_id": {"type": "string"}},
+        {},
+    ),
+    "select_option": (
+        {"target_ref": {"type": "string"}, "option": {"type": "string"},
+         "observation_id": {"type": "string"}},
+        {},
+    ),
+    "set_toggle": (
+        {"target_ref": {"type": "string"}, "value": {"type": "boolean"},
+         "observation_id": {"type": "string"}},
+        {},
+    ),
+    "save_form": (
+        {"target_ref": {"type": "string"},
+         "observation_id": {"type": "string"}},
+        {},
+    ),
+    "scroll": (
+        {"direction": {"type": "string", "enum": list(tasks.SCROLL_DIRECTIONS)},
+         "amount": {"type": "integer"}},
+        {},
+    ),
+    "back": ({}, {}),
+    "wait": ({}, {"seconds": {"type": "number"}}),
+    "finish_answer": ({"answer": {"type": "object"}}, {}),
+    "finish": ({}, {}),
+    "stop": ({}, {"reason": {"type": "string"}}),
+}
+
+
 def typed_action_schema(task_mode: str) -> dict:
-    """Constrained-decoding schema for one M019 mode's allowed actions."""
+    """Exact per-action constrained-decoding schema for one M019 mode.
+
+    One ``oneOf`` branch per allowed action, in capability-manifest order;
+    each branch requires the validator's mandatory fields and forbids extras.
+    """
 
     manifest = tasks.capability_manifest(task_mode)
-    return {
-        "type": "object",
-        "properties": {
-            "action": {"type": "string",
-                       "enum": list(manifest["allowed_actions"])},
-            "target_ref": {"type": "string"},
-            "observation_id": {"type": "string"},
-            "expected_change": {"type": "string",
-                                "enum": ["url_change", "content_change",
-                                         "no_change"]},
-            "text": {"type": "string"},
-            "option": {"type": "string"},
-            "value": {"type": "boolean"},
-            "direction": {"type": "string", "enum": ["up", "down"]},
-            "amount": {"type": "integer"},
-            "seconds": {"type": "number"},
-            "answer": {"type": "object", "additionalProperties": True},
-            "reason": {"type": "string"},
-        },
-        "required": ["action"],
-    }
+    branches = []
+    for action in manifest["allowed_actions"]:
+        required, optional = _TYPED_SCHEMA_FIELDS[action]
+        properties = {"action": {"type": "string", "enum": [action]}}
+        properties.update(required)
+        properties.update(optional)
+        branches.append({
+            "type": "object",
+            "properties": properties,
+            "required": ["action"] + sorted(required),
+            "additionalProperties": False,
+        })
+    return {"oneOf": branches}
 
 
 def build_typed_prompt(goal: str, task_mode: str, image_w: int, image_h: int,

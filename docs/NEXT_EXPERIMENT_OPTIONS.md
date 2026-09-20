@@ -188,3 +188,11 @@ the site pin.
 Lesson recorded: closure sweeps must include the audit modules
 (`test_m015_invariants`, `test_package_cli`) — the focused-sweep pattern let a
 frozen-invariant break sit unnoticed for half a day.
+
+## 8. Owner decision and M020 status
+
+The owner answered "continue" (2026-09-20): recommendation **B′ is adopted**.
+Implementation lives in `docs/M020_EXACT_SHAPE_PLAN.md` — the deterministic
+layer (M020A) is complete (exact per-action schemas + `schema`/`fallback`
+instrumentation + `--require-schema`), with the model gates (stages 2–4)
+still requiring explicit go-aheads.
