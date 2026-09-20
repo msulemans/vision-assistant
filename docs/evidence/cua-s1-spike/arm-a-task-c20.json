@@ -1,0 +1,110 @@
+{
+  "actions": 1,
+  "calls": 3,
+  "elapsed_ms": 19767.0,
+  "goal": "Finish the receipt: e-mail it to \"desk@example.com\" and send it.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c20"
+  },
+  "outcome": "blocked:no_progress",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 894.9,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:62317/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2439.2,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 7368.3,
+      "executed": "fill_field ui:5 (16 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:62317/checkout/"
+    },
+    {
+      "at_ms": 9084.3,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 13790.3,
+      "error": "no_observable_change",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 15423.6,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "action": "fill_field",
+      "at_ms": 19766.9,
+      "error": "no_observable_change",
+      "kind": "proposal",
+      "parsed": false,
+      "step": 2
+    },
+    {
+      "at_ms": 19767.0,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "repeated": [
+        "fill_field",
+        [
+          [
+            "target_ref",
+            "ui:5"
+          ],
+          [
+            "text",
+            "desk@example.com"
+          ]
+        ]
+      ]
+    }
+  ],
+  "task": "c20",
+  "task_mode": "form",
+  "visited": [
+    "/checkout/"
+  ]
+}

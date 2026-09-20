@@ -1,0 +1,329 @@
+{
+  "cases_sha256": "25466701a5009b971519f3101a1b2891085383a6910ed77a26c594b902fd0046",
+  "generator": {
+    "config": {
+      "context_tokens": 224,
+      "encoder": "tinyx",
+      "heads": 4,
+      "hf_model": "Qwen/Qwen2.5-0.5B",
+      "layers": 2,
+      "option_tokens": 96,
+      "rank": 128,
+      "width": 128
+    },
+    "config_sha256": "62d31e2f9a001a8e9b6f8534c5194d07ebdd3f9d62ef1ac281906622992650ca",
+    "device": "cpu",
+    "model": "cua-s1-forms",
+    "state_signature": "0c661c669bc22189c81637553dcd105fe6178c8a8de85f6f6307c3c635403bfa",
+    "torch": "2.14.0",
+    "weights_sha256": "05954c1caf51c2fb6c13ea4acbfc88a2e7653dea192252bb51dc89e76a356ddc"
+  },
+  "latency_ms": {
+    "max": 22.925,
+    "mean": 3.901,
+    "per_element": [
+      22.925,
+      1.927,
+      1.648,
+      2.367,
+      2.085,
+      1.994,
+      1.897,
+      1.958,
+      1.831,
+      1.968,
+      2.31
+    ]
+  },
+  "tasks": {
+    "c16": {
+      "elements": [
+        {
+          "argmax": 2,
+          "key": "dark",
+          "options": [
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.999992,
+          "probs": [
+            8e-06,
+            0.0,
+            0.999992
+          ]
+        },
+        {
+          "argmax": 2,
+          "key": "show_timestamps",
+          "options": [
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "argmax": 1,
+          "key": "save",
+          "options": [
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.998638,
+          "probs": [
+            0.0,
+            0.998638,
+            0.001362
+          ]
+        }
+      ],
+      "entities": [],
+      "form_title": "Display settings"
+    },
+    "c17": {
+      "elements": [
+        {
+          "argmax": 6,
+          "key": "default_query",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.999993,
+          "probs": [
+            7e-06,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.999993
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "default_category",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "save",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.918183,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.081817,
+            0.918183
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Search query",
+          "value": "parser"
+        },
+        {
+          "label": "Search query",
+          "value": "robotcis"
+        },
+        {
+          "label": "Category",
+          "value": "stories"
+        },
+        {
+          "label": "Category",
+          "value": "authors"
+        }
+      ],
+      "form_title": "Search preferences"
+    },
+    "c18": {
+      "elements": [
+        {
+          "argmax": 6,
+          "key": "title",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "body",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.999954,
+          "probs": [
+            4.2e-05,
+            0.0,
+            0.0,
+            3e-06,
+            0.0,
+            0.0,
+            0.999954
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "save",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Draft title",
+          "value": "Bench log"
+        },
+        {
+          "label": "Draft title",
+          "value": "Cable check."
+        },
+        {
+          "label": "Draft body",
+          "value": "Cable check."
+        },
+        {
+          "label": "Draft body",
+          "value": "Bench log"
+        }
+      ],
+      "form_title": "Draft editor"
+    },
+    "c20": {
+      "elements": [
+        {
+          "argmax": 1,
+          "key": "email",
+          "options": [
+            "fill Contact e-mail: desk@example.com",
+            "fill Contact e-mail: desk@example.org",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 0.574276,
+          "probs": [
+            0.425597,
+            0.574276,
+            0.0,
+            0.0,
+            0.000126
+          ]
+        },
+        {
+          "argmax": 4,
+          "key": "send",
+          "options": [
+            "fill Contact e-mail: desk@example.com",
+            "fill Contact e-mail: desk@example.org",
+            "check",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Contact e-mail",
+          "value": "desk@example.com"
+        },
+        {
+          "label": "Contact e-mail",
+          "value": "desk@example.org"
+        }
+      ],
+      "form_title": "Send receipt"
+    }
+  },
+  "version": "cua-s1-decisions-v1"
+}

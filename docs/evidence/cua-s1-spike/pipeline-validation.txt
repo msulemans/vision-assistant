@@ -1,0 +1,14 @@
+fresh synthetic rows: 744
+top1 over all rows: 0.9704
+  check     30 /    30
+  click     30 /    30
+  fill     326 /   346
+  skip     336 /   338
+REQUIRED_CHECKBOXES: ('I consent to treatment and agree to the privacy policy', 'I agree to the terms and conditions', 'I certify the information above is accurate', 'I am legally authorized to work in this country', 'I have read and accept the privacy notice', 'I confirm the details are correct', 'I accept the terms of service', 'Consent to electronic communication (required)', 'I acknowledge the cancellation policy', 'I agree to the HIPAA notice', 'I authorize verification of the information provided', 'I understand this is a binding application')
+OPTIONAL_CHECKBOXES: ('Subscribe to our newsletter', 'Send me promotional offers', 'Text me appointment reminders', 'Share my data with partners', 'Remember me on this device', 'Join the loyalty program', 'I would like to receive marketing email', 'Add me to the mailing list', 'Sign up for SMS alerts')
+SUBMIT_LABELS: ('Submit', 'Submit registration', 'Submit application', 'Submit form', 'Send', 'Continue', 'Register', 'Apply now', 'Save and continue', 'Complete registration', 'Next', 'Finish', 'Submit claim', 'Confirm and submit', 'Sign up', 'Book appointment', 'Create account', 'Done')
+NON_SUBMIT_BUTTONS: ('Clear form', 'Cancel', 'Reset', 'Clear', 'Discard', 'Back', 'Previous', 'Go back', 'Delete draft', 'Log out', 'Help', 'Print blank form', 'Upload file', 'Add another', 'Remove', 'Start over', 'Report a problem', 'Close', 'Exit')
+FORM_TITLES: ('Example Clinic - New Patient Registration', 'Example Robotics - Job Application', 'Test Insurance - Auto Claim Form', 'Example Library - Membership Sign-up', 'Test Bank - Direct Deposit Enrollment', 'Example Dental - Patient Intake', 'Test University - Graduate Application', 'Example Utilities - New Service Request', 'Test Freight - Vendor Onboarding', 'Example Vet - Pet Owner Registration', 'Test Rentals - Tenant Application', 'Example Travel - Visa Assistance Form', 'Test Camp - Parent Consent Form', 'Example Telecom - Account Transfer', 'Test Pharmacy - Prescription Transfer', 'Example Gym - Member Enrollment')
+SAMPLE fill context: 'TASK fill the form from the document, then submit\nFORM Example Dental - Patient Intake - Mozilla Firefox\nELEMENT Edit "State / Province" value=""'
+SAMPLE fill options: ['fill Date of incident: 22 Dec 2026', 'fill Email: abecker90@example.invalid', 'fill Policy no: TEST-POL-51591795'] ...
+SAMPLE check context: 'TASK fill the form from the document, then submit\nFORM Example Dental - Patient Intake - Mozilla Firefox\nELEMENT CheckBox "I agree to the terms and conditions" unchecked'

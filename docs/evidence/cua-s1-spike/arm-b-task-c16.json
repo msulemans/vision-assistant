@@ -1,0 +1,82 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 4932.0,
+  "goal": "In display settings: turn on \"dark\" and turn off \"show_timestamps\". Save.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'stopped'",
+      "form_state.settings: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c16"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 864.0,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:62262/settings/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2465.2,
+      "count": 9,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 3325.9,
+      "executed": "save_form ui:8",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:62262/settings/?saved=1"
+    },
+    {
+      "at_ms": 4931.8,
+      "count": 9,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 9,
+      "truncated": false
+    },
+    {
+      "at_ms": 4931.9,
+      "executed": "stop",
+      "kind": "action",
+      "step": 2
+    },
+    {
+      "at_ms": 4932.0,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "c16",
+  "task_mode": "form",
+  "visited": [
+    "/settings/",
+    "/settings/?saved=1"
+  ]
+}

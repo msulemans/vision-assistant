@@ -1,0 +1,45 @@
+{
+  "cases_sha256_prefix": "25466701a5009b97",
+  "config": {
+    "context_tokens": 224,
+    "encoder": "tinyx",
+    "heads": 4,
+    "hf_model": "Qwen/Qwen2.5-0.5B",
+    "layers": 2,
+    "option_tokens": 96,
+    "rank": 128,
+    "width": 128
+  },
+  "config_sha256": "62d31e2f9a001a8e9b6f8534c5194d07ebdd3f9d62ef1ac281906622992650ca",
+  "decisions_sha256": "c9ab7eaae8d66286b4e618e68d4551b56103e4fb86db80d1c928ca6b37fcaa30",
+  "license": "MIT (code and weights per release pages)",
+  "model": "cua-ai/cua-s1-forms",
+  "note": "pickle checkpoint (cua-s1-forms.pt) intentionally not downloaded; loader rejects pickle",
+  "published_validation": {
+    "ece": 0.00014795374386267213,
+    "examples": 22054,
+    "nll": 0.0019850827802381913,
+    "per_action": {
+      "check": {
+        "acc": 1.0,
+        "n": 835
+      },
+      "click": {
+        "acc": 1.0,
+        "n": 939
+      },
+      "fill": {
+        "acc": 0.9998858968507531,
+        "n": 8764
+      },
+      "skip": {
+        "acc": 0.9989579715178881,
+        "n": 11516
+      }
+    },
+    "rows_per_second": 2589.071654630599,
+    "top1": 0.9994105100631714
+  },
+  "state_signature": "0c661c669bc22189c81637553dcd105fe6178c8a8de85f6f6307c3c635403bfa",
+  "weights_sha256": "05954c1caf51c2fb6c13ea4acbfc88a2e7653dea192252bb51dc89e76a356ddc"
+}

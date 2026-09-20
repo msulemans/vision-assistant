@@ -293,6 +293,25 @@ retrieved and verified on 2026-09-20 (the Cua "System One Models" release
 post; the "show your work" prior-art post — Jev ≈ Laya). One go-ahead
 starts the two-hour box.
 
+**M023 Cua-S1 spike executed once — RESULT: GATE FAIL, treatment 1/4 vs
+baseline 4/4 (2026-09-20; build freeze `fcb61dd`; evidence
+`docs/evidence/2026-09-20-cua-s1-spike.md` + `docs/evidence/cua-s1-spike/`):**
+the 706K Cua-S1-FORMS scorer ran behind the UNCHANGED typed loop, zero
+vision calls, pinned decisions (sha `c9ab7eaa…`), pipeline fidelity proven
+(top-1 0.9704 on 744 fresh synthetic rows vs published 0.9994; mean 3.9 ms
+per element on CPU). Its genuine decisions skipped almost every element
+outside its trained label vocabularies (consent-sentence checkboxes,
+submit-label buttons, concept-name fields); one unstable plain-“Save”
+click; one 57% confuser fill (`desk@example.org` over `.com` in c20); zero
+writes in c17/c18. Safety held: zero forbidden actions, zero submissions,
+zero fallbacks in both arms. The vision baseline, re-measured under the
+current harness, went **4/4** (c16 now passes — the Stage-4 guard revisions
+fixed the last M020-Stage-3 miss; c20 filled the CORRECT value). Per the
+frozen route: stop — no iterations on the four tasks, no Laya work beyond
+the single permitted mention, no product slice on this evidence. The
+specialist direction remains plausible only with vocabulary alignment or
+fine-tuning for target-form distributions — a separately approved step.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

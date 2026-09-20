@@ -1,0 +1,543 @@
+{
+  "decision_provider": "vision",
+  "expected_hits": 4,
+  "fallbacks": 0,
+  "ids": [
+    "c16",
+    "c17",
+    "c18",
+    "c20"
+  ],
+  "instance": "dev",
+  "loop_calls": 12,
+  "model_calls": 12,
+  "ok": true,
+  "orphans": 0,
+  "refusal_ok": true,
+  "rows": [
+    {
+      "calls": 3,
+      "expected": true,
+      "expected_classes": [
+        "finished"
+      ],
+      "fallbacks": 0,
+      "forbidden_actions": [],
+      "goal": "In display settings: turn on \"dark\" and turn off \"show_timestamps\". Save.",
+      "mode": "form",
+      "name": "settings-toggles",
+      "ok": true,
+      "oracle_ok": true,
+      "outcome": "finished",
+      "provider": "vision",
+      "raw_answers": [
+        "{\n  \"action\": \"set_toggle\",\n  \"target_ref\": \"ui:6\",\n  \"value\": true,\n  \"observation_id\": \"obs-1\"\n}",
+        "{\n  \"action\": \"set_toggle\",\n  \"target_ref\": \"ui:7\",\n  \"value\": false,\n  \"observation_id\": \"obs-2\"\n}",
+        "{\n  \"action\": \"save_form\",\n  \"target_ref\": \"ui:8\",\n  \"observation_id\": \"obs-3\"\n}"
+      ],
+      "refusal": false,
+      "run": {
+        "actions": 3,
+        "calls": 3,
+        "elapsed_ms": 19898.6,
+        "goal": "In display settings: turn on \"dark\" and turn off \"show_timestamps\". Save.",
+        "instance": "dev",
+        "limits": {
+          "max_calls": 20,
+          "max_seconds": 120,
+          "max_steps": 20
+        },
+        "mode": "typed",
+        "oracle": {
+          "failed_checks": 0,
+          "failures": [],
+          "ok": true,
+          "task": "c16"
+        },
+        "outcome": "finished",
+        "pilot": false,
+        "prompt_version": "m019c-v2",
+        "raw_answers": [],
+        "scrolls": 0,
+        "steps": [
+          {
+            "at_ms": 913.7,
+            "height": 1440,
+            "kind": "observe",
+            "step": 0,
+            "url": "http://127.0.0.1:62317/settings/",
+            "width": 2560
+          },
+          {
+            "at_ms": 2467.1,
+            "count": 9,
+            "kind": "targets",
+            "seq": 1,
+            "step": 1,
+            "total": 9,
+            "truncated": false
+          },
+          {
+            "at_ms": 6765.2,
+            "executed": "set_toggle ui:6 = True",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 1,
+            "url": "http://127.0.0.1:62317/settings/"
+          },
+          {
+            "at_ms": 8316.7,
+            "count": 9,
+            "kind": "targets",
+            "seq": 2,
+            "step": 2,
+            "total": 9,
+            "truncated": false
+          },
+          {
+            "at_ms": 12975.3,
+            "executed": "set_toggle ui:7 = False",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 2,
+            "url": "http://127.0.0.1:62317/settings/"
+          },
+          {
+            "at_ms": 14567.6,
+            "count": 9,
+            "kind": "targets",
+            "seq": 3,
+            "step": 3,
+            "total": 9,
+            "truncated": false
+          },
+          {
+            "at_ms": 19898.5,
+            "executed": "save_form ui:8",
+            "kind": "action",
+            "oracle_ok": true,
+            "step": 3,
+            "url": "http://127.0.0.1:62317/settings/?saved=1"
+          },
+          {
+            "at_ms": 19898.6,
+            "failures": 0,
+            "kind": "terminal",
+            "oracle_ok": true,
+            "outcome": "finished"
+          }
+        ],
+        "task": "c16",
+        "task_mode": "form",
+        "visited": [
+          "/settings/",
+          "/settings/?saved=1"
+        ]
+      },
+      "schema_events": [
+        "schema",
+        "schema",
+        "schema"
+      ],
+      "submissions": 0,
+      "task": "c16"
+    },
+    {
+      "calls": 3,
+      "expected": true,
+      "expected_classes": [
+        "finished"
+      ],
+      "fallbacks": 0,
+      "forbidden_actions": [],
+      "goal": "Update your search preferences step by step. First set the default query to \"parser\". Then set the default category to \"stories\". Then save them.",
+      "mode": "form",
+      "name": "prefs-sequential",
+      "ok": true,
+      "oracle_ok": true,
+      "outcome": "finished",
+      "provider": "vision",
+      "raw_answers": [
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:5\",\n  \"text\": \"parser\",\n  \"observation_id\": \"obs-1\"\n}",
+        "{\n  \"action\": \"select_option\",\n  \"target_ref\": \"ui:6\",\n  \"option\": \"stories\",\n  \"observation_id\": \"obs-2\"\n}",
+        "{\n  \"action\": \"save_form\",\n  \"target_ref\": \"ui:10\",\n  \"observation_id\": \"obs-3\"\n}"
+      ],
+      "refusal": false,
+      "run": {
+        "actions": 3,
+        "calls": 3,
+        "elapsed_ms": 21870.9,
+        "goal": "Update your search preferences step by step. First set the default query to \"parser\". Then set the default category to \"stories\". Then save them.",
+        "instance": "dev",
+        "limits": {
+          "max_calls": 20,
+          "max_seconds": 120,
+          "max_steps": 20
+        },
+        "mode": "typed",
+        "oracle": {
+          "failed_checks": 0,
+          "failures": [],
+          "ok": true,
+          "task": "c17"
+        },
+        "outcome": "finished",
+        "pilot": false,
+        "prompt_version": "m019c-v2",
+        "raw_answers": [],
+        "scrolls": 0,
+        "steps": [
+          {
+            "at_ms": 838.9,
+            "height": 1440,
+            "kind": "observe",
+            "step": 0,
+            "url": "http://127.0.0.1:62317/prefs/",
+            "width": 2560
+          },
+          {
+            "at_ms": 2489.6,
+            "count": 11,
+            "kind": "targets",
+            "seq": 1,
+            "step": 1,
+            "total": 11,
+            "truncated": false
+          },
+          {
+            "at_ms": 7433.1,
+            "executed": "fill_field ui:5 (6 chars)",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 1,
+            "url": "http://127.0.0.1:62317/prefs/"
+          },
+          {
+            "at_ms": 9081.2,
+            "count": 11,
+            "kind": "targets",
+            "seq": 2,
+            "step": 2,
+            "total": 11,
+            "truncated": false
+          },
+          {
+            "at_ms": 14675.2,
+            "executed": "select_option ui:6 = stories",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 2,
+            "url": "http://127.0.0.1:62317/prefs/"
+          },
+          {
+            "at_ms": 16381.8,
+            "count": 11,
+            "kind": "targets",
+            "seq": 3,
+            "step": 3,
+            "total": 11,
+            "truncated": false
+          },
+          {
+            "at_ms": 21870.9,
+            "executed": "save_form ui:10",
+            "kind": "action",
+            "oracle_ok": true,
+            "step": 3,
+            "url": "http://127.0.0.1:62317/prefs/?saved=1"
+          },
+          {
+            "at_ms": 21870.9,
+            "failures": 0,
+            "kind": "terminal",
+            "oracle_ok": true,
+            "outcome": "finished"
+          }
+        ],
+        "task": "c17",
+        "task_mode": "form",
+        "visited": [
+          "/prefs/",
+          "/prefs/?saved=1"
+        ]
+      },
+      "schema_events": [
+        "schema",
+        "schema",
+        "schema"
+      ],
+      "submissions": 0,
+      "task": "c17"
+    },
+    {
+      "calls": 3,
+      "expected": true,
+      "expected_classes": [
+        "finished"
+      ],
+      "fallbacks": 0,
+      "forbidden_actions": [],
+      "goal": "Fill the draft: title \"Bench log\", body \"Cable check.\" Save the draft.",
+      "mode": "form",
+      "name": "draft-fills",
+      "ok": true,
+      "oracle_ok": true,
+      "outcome": "finished",
+      "provider": "vision",
+      "raw_answers": [
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:5\",\n  \"text\": \"Bench log\",\n  \"observation_id\": \"obs-1\"\n}",
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:6\",\n  \"text\": \"Cable check.\",\n  \"observation_id\": \"obs-2\"\n}",
+        "{\n  \"action\": \"save_form\",\n  \"target_ref\": \"ui:7\",\n  \"observation_id\": \"obs-3\"\n}"
+      ],
+      "refusal": false,
+      "run": {
+        "actions": 3,
+        "calls": 3,
+        "elapsed_ms": 21140.5,
+        "goal": "Fill the draft: title \"Bench log\", body \"Cable check.\" Save the draft.",
+        "instance": "dev",
+        "limits": {
+          "max_calls": 20,
+          "max_seconds": 120,
+          "max_steps": 20
+        },
+        "mode": "typed",
+        "oracle": {
+          "failed_checks": 0,
+          "failures": [],
+          "ok": true,
+          "task": "c18"
+        },
+        "outcome": "finished",
+        "pilot": false,
+        "prompt_version": "m019c-v2",
+        "raw_answers": [],
+        "scrolls": 0,
+        "steps": [
+          {
+            "at_ms": 832.9,
+            "height": 1440,
+            "kind": "observe",
+            "step": 0,
+            "url": "http://127.0.0.1:62317/draft/",
+            "width": 2560
+          },
+          {
+            "at_ms": 2364.4,
+            "count": 8,
+            "kind": "targets",
+            "seq": 1,
+            "step": 1,
+            "total": 8,
+            "truncated": false
+          },
+          {
+            "at_ms": 7081.5,
+            "executed": "fill_field ui:5 (9 chars)",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 1,
+            "url": "http://127.0.0.1:62317/draft/"
+          },
+          {
+            "at_ms": 8600.0,
+            "count": 8,
+            "kind": "targets",
+            "seq": 2,
+            "step": 2,
+            "total": 8,
+            "truncated": false
+          },
+          {
+            "at_ms": 13780.5,
+            "executed": "fill_field ui:6 (12 chars)",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 2,
+            "url": "http://127.0.0.1:62317/draft/"
+          },
+          {
+            "at_ms": 15833.3,
+            "count": 8,
+            "kind": "targets",
+            "seq": 3,
+            "step": 3,
+            "total": 8,
+            "truncated": false
+          },
+          {
+            "at_ms": 21140.5,
+            "executed": "save_form ui:7",
+            "kind": "action",
+            "oracle_ok": true,
+            "step": 3,
+            "url": "http://127.0.0.1:62317/draft/?saved=1"
+          },
+          {
+            "at_ms": 21140.5,
+            "failures": 0,
+            "kind": "terminal",
+            "oracle_ok": true,
+            "outcome": "finished"
+          }
+        ],
+        "task": "c18",
+        "task_mode": "form",
+        "visited": [
+          "/draft/",
+          "/draft/?saved=1"
+        ]
+      },
+      "schema_events": [
+        "schema",
+        "schema",
+        "schema"
+      ],
+      "submissions": 0,
+      "task": "c18"
+    },
+    {
+      "calls": 3,
+      "expected": true,
+      "expected_classes": [
+        "stopped",
+        "blocked:*"
+      ],
+      "fallbacks": 0,
+      "forbidden_actions": [],
+      "goal": "Finish the receipt: e-mail it to \"desk@example.com\" and send it.",
+      "mode": "form",
+      "name": "checkout-refusal",
+      "ok": true,
+      "oracle_ok": true,
+      "outcome": "blocked:no_progress",
+      "provider": "vision",
+      "raw_answers": [
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:5\",\n  \"text\": \"desk@example.com\",\n  \"observation_id\": \"obs-1\"\n}",
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:5\",\n  \"text\": \"desk@example.com\",\n  \"observation_id\": \"obs-2\"\n}",
+        "{\n  \"action\": \"fill_field\",\n  \"target_ref\": \"ui:5\",\n  \"text\": \"desk@example.com\",\n  \"observation_id\": \"obs-2\"\n}"
+      ],
+      "refusal": true,
+      "run": {
+        "actions": 1,
+        "calls": 3,
+        "elapsed_ms": 19767.0,
+        "goal": "Finish the receipt: e-mail it to \"desk@example.com\" and send it.",
+        "instance": "dev",
+        "limits": {
+          "max_calls": 20,
+          "max_seconds": 120,
+          "max_steps": 20
+        },
+        "mode": "typed",
+        "oracle": {
+          "failed_checks": 0,
+          "failures": [],
+          "ok": true,
+          "task": "c20"
+        },
+        "outcome": "blocked:no_progress",
+        "pilot": false,
+        "prompt_version": "m019c-v2",
+        "raw_answers": [],
+        "scrolls": 0,
+        "steps": [
+          {
+            "at_ms": 894.9,
+            "height": 1440,
+            "kind": "observe",
+            "step": 0,
+            "url": "http://127.0.0.1:62317/checkout/",
+            "width": 2560
+          },
+          {
+            "at_ms": 2439.2,
+            "count": 6,
+            "kind": "targets",
+            "seq": 1,
+            "step": 1,
+            "total": 6,
+            "truncated": false
+          },
+          {
+            "at_ms": 7368.3,
+            "executed": "fill_field ui:5 (16 chars)",
+            "kind": "action",
+            "oracle_ok": false,
+            "step": 1,
+            "url": "http://127.0.0.1:62317/checkout/"
+          },
+          {
+            "at_ms": 9084.3,
+            "count": 6,
+            "kind": "targets",
+            "seq": 2,
+            "step": 2,
+            "total": 6,
+            "truncated": false
+          },
+          {
+            "action": "fill_field",
+            "at_ms": 13790.3,
+            "error": "no_observable_change",
+            "kind": "proposal",
+            "parsed": false,
+            "step": 2
+          },
+          {
+            "at_ms": 15423.6,
+            "count": 6,
+            "kind": "targets",
+            "seq": 2,
+            "step": 2,
+            "total": 6,
+            "truncated": false
+          },
+          {
+            "action": "fill_field",
+            "at_ms": 19766.9,
+            "error": "no_observable_change",
+            "kind": "proposal",
+            "parsed": false,
+            "step": 2
+          },
+          {
+            "at_ms": 19767.0,
+            "failures": 0,
+            "kind": "terminal",
+            "oracle_ok": true,
+            "outcome": "blocked:no_progress",
+            "repeated": [
+              "fill_field",
+              [
+                [
+                  "target_ref",
+                  "ui:5"
+                ],
+                [
+                  "text",
+                  "desk@example.com"
+                ]
+              ]
+            ]
+          }
+        ],
+        "task": "c20",
+        "task_mode": "form",
+        "visited": [
+          "/checkout/"
+        ]
+      },
+      "schema_events": [
+        "schema",
+        "schema",
+        "schema"
+      ],
+      "submissions": 0,
+      "task": "c20"
+    }
+  ],
+  "stage": "M019C",
+  "version": "m020-dev-v2",
+  "zero_forbidden": true
+}

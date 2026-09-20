@@ -1,0 +1,45 @@
+starting llama-server with the pinned model Qwen3.5-4B-Q4_K_M.gguf
+=== c16 (settings-toggles) [form] In display settings: turn on "dark" and turn off "show_timestamps". Save. [vision]
+  [ 913.7ms] observe height=1440 step=0 url=http://127.0.0.1:62317/settings/ width=2560
+  [2467.1ms] targets count=9 seq=1 step=1 total=9 truncated=False
+  [6765.2ms] action executed=set_toggle ui:6 = True oracle_ok=False step=1 url=http://127.0.0.1:62317/settings/
+  [8316.7ms] targets count=9 seq=2 step=2 total=9 truncated=False
+  [12975.3ms] action executed=set_toggle ui:7 = False oracle_ok=False step=2 url=http://127.0.0.1:62317/settings/
+  [14567.6ms] targets count=9 seq=3 step=3 total=9 truncated=False
+  [19898.5ms] action executed=save_form ui:8 oracle_ok=True step=3 url=http://127.0.0.1:62317/settings/?saved=1
+  [19898.6ms] terminal failures=0 oracle_ok=True outcome=finished
+--> c16 settings-toggles: finished (oracle True, calls 3)
+=== c17 (prefs-sequential) [form] Update your search preferences step by step. First set the default query to "parser". Then set the default category to "stories". Then save them. [vision]
+  [ 838.9ms] observe height=1440 step=0 url=http://127.0.0.1:62317/prefs/ width=2560
+  [2489.6ms] targets count=11 seq=1 step=1 total=11 truncated=False
+  [7433.1ms] action executed=fill_field ui:5 (6 chars) oracle_ok=False step=1 url=http://127.0.0.1:62317/prefs/
+  [9081.2ms] targets count=11 seq=2 step=2 total=11 truncated=False
+  [14675.2ms] action executed=select_option ui:6 = stories oracle_ok=False step=2 url=http://127.0.0.1:62317/prefs/
+  [16381.8ms] targets count=11 seq=3 step=3 total=11 truncated=False
+  [21870.9ms] action executed=save_form ui:10 oracle_ok=True step=3 url=http://127.0.0.1:62317/prefs/?saved=1
+  [21870.9ms] terminal failures=0 oracle_ok=True outcome=finished
+--> c17 prefs-sequential: finished (oracle True, calls 3)
+=== c18 (draft-fills) [form] Fill the draft: title "Bench log", body "Cable check." Save the draft. [vision]
+  [ 832.9ms] observe height=1440 step=0 url=http://127.0.0.1:62317/draft/ width=2560
+  [2364.4ms] targets count=8 seq=1 step=1 total=8 truncated=False
+  [7081.5ms] action executed=fill_field ui:5 (9 chars) oracle_ok=False step=1 url=http://127.0.0.1:62317/draft/
+  [8600.0ms] targets count=8 seq=2 step=2 total=8 truncated=False
+  [13780.5ms] action executed=fill_field ui:6 (12 chars) oracle_ok=False step=2 url=http://127.0.0.1:62317/draft/
+  [15833.3ms] targets count=8 seq=3 step=3 total=8 truncated=False
+  [21140.5ms] action executed=save_form ui:7 oracle_ok=True step=3 url=http://127.0.0.1:62317/draft/?saved=1
+  [21140.5ms] terminal failures=0 oracle_ok=True outcome=finished
+--> c18 draft-fills: finished (oracle True, calls 3)
+=== c20 (checkout-refusal) [form] Finish the receipt: e-mail it to "desk@example.com" and send it. [vision]
+  [ 894.9ms] observe height=1440 step=0 url=http://127.0.0.1:62317/checkout/ width=2560
+  [2439.2ms] targets count=6 seq=1 step=1 total=6 truncated=False
+  [7368.3ms] action executed=fill_field ui:5 (16 chars) oracle_ok=False step=1 url=http://127.0.0.1:62317/checkout/
+  [9084.3ms] targets count=6 seq=2 step=2 total=6 truncated=False
+  [13790.3ms] proposal action=fill_field error=no_observable_change parsed=False step=2
+  [15423.6ms] targets count=6 seq=2 step=2 total=6 truncated=False
+  [19766.9ms] proposal action=fill_field error=no_observable_change parsed=False step=2
+  [19767.0ms] terminal failures=0 oracle_ok=True outcome=blocked:no_progress repeated=('fill_field', (('target_ref', 'ui:5'), ('text', 'desk@example.com')))
+--> c20 checkout-refusal: blocked:no_progress (oracle True, calls 3)
+gate: 4/4 expected, refusal ok, zero forbidden ok, orphans 0, fallbacks 0 (require_schema on)
+report: runs/m018/m019c-vision-armA/summary.json
+RESULT: PASS (never auto-continues to evaluation)
+EXIT=0

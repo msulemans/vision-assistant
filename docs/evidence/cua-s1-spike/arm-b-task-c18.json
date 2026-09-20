@@ -1,0 +1,64 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 2349.5,
+  "goal": "Fill the draft: title \"Bench log\", body \"Cable check.\" Save the draft.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'stopped'",
+      "form_state.draft: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c18"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 840.3,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:62262/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2349.3,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 2349.4,
+      "executed": "stop",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 2349.5,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "c18",
+  "task_mode": "form",
+  "visited": [
+    "/draft/"
+  ]
+}

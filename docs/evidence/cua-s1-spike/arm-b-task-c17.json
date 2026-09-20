@@ -1,0 +1,64 @@
+{
+  "actions": 1,
+  "calls": 1,
+  "elapsed_ms": 2458.5,
+  "goal": "Update your search preferences step by step. First set the default query to \"parser\". Then set the default category to \"stories\". Then save them.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 2,
+    "failures": [
+      "outcome: expected 'finished', got 'stopped'",
+      "form_state.prefs: does not match the expected values"
+    ],
+    "ok": false,
+    "task": "c17"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 817.6,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:62262/prefs/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2458.2,
+      "count": 11,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 11,
+      "truncated": false
+    },
+    {
+      "at_ms": 2458.4,
+      "executed": "stop",
+      "kind": "action",
+      "step": 1
+    },
+    {
+      "at_ms": 2458.5,
+      "failures": 2,
+      "kind": "terminal",
+      "oracle_ok": false,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "c17",
+  "task_mode": "form",
+  "visited": [
+    "/prefs/"
+  ]
+}

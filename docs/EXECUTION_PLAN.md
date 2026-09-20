@@ -48,7 +48,7 @@ Not on the road (owner decisions): further harness iterations for the 4B
 generalist lane — M022 was the last; revisiting that lane means a stronger
 model under the frozen harness. No Laya work before Step 1 reports.
 
-### Step 1 — Cua-S1 four-task form spike (NEXT; ≈ 2-hour box)
+### Step 1 — Cua-S1 four-task form spike (EXECUTED 2026-09-20; RESULT: GATE FAIL — 1/4 vs baseline 4/4; stop per the frozen route; report: `docs/evidence/2026-09-20-cua-s1-spike.md`)
 
 Pointer: `docs/CUA_S1_INTEGRATION_PLAN.md` (amended: four existing tasks —
 c16/c17/c18/c20; no new authoring; two-hour box).

@@ -228,8 +228,11 @@ exists outside `runs/` and the pinnable model directory.
   harnesses:** the fair test if the 4B line is reopened; needs its own
   pin + freeze (`docs/NEXT_EXPERIMENT_OPTIONS.md`, option A).
 
-## Stop point
+## Stop point and outcome (2026-09-20)
 
-Nothing beyond this document was done (amendment included). Any
-installation, download, code, or model run requires an explicit go-ahead —
-one go-ahead starts the two-hour box end-to-end.
+This document was frozen as plan-only; the amended spike was then executed
+once per arm (build freeze commit `fcb61dd`): treatment **1/4** vs vision
+baseline **4/4** ⇒ **GATE FAIL**. Per the amendment: stop — no iterations
+on the four tasks, no Laya work beyond the single permitted mention, no
+product slice on this evidence. Full report:
+`docs/evidence/2026-09-20-cua-s1-spike.md`.
