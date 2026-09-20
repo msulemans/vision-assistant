@@ -453,6 +453,7 @@ def cmd_hn_pilot(args) -> int:
     spec = tasks.TaskSpec("hn", "P", "answer", "live", HN_PILOT_GOAL,
                           HN_ORIGIN + "/",
                           notes="M018E live pilot; reviewer-scored; frozen scope")
+    report = None
     try:
         print("starting llama-server with the pinned model " + model["name"])
         adapter.start()
@@ -462,18 +463,23 @@ def cmd_hn_pilot(args) -> int:
             server_state_provider=lambda: {}, limits=limits, mode="target",
             pilot=True)
         report["raw_answers"] = raw_answers
-        kept = root / "shots-kept"
-        if session.snapshot_dir.exists():
-            shutil.copytree(session.snapshot_dir, kept)
-        (root / "pilot-report.json").write_text(
-            json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-        print("outcome: {} (actions {}, calls {}, {} ms)".format(
-            report["outcome"], report["actions"], report["calls"],
-            report["elapsed_ms"]))
-        print("report:", root)
+    except Exception as exc:  # noqa: BLE001 - crash-safe pilot reporting
+        report = {
+            "stage": "M018E", "task": "hn", "outcome": "failed:exception",
+            "error": "{}: {}".format(type(exc).__name__, exc),
+            "raw_answers": raw_answers,
+        }
     finally:
+        kept = root / "shots-kept"
+        if (session.snapshot_dir is not None and session.snapshot_dir.exists()
+                and not kept.exists()):
+            shutil.copytree(session.snapshot_dir, kept)
         session.stop()
         adapter.stop()
+    (root / "pilot-report.json").write_text(
+        json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    print("outcome: {}".format(report.get("outcome")))
+    print("report:", root)
     return 0
 
 
@@ -655,7 +661,8 @@ def main(argv=None) -> int:
     p_hn = sub.add_parser("hn-pilot",
                           help="M018E: one live Hacker News reading run (reviewer-scored, frozen scope)")
     p_hn.add_argument("--pin-dir", default=str(REPO_ROOT / "models" / "qwen3.5-4b"))
-    p_hn.add_argument("--ctx-size", type=int, default=4096)
+    p_hn.add_argument("--ctx-size", type=int, default=8192,
+                      help="pilot context: 8192 (attempt 1 at 4096 hit context overflow on a live page)")
     p_hn.add_argument("--max-steps", type=int, default=0)
     p_hn.add_argument("--max-calls", type=int, default=0)
     p_hn.add_argument("--max-seconds", type=float, default=0)

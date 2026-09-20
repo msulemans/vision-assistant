@@ -70,3 +70,24 @@ completion.
   incorrect / abstained (legal if fewer than three qualify) / failed run.
 - Live HN success is a transfer demonstration, **not** part of the
   reproducible 50-task denominator.
+
+## Attempt 1 (2026-09-20 12:00, recorded before the fix) — infrastructure failure
+
+Attempt 1 loaded the live front page and ran three steps (146 targets
+extracted, capped at 40) before the model server returned
+`request (4109 tokens) exceeds the available context size (4096 tokens)`.
+An earlier request had been truncated at 4095 tokens, which produced an
+unparseable reply. The run aborted; the crash also killed the report write
+(robustness gap). **This is a harness capacity defect, not a capability
+measurement** — the frozen 4096 context was sized for fixture pages, and a
+live front page with 40 long-labeled targets needs slightly more.
+
+## Scoped harness fix (recorded before attempt 2; goal, prompt, model,
+budgets, and scoring unchanged)
+
+- Pilot context: **8192** (runtime capacity for real pages; CLI default for
+  `hn-pilot`; the fixture benchmarks keep 4096 and are untouched).
+- The pilot command is crash-safe: on any exception it writes a report with
+  `outcome: failed:exception` and preserves screenshots.
+- Attempt 2 is a single run under these settings; attempt 1's artifacts are
+  kept as evidence (`runs/m018/m018e-hn-20260920-120002/server.log`).
