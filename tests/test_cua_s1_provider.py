@@ -148,12 +148,37 @@ class CasesContractTest(unittest.TestCase):
             self.assertEqual(element["options"],
                              ["check", "uncheck", "click", "skip"])
 
-    def test_cases_include_the_task_goal(self) -> None:
+    def test_cases_include_the_task_goal_and_hints(self) -> None:
         cases = cua.build_cases("c16")
         self.assertIn("turn off", cases["goal"])
         for element in cases["elements"]:
             self.assertTrue(element["context"].startswith("TASK "))
             self.assertIn('"show_timestamps"', element["context"])
+        dark = next(item for item in cases["elements"]
+                    if item["key"] == "dark")
+        self.assertIn('hint="', dark["context"])
+        self.assertIn('turn on "dark"', dark["context"])
+        stamps = next(item for item in cases["elements"]
+                      if item["key"] == "show_timestamps")
+        self.assertIn('turn off "show_timestamps"', stamps["context"])
+
+    def test_goal_hint_exact_then_token_then_none(self) -> None:
+        goal = ('In display settings: turn on "dark" and turn off '
+                '"show_timestamps". Save.')
+        self.assertEqual(cua.goal_hint(goal, "dark"),
+                         'In display settings: turn on "dark"')
+        self.assertIn('turn off "show_timestamps"',
+                      cua.goal_hint(goal, "show_timestamps"))
+        self.assertEqual(cua.goal_hint(goal, "compact"), "")
+        mail = 'e-mail it to "desk@example.com" and send it'
+        self.assertIn("desk@example.com", cua.goal_hint(mail, "Contact e-mail"))
+        self.assertEqual(cua.goal_hint(mail, "Per page"), "")
+        prefs = ('Update your search preferences step by step. First set the '
+                 'default query to "parser". Then set the default category '
+                 'to "stories". Then save them.')
+        self.assertIn('"parser"', cua.goal_hint(prefs, "Default query"))
+        self.assertNotIn('"stories"', cua.goal_hint(prefs, "Default query"))
+        self.assertIn('"stories"', cua.goal_hint(prefs, "Default category"))
 
     def test_render_context_carries_the_goal(self) -> None:
         edit = {"role": "Edit", "label": "Default query", "value": "",
@@ -175,6 +200,10 @@ class CasesContractTest(unittest.TestCase):
         self.assertIn('ELEMENT CheckBox "dark" checked',
                       cua.render_context("Turn dark on.", "Display settings",
                                          checked))
+        hinted = cua.render_context('In settings: turn on "dark". Save.',
+                                    "Display settings", checkbox,
+                                    hint='turn on "dark"')
+        self.assertIn('hint="turn on "dark""', hinted)
 
     def test_render_options_entity_pointers_then_fixed(self) -> None:
         options = cua.render_options((("Search query", "parser"),

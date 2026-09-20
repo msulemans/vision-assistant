@@ -29,12 +29,26 @@ milestone.
    the scenario's tokens as ordinary members; the four dev tasks' exact
    goals are never used as training episodes.
 3. **Fine-tune of the released 706K checkpoint**
-   (`scripts/s1_forms_va_train.py`) → `models/s1-forms-va-v1`
-   (safetensors + JSON via the upstream loader; pickle rejected; signature
-   validated on load).
+   (`scripts/s1_forms_va_train.py`) → the final checkpoint
+   `models/s1-forms-va-v4` (safetensors + JSON via the upstream loader;
+   pickle rejected; signature validated on load; iterations v1–v3 are
+   recorded in the evidence).
 4. Decisions re-scored through `scripts/cua_s1_scoring.py --weights` and
    re-pinned; **Arm B re-run on the same four tasks** (same command shape,
    one run per task, `--require-schema`).
+
+## Revision v3 (2026-09-20, pre-measurement)
+
+Training iterations v1–v3 (corpora 1/3/4; 14 + 20 + 12 epochs) showed the
+name×polarity×state conjunction is not learnable at 706K params from
+goal-text-only contexts (val best: check 0.30–0.48, uncheck 0.17–0.57,
+fill 0.72–0.80; overfitting after epoch 5). v3 therefore adds **trusted
+goal-clause retrieval**: the provider renders `hint="<goal clause>"` for
+elements the goal mentions (`goal_hint()` — exact label first, then token
+match; it never maps polarity or values to actions). The specialist still
+chooses the option (polarity read, value match including confusers, skip
+discipline). No measurement run against the four tasks has happened yet —
+this revision predates the gate.
 
 ## Honest framing
 

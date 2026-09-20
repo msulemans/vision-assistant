@@ -62,7 +62,11 @@ FIELD_VALUES = ("parser", "robotcis", "teleoscope", "bench log", "cable check",
                 "alpha", "beta", "staging", "nightly", "mainline", "harbor",
                 "lakeview", "oakridge", "quicklog", "runbook", "sensor drift",
                 "field notes", "cable swap", "lab notes", "desk check",
-                "cold start", "warm boot")
+                "cold start", "warm boot", "signal drop", "cable run",
+                "bench audit", "pilot light", "ground truth", "hot path",
+                "cold path", "edge case", "frame drop", "loopback",
+                "first pass", "second pass", "paper trail", "quiet hours",
+                "beta wave", "night shift")
 SELECT_FIELDS = (
     ("Default category", ("all", "stories", "authors")),
     ("Sort order", ("relevance", "newest", "oldest")),
@@ -114,7 +118,9 @@ def _row(goal: str, title: str, element: dict, entities, options,
         label = len(entities) + csp.FIXED_ACTIONS.index(target[0])
         action = target[0]
     return {
-        "context": csp.render_context(goal, title, element),
+        "context": csp.render_context(goal, title, element,
+                                      hint=csp.goal_hint(
+                                          goal, element["label"])),
         "options": options,
         "label": label,
         "meta": {"action": action},
@@ -123,8 +129,8 @@ def _row(goal: str, title: str, element: dict, entities, options,
 
 def _settings_episode(rng: random.Random):
     title = rng.choice(SETTINGS_TITLES)
-    names = rng.sample(TOGGLE_NAMES, rng.randint(2, 4))
-    mentioned = rng.sample(names, rng.randint(1, min(2, len(names))))
+    names = rng.sample(TOGGLE_NAMES, rng.randint(3, 5))
+    mentioned = rng.sample(names, rng.randint(2, min(4, len(names))))
     desired = {name: rng.random() < 0.5 for name in mentioned}
     clauses = []
     for name in mentioned:
@@ -137,13 +143,8 @@ def _settings_episode(rng: random.Random):
     for name in names:
         checked = rng.random() < 0.5
         if name in desired:
-            wants_on = desired[name]
-            if wants_on and not checked:
-                target = ("check", None)
-            elif (not wants_on) and checked:
-                target = ("uncheck", None)
-            else:
-                target = ("skip", None)
+            target = (("check", None) if desired[name]
+                      else ("uncheck", None))
         else:
             target = ("skip", None)
         element = {"role": "CheckBox", "label": name, "value": "",
@@ -275,8 +276,11 @@ def _receipt_episode(rng: random.Random):
     return rows, "receipt|{}".format(send)
 
 
-EPISODES = (_settings_episode, _prefs_episode, _draft_episode,
-            _receipt_episode)
+EPISODES = (_settings_episode, _settings_episode, _settings_episode,
+            _settings_episode,
+            _prefs_episode, _prefs_episode,
+            _draft_episode, _draft_episode,
+            _receipt_episode, _receipt_episode)
 
 
 def main() -> int:

@@ -96,6 +96,15 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _weights_file(path) -> Path:
+    """Accept a checkpoint directory or a weights file for hashing."""
+
+    candidate = Path(path)
+    if candidate.is_dir():
+        candidate = candidate / "model.safetensors"
+    return candidate
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--init", default=str(
@@ -138,6 +147,7 @@ def main() -> int:
         return 0.5 * (1 + math.cos(math.pi * min(progress, 1.0)))
 
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, rate)
+    output_dir = Path(args.out)
     best = {"nll": float("inf")}
     best_state = None
     history = []
@@ -163,7 +173,9 @@ def main() -> int:
                   "val_nll": validation["nll"], "val_top1": validation["top1"],
                   "val_rows_per_second": validation["rows_per_second"]}
         history.append(record)
-        print(json.dumps(record, sort_keys=True))
+        print(json.dumps(record, sort_keys=True), flush=True)
+        save_checkpoint(output_dir, model, config,
+                        metadata={"partial": True, "epoch": epoch + 1})
         if validation["nll"] < best["nll"]:
             best = {key: value for key, value in validation.items()
                     if key != "rows_per_second"}
@@ -174,7 +186,7 @@ def main() -> int:
     metadata = {
         "task": "s1-forms-va-domain-adaptation",
         "initialized_from": str(args.init),
-        "init_sha256": _sha256(Path(args.init)),
+        "init_sha256": _sha256(_weights_file(args.init)),
         "corpus": {"train": str(args.train), "val": str(args.val),
                    "train_rows": len(train_set), "val_rows": len(val_set)},
         "seed": args.seed, "epochs": args.epochs, "batch_size": args.batch,

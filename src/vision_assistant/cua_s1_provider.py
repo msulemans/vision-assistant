@@ -4,11 +4,13 @@ Based on the cua-s1 research project (MIT, ``libs/cua-s1`` in trycua/cua) —
 **scorer architecture only**. The stock released checkpoint skips this
 repository's form vocabulary (measured: M023 spike, 1/4); v2 therefore
 adapts the same 706K one-pass option scorer to this project's scenario: the
-context's TASK line carries the task goal, the option set carries an
-explicit ``uncheck`` (the stock model could not express it), and
-``models/s1-forms-va-v1`` is fine-tuned from the released weights on a
-synthetic corpus over this form family (``scripts/s1_forms_va_generate.py``
-+ ``scripts/s1_forms_va_train.py``). The formats and decode semantics are
+context's TASK line carries the task goal, trusted code adds a local
+``hint="<goal clause>"`` for elements the goal mentions (goal-clause
+retrieval only — the specialist still chooses the option), the option set
+carries an explicit ``uncheck`` (the stock model could not express it), and
+``models/s1-forms-va-v4`` is fine-tuned on a synthetic corpus over this
+form family (``scripts/s1_forms_va_generate.py`` +
+``scripts/s1_forms_va_train.py``). The formats and decode semantics are
 restated here so the product venv stays stdlib-only and auditable; actual
 scoring runs in the separate Python 3.11 environment
 (``scripts/cua_s1_scoring.py``) and its probabilities are pinned into a
@@ -35,11 +37,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from . import browser_targets
 
-DECISION_VERSION = "s1-forms-va-decisions-v1"
+DECISION_VERSION = "s1-forms-va-decisions-v2"
 CONFIDENCE_MIN = 0.5
 FIXED_ACTIONS = ("check", "uncheck", "click", "skip")
 
@@ -152,20 +155,50 @@ TASK_SLOTS = {
 }
 
 
+_HINT_SPLIT = re.compile(r"(?<=[.;!?])\s+|,\s+|\s+and\s+", re.IGNORECASE)
+
+
+def goal_hint(goal: str, label: str, cap: int = 72) -> str:
+    """Trusted goal-clause retrieval for one element label.
+
+    Returns the goal clause that mentions the label (exact substring first,
+    then distinctive tokens), or "" when the goal never mentions it. This
+    only localizes relevant goal text; the specialist still chooses the
+    option (polarity, value, confuser rejection, skip).
+    """
+
+    text = " ".join(str(goal).split())
+    wanted = str(label).lower().strip()
+    if not text or not wanted:
+        return ""
+    clauses = [clause.strip() for clause in _HINT_SPLIT.split(text)
+               if clause.strip()]
+    for clause in clauses:
+        if wanted in clause.lower():
+            return clause[:cap]
+    tokens = [token for token in re.split(r"[^a-z0-9]+", wanted)
+              if len(token) >= 3]
+    for clause in clauses:
+        lowered = clause.lower()
+        if tokens and any(token in lowered for token in tokens):
+            return clause[:cap]
+    return ""
+
+
 def render_context(goal: str, form_title: str, element: dict,
-                   placeholder: str = "") -> str:
-    """The v2 byte-level layout: the TASK line carries the goal."""
+                   hint: str = "") -> str:
+    """The v2/v3 byte-level layout: goal in TASK, trusted hint when found."""
 
     if element["role"] == "CheckBox":
         state = "checked" if element["checked"] else "unchecked"
     else:
         state = 'value="{}"'.format(element["value"][:48])
-    hint = ' hint="{}"'.format(placeholder[:72]) if placeholder else ""
+    shown = ' hint="{}"'.format(hint[:72]) if hint else ""
     return (
         "TASK {}\n".format(goal[:128])
         + "FORM {}\n".format(form_title[:64])
         + 'ELEMENT {} "{}" {}{}'.format(
-            element["role"], element["label"][:72], state, hint)
+            element["role"], element["label"][:72], state, shown)
     )
 
 
@@ -194,7 +227,10 @@ def build_cases(task_id: str) -> dict:
     elements = []
     for element in TASK_ELEMENTS[task_id]:
         case = dict(element)
-        case["context"] = render_context(goal, TASK_TITLES[task_id], element)
+        hint = goal_hint(goal, element["label"])
+        case["hint"] = hint
+        case["context"] = render_context(goal, TASK_TITLES[task_id], element,
+                                         hint=hint)
         case["options"] = list(options)
         elements.append(case)
     return {
