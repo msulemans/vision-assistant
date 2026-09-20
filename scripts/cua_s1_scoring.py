@@ -37,13 +37,18 @@ def _sha256(path: Path) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pin-dir", default=str(REPO_ROOT / "models" / "cua-s1-forms"))
+    parser.add_argument("--weights", default="",
+                        help="checkpoint file or directory (default: the "
+                             "released cua-s1-forms.safetensors in --pin-dir)")
     parser.add_argument("--out", default="")
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
 
     pin_dir = Path(args.pin_dir)
-    weights = pin_dir / "cua-s1-forms.safetensors"
-    config_path = pin_dir / "cua-s1-forms.json"
+    weights = (Path(args.weights) if args.weights
+               else pin_dir / "cua-s1-forms.safetensors")
+    config_path = (weights / "config.json" if weights.is_dir()
+                   else weights.with_suffix(".json"))
     if not weights.is_file() or not config_path.is_file():
         print("missing checkpoint files in", pin_dir)
         return 1
@@ -60,7 +65,7 @@ def main() -> int:
         "version": csp.DECISION_VERSION,
         "cases_sha256": csp.cases_sha256(),
         "generator": {
-            "model": "cua-s1-forms",
+            "model": str(weights),
             "weights_sha256": _sha256(weights),
             "config_sha256": _sha256(config_path),
             "state_signature": sidecar.get("state_signature"),

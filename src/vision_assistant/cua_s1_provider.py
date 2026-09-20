@@ -1,17 +1,26 @@
-"""M023 spike: Cua-S1 specialist form-decision provider (stdlib-only).
+"""M023/M024: the S1 specialist form-decision provider (stdlib-only).
 
-Adopted from the cua-s1 research project (MIT, ``libs/cua-s1`` in
-trycua/cua) — **scorer contract only**. The upstream scorer is a 706K-param
-one-pass option scorer; the context/option formats and decode semantics are
-restated here so the product venv stays stdlib-only and auditable, while the
-actual scoring runs in a separate Python 3.11 environment
-(``scripts/cua_s1_scoring.py``) and its probabilities are pinned into
-``models/cua-s1-forms/decisions.json`` (SHA-256s recorded in the spike
-evidence). This module maps those pinned decisions onto the repository's
-**existing** typed actions, fail-closed:
+Based on the cua-s1 research project (MIT, ``libs/cua-s1`` in trycua/cua) —
+**scorer architecture only**. The stock released checkpoint skips this
+repository's form vocabulary (measured: M023 spike, 1/4); v2 therefore
+adapts the same 706K one-pass option scorer to this project's scenario: the
+context's TASK line carries the task goal, the option set carries an
+explicit ``uncheck`` (the stock model could not express it), and
+``models/s1-forms-va-v1`` is fine-tuned from the released weights on a
+synthetic corpus over this form family (``scripts/s1_forms_va_generate.py``
++ ``scripts/s1_forms_va_train.py``). The formats and decode semantics are
+restated here so the product venv stays stdlib-only and auditable; actual
+scoring runs in the separate Python 3.11 environment
+(``scripts/cua_s1_scoring.py``) and its probabilities are pinned into a
+decisions file (SHA-256s recorded in the evidence). This module maps those
+pinned decisions onto the repository's **existing** typed actions,
+fail-closed:
 
 - ``fill <document label>: <value>`` -> ``fill_field`` / ``select_option``
-- ``check``                          -> ``set_toggle(value=True)`` (never False)
+- ``check``                          -> ``set_toggle(value=True)``
+- ``uncheck``                        -> ``set_toggle(value=False)`` (v2; the
+                                       option set and the adapted checkpoint
+                                       both carry it)
 - ``click``                          -> ``save_form`` only for an authorized
                                        save; anything else is refused via
                                        ``stop`` (never arbitrary clicks)
@@ -30,9 +39,9 @@ from pathlib import Path
 
 from . import browser_targets
 
-DECISION_VERSION = "cua-s1-decisions-v1"
+DECISION_VERSION = "s1-forms-va-decisions-v1"
 CONFIDENCE_MIN = 0.5
-FIXED_ACTIONS = ("check", "click", "skip")
+FIXED_ACTIONS = ("check", "uncheck", "click", "skip")
 
 TASK_TITLES = {
     "c16": "Display settings",
@@ -143,8 +152,9 @@ TASK_SLOTS = {
 }
 
 
-def render_context(form_title: str, element: dict, placeholder: str = "") -> str:
-    """Mirror of the upstream ``render_context`` (same byte-level layout)."""
+def render_context(goal: str, form_title: str, element: dict,
+                   placeholder: str = "") -> str:
+    """The v2 byte-level layout: the TASK line carries the goal."""
 
     if element["role"] == "CheckBox":
         state = "checked" if element["checked"] else "unchecked"
@@ -152,35 +162,44 @@ def render_context(form_title: str, element: dict, placeholder: str = "") -> str
         state = 'value="{}"'.format(element["value"][:48])
     hint = ' hint="{}"'.format(placeholder[:72]) if placeholder else ""
     return (
-        "TASK fill the form from the document, then submit\n"
-        "FORM {}\n".format(form_title[:64])
+        "TASK {}\n".format(goal[:128])
+        + "FORM {}\n".format(form_title[:64])
         + 'ELEMENT {} "{}" {}{}'.format(
             element["role"], element["label"][:72], state, hint)
     )
 
 
 def render_options(entities) -> list:
-    """Mirror of the upstream ``render_options``: entity pointers + fixed."""
+    """Entity pointer options followed by the v2 fixed actions."""
 
     return ["fill {}: {}".format(label, value)
             for label, value in entities] + list(FIXED_ACTIONS)
 
 
+def task_goal(task_id: str) -> str:
+    """The frozen task's goal text (single source of truth: m019_tasks)."""
+
+    from . import m019_tasks
+    return m019_tasks.DEV_TASKS_BY_ID[task_id].spec.goal
+
+
 def build_cases(task_id: str) -> dict:
-    """The exact scorer-side cases for one task (context + options)."""
+    """The exact scorer-side cases for one task (goal + context + options)."""
 
     if task_id not in TASK_ELEMENTS:
         raise ValueError("no Cua-S1 cases for task {!r}".format(task_id))
     entities = TASK_ENTITIES[task_id]
     options = render_options(entities)
+    goal = task_goal(task_id)
     elements = []
     for element in TASK_ELEMENTS[task_id]:
         case = dict(element)
-        case["context"] = render_context(TASK_TITLES[task_id], element)
+        case["context"] = render_context(goal, TASK_TITLES[task_id], element)
         case["options"] = list(options)
         elements.append(case)
     return {
         "task": task_id,
+        "goal": goal,
         "form_title": TASK_TITLES[task_id],
         "entities": [{"label": label, "value": value}
                      for label, value in entities],
@@ -356,6 +375,11 @@ class CuaS1Engine:
                 return (self._wire("set_toggle", entry, observation_id,
                                    value=True), None)
             return None, "check decision does not fit target role"
+        if action_name == "uncheck":
+            if entry.role in ("checkbox", "radio"):
+                return (self._wire("set_toggle", entry, observation_id,
+                                   value=False), None)
+            return None, "uncheck decision does not fit target role"
         return None, "decision has no expressible action"
 
     def next_action(self, targets, observation_id: str) -> dict:

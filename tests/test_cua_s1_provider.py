@@ -86,7 +86,7 @@ C18_CHOICES = {
 }
 C16_CHOICES = {
     "dark": ("check", 0.98),
-    "show_timestamps": ("skip", 0.90),
+    "show_timestamps": ("uncheck", 0.97),
     "save": ("click", 0.95),
 }
 C20_CHOICES = {
@@ -145,33 +145,43 @@ class CasesContractTest(unittest.TestCase):
         cases = cua.build_cases("c16")
         self.assertEqual(cases["entities"], [])
         for element in cases["elements"]:
-            self.assertEqual(element["options"], ["check", "click", "skip"])
+            self.assertEqual(element["options"],
+                             ["check", "uncheck", "click", "skip"])
 
-    def test_render_context_matches_upstream_contract(self) -> None:
+    def test_cases_include_the_task_goal(self) -> None:
+        cases = cua.build_cases("c16")
+        self.assertIn("turn off", cases["goal"])
+        for element in cases["elements"]:
+            self.assertTrue(element["context"].startswith("TASK "))
+            self.assertIn('"show_timestamps"', element["context"])
+
+    def test_render_context_carries_the_goal(self) -> None:
         edit = {"role": "Edit", "label": "Default query", "value": "",
                 "checked": None}
         self.assertEqual(
-            cua.render_context("Search preferences", edit),
-            "TASK fill the form from the document, then submit\n"
+            cua.render_context("Set the query to parser.",
+                               "Search preferences", edit),
+            "TASK Set the query to parser.\n"
             "FORM Search preferences\n"
             'ELEMENT Edit "Default query" value=""')
         checkbox = {"role": "CheckBox", "label": "dark", "value": "",
                     "checked": False}
         self.assertEqual(
-            cua.render_context("Display settings", checkbox),
-            "TASK fill the form from the document, then submit\n"
+            cua.render_context("Turn dark on.", "Display settings", checkbox),
+            "TASK Turn dark on.\n"
             "FORM Display settings\n"
             'ELEMENT CheckBox "dark" unchecked')
         checked = dict(checkbox, checked=True)
         self.assertIn('ELEMENT CheckBox "dark" checked',
-                      cua.render_context("Display settings", checked))
+                      cua.render_context("Turn dark on.", "Display settings",
+                                         checked))
 
     def test_render_options_entity_pointers_then_fixed(self) -> None:
         options = cua.render_options((("Search query", "parser"),
                                       ("Category", "stories")))
         self.assertEqual(options, ["fill Search query: parser",
                                    "fill Category: stories",
-                                   "check", "click", "skip"])
+                                   "check", "uncheck", "click", "skip"])
 
     def test_cases_sha_is_stable_hex(self) -> None:
         sha = cua.cases_sha256()
@@ -264,18 +274,20 @@ class EngineTest(unittest.TestCase):
         self.assertEqual((third["action"], third["target_ref"]),
                          ("save_form", "ui:7"))
 
-    def test_c16_checks_true_never_false(self) -> None:
+    def test_c16_toggles_check_on_and_uncheck_off(self) -> None:
         engine = _engine("c16", C16_CHOICES)
         actions = []
-        for seq in range(2, 8):
+        for seq in range(2, 9):
             actions.append(engine.next_action(C16_TARGETS,
                                               "obs-{}".format(seq)))
         serialized = json.dumps(actions)
         self.assertIn('"value": true', serialized)
-        self.assertNotIn('"value": false', serialized)
+        self.assertIn('"value": false', serialized)
         toggles = [item for item in actions
                    if item.get("action") == "set_toggle"]
-        self.assertEqual([item["target_ref"] for item in toggles], ["ui:6"])
+        self.assertEqual([(item["target_ref"], item["value"])
+                          for item in toggles],
+                         [("ui:6", True), ("ui:7", False)])
         saves = [item for item in actions if item.get("action") == "save_form"]
         self.assertEqual([item["target_ref"] for item in saves], ["ui:8"])
         self.assertNotIn("ui:9", serialized)
@@ -326,6 +338,15 @@ class EngineTest(unittest.TestCase):
         first = engine.next_action(C17_TARGETS, "obs-2")
         self.assertEqual((first["action"], first["target_ref"]),
                          ("save_form", "ui:10"))
+
+    def test_uncheck_on_a_field_is_skipped(self) -> None:
+        choices = {"default_query": ("uncheck", 0.9),
+                   "default_category": ("fill Category: stories", 0.9),
+                   "save": ("click", 0.9)}
+        engine = _engine("c17", choices)
+        first = engine.next_action(C17_TARGETS, "obs-2")
+        self.assertEqual(first["action"], "select_option")
+        self.assertIn("does not fit", engine.trace[0]["note"])
 
     def test_engine_never_repeats_an_attempted_slot(self) -> None:
         engine = _engine("c17", C17_CHOICES)
