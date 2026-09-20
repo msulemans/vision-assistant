@@ -157,7 +157,7 @@ class TargetRoutingTest(TargetLoopBase):
             ["http://127.0.0.1:1/news/", "http://127.0.0.1:1/story/d03/"])
         self.assertEqual(report["outcome"], "finished")
         self.assertEqual(report["mode"], "target")
-        self.assertEqual(report["prompt_version"], "m018t-v1")
+        self.assertEqual(report["prompt_version"], "m018t-v2")
         self.assertIn(("click_target", "t1"), session.calls)
         self.assertEqual([c for c in session.calls if c[0] == "click"], [])
 

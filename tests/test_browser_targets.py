@@ -181,7 +181,7 @@ class TargetPromptTest(unittest.TestCase):
         self.assertNotIn("step 2", prompt)
 
     def test_prompt_version_and_hints_are_frozen(self) -> None:
-        self.assertEqual(bt.PROMPT_VERSION, "m018t-v1")
+        self.assertEqual(bt.PROMPT_VERSION, "m018t-v2")
         for code in ("refused_target_stale", "refused_target_hidden",
                      "refused_target_disabled", "refused_target_moved",
                      "refused_target_offscreen"):
