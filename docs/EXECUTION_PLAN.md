@@ -66,7 +66,7 @@ Cua-S1 ≤ 100 ms/element; skipped fields ≤ Arm A.
 **Pass ⇒ Step 3 is eligible. Fail ⇒ stop, report, no iterations.**
 Laya: deferred; one mention in the evidence report; nothing else.
 
-### Step 2 — Package the proof (independent; ≈ 2-hour box)
+### Step 2 — Package the proof (EXECUTED 2026-09-20 — deliverables: `docs/RESULTS.md`, control-plane diagram in `docs/ARCHITECTURE.md` + README, failure analysis, reproduce transcript at `docs/evidence/2026-09-20-reproduce-gates.txt`)
 
 The measured boundary this project has reached is the asset ("show your
 work"). One step makes it legible to outsiders:
@@ -87,7 +87,7 @@ work"). One step makes it legible to outsiders:
 
 Ships with no model runs and no network.
 
-### Step 3 — Product slice: Verified Form Copilot (conditional; ≈ 1–2 day box)
+### Step 3 — Product slice: Verified Form Copilot (NOT eligible — Step 1 failed; retained only for a future approved revisit)
 
 Eligible only if Step 1 passes. Local, fake data, human approval before
 submission:

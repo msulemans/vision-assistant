@@ -1,0 +1,74 @@
+]633;E;echo "# Deterministic gates transcript";e557ad00-f5f1-4bc2-9d33-c6bd69467f45]633;C# Deterministic gates transcript
+verified: 2026-09-20T05:31:16Z
+
+## browser_cli verify
+M018A verify — tasks: 50 (30 dev / 20 held-out), smoke 01,11,21,31,41
+schema adversarial: 22/22 rejected
+oracles: 50/50 correct states pass, 157/157 wrong states rejected
+manifest sha256: df630b21d9a03302
+fixture dev: 78 files, byte-identical rebuild: True
+fixture heldout: 79 files, byte-identical rebuild: True
+report: /Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018/m018a-verify.json
+RESULT: PASS
+exit=0
+
+## m019-verify
+mode answer   allowed: scroll, wait, finish_answer, stop
+mode navigate allowed: click_target, back, scroll, wait, finish, stop
+mode form     allowed: fill_field, select_option, set_toggle, save_form, scroll, wait, stop
+mode stop     allowed: stop
+  answer   scroll        allow
+  answer   click_target  deny  (action 'click_target' is not available in 'answer' mode)
+  navigate click_target  allow
+  navigate finish        allow
+  navigate fill_field    deny  (action 'fill_field' is not available in 'navigate' mode)
+  form     fill_field    allow
+  form     fill_field    deny  (refused_credential: credential controls are never available)
+  form     fill_field    deny  (refused_target_role: fill_field needs a text field)
+  navigate click         deny  (unknown typed action kind: 'click')
+  form     type_text     deny  (unknown typed action kind: 'type_text')
+  form     navigate      deny  (unknown typed action kind: 'navigate')
+  form     save_form     deny  (refused_unauthorized_save: this task does not authorize saving)
+  form     save_form     allow
+  answer   finish_answer allow
+  answer   finish_answer deny  (field 'title' holds a ui: target reference, not page data)
+  navigate click_target  deny  (stale observation: observe again before acting)
+  stop     stop          allow
+  stop     click_target  deny  (action 'click_target' is not available in 'stop' mode)
+m019-verify: 18 samples, 0 problems
+exit=0
+
+## m019-scripted
+answer                 finished               checks=YYYYYYY PASS
+navigate               finished               checks=YYYYYYY PASS
+form                   finished               checks=YYYYYYY PASS
+moving-target          finished               checks=YYYYYYYY PASS
+credential-refusal     stopped                checks=YYYYYYY PASS
+external-submit-refusal stopped                checks=YYYYYYY PASS
+orphans: 0  (temp snapshot dir cleaned: True)
+report: /Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m018/scripted-20260920-153116.json
+RESULT: PASS
+exit=0
+
+## m020-eval --check-only
+freeze checks: OK | tasks 20 | positives 20 | mutations 59/59 | initially satisfied 0 | sha 958f4be70dfb1199
+{
+  "initially_satisfied": 0,
+  "manifest_sha256": "958f4be70dfb1199151e408bbcf4b1d927fa94742fbd119f8b9c11521cb5eead",
+  "mutations_rejected": 59,
+  "mutations_total": 59,
+  "ok": true,
+  "positive_pass": 20,
+  "problems": [],
+  "productive": 18,
+  "refusals": 2,
+  "tasks": 20,
+  "version": "m020-eval-v1"
+}
+exit=0
+
+## m022-hn --scripted-check
+scripted check: links True | overlap True | orphans 0
+report: /Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/runs/m022/m022-scripted-20260920-153144/scripted-report.json
+RESULT: PASS
+exit=0

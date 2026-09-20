@@ -312,6 +312,17 @@ the single permitted mention, no product slice on this evidence. The
 specialist direction remains plausible only with vocabulary alignment or
 fine-tuning for target-form distributions — a separately approved step.
 
+**Packaging step executed (2026-09-20, owner-directed — the execution plan
+is now fully resolved):** `docs/RESULTS.md` carries the browser-use arc's
+measured table (M018A–M023, every row linked to its committed evidence),
+the fixed-vs-open failure analysis, and the deterministic reproduce
+commands with a verified no-model gate transcript
+(`docs/evidence/2026-09-20-reproduce-gates.txt`); a mermaid control-plane
+diagram now lives in `docs/ARCHITECTURE.md` and the README, whose new
+browser-use results section links both. Step 1 was executed (fail,
+stopped), Step 2 is this packaging, Step 3 is not eligible on the measured
+evidence. Frozen sets remain untouched; failed runs remain preserved.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.

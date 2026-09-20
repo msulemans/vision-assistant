@@ -154,3 +154,33 @@ Planned for M005, before its first model call; these are not current guarantees:
 M006 includes preview/retake, explicit submit, stop, reset, and error recovery.
 M009 improves that workflow; it does not introduce those basic controls late.
 M002 remains a deterministic teaching surface until this bridge is implemented.
+
+## Shipped control plane for supervised browser use (M018–M023)
+
+The second arc implements the supervised action path above as a typed
+propose → validate → execute → verify loop on a loopback-only browser
+fixture (plus one explicitly opted-in live host). Decision sources are
+interchangeable; everything downstream is fixed:
+
+```mermaid
+flowchart LR
+    M["decision source<br>vision model · Cua-S1 scorer · scan lane"] --> P["proposer<br>one typed action JSON"]
+    P --> V["validator + policy<br>exact per-action schemas"]
+    V -->|refused + hint| P
+    V -->|allowed| X["executor<br>typed session ops only"]
+    X --> R["read-back verification"]
+    R --> O["oracle / verifier<br>independent success scoring"]
+    O -->|not satisfied| P
+    O -->|satisfied| T["terminal<br>finished · stopped · blocked"]
+    T --> E["evidence<br>runs/ + docs/evidence/"]
+```
+
+Guarantees the diagram encodes: raw clicks and typing are not expressible;
+credential controls are refused; submit-like controls are denied unless the
+task authorizes exactly one local save; every mutating action carries the
+current observation id; budgets (steps, calls, seconds, scrolls) are frozen
+before a run; model-facing prompts never contain reviewer data; and each
+executed run is recorded with its oracle verdict. The M022 scan lane
+replaces the proposer for long pages (trusted traversal plus a dedup- and
+conflict-checked evidence ledger whose final call is ledger-only). See
+`docs/RESULTS.md` for the measured outcomes behind each box.

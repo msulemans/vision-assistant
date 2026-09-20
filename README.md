@@ -154,6 +154,42 @@ artifacts), and a re-verified rollback/removal story.
 Roadmap complete: M001–M017. See `docs/SUPPORT.md` and
 `docs/evidence/2026-09-20-m017-*.json`.
 
+### Browser-use extension (M018–M023) — measured results
+
+A second arc takes the lab from screen understanding into supervised
+computer use on a loopback browser fixture. Every row links to committed
+evidence; the full package — failure analysis and reproduce commands — is
+[docs/RESULTS.md](docs/RESULTS.md):
+
+| milestone | set | measured result |
+|---|---|---|
+| M018T target-assisted clicking | paired 18-task eval | 1/18 → 6/18 |
+| M019D typed actions | frozen 20 | 10/18 + refusals 2/2 |
+| M020 exact per-action schemas | frozen 20 | **15/18 + refusals 2/2; zero forbidden; zero fallbacks** |
+| M021 live Hacker News read | live page | answer incorrect (0/3); hygiene perfect |
+| M022 multi-viewport evidence ledger | dev smoke | gate 0/5; cross-viewport evidence fixed; model walls recorded |
+| M023 Cua-S1 specialist decision provider | 4 dev form tasks | 1/4 vs 4/4 ⇒ gate fail; stopped and reported |
+
+The control plane: the model (or an optional specialist) proposes, code
+validates and executes, read-back verifies, the oracle scores:
+
+```mermaid
+flowchart LR
+    M["decision source<br>vision model · Cua-S1 scorer · scan lane"] --> P["proposer<br>one typed action JSON"]
+    P --> V["validator + policy<br>exact per-action schemas"]
+    V -->|refused + hint| P
+    V -->|allowed| X["executor<br>typed session ops only"]
+    X --> R["read-back verification"]
+    R --> O["oracle / verifier<br>independent success scoring"]
+    O -->|not satisfied| P
+    O -->|satisfied| T["terminal<br>finished · stopped · blocked"]
+    T --> E["evidence<br>runs/ + docs/evidence/"]
+```
+
+Deterministic gates (no model, no network): `browser_cli verify`,
+`m019-verify`, `m019-scripted`, `m020-eval --check-only`,
+`m022-hn --scripted-check`; full suite 674 = 664 product + 10 learning.
+
 ## Run the Milestone 002 lab
 
 The lab is stdlib-only, so no package is installed.
