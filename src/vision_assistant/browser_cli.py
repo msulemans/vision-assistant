@@ -214,7 +214,8 @@ def cmd_target_smoke(args) -> int:
     Phases: (1) click_target navigates to the rank-3 story; (2) a target that
     moves after observation is refused as moved; (3) a click after a new
     snapshot is refused as stale without reaching the helper; (4) the search
-    flow click_target → type → click_target submitted end to end.
+    flow click_target → type → click_target submitted end to end; (5) a target
+    hidden after observation (Escape closes the overlay) is refused as hidden.
     """
 
     from .browser_session import BrowserError, BrowserSession, compile_helper
@@ -349,9 +350,33 @@ def cmd_target_smoke(args) -> int:
         step("snapshot", page="search-ai", seq=results.seq, url=results.url)
         step("search-submitted", url=url, ok=report["phase4_query_ok"])
 
-        refusal_ok = (len(report["refusals"]) == 2
+        # Phase 5: a target hidden after observation (Escape closes the overlay
+        # without a new snapshot, so the stale observer sees a visible button).
+        step("navigate", to="/welcome/", url=navigate_with_retry("/welcome/"))
+        welcome = session.snapshot(path=str(shots / "welcome.png"))
+        step("snapshot", page="welcome", seq=welcome.seq)
+        listing5 = session.targets()
+        dismiss = find_target(listing5, role="button", label="Dismiss")
+        if dismiss is None:
+            raise BrowserError("smoke_missing_target", "dismiss button not listed")
+        session.press_key("escape")
+        time.sleep(0.3)
+        try:
+            session.click_target(dismiss.id)
+            report["refusals"].append({"phase": "hidden",
+                                       "expected": "refused_target_hidden", "got": "none"})
+            step("click_target", page="welcome", target=dismiss.id, outcome="NOT_REFUSED")
+        except BrowserError as exc:
+            report["refusals"].append({"phase": "hidden",
+                                       "expected": "refused_target_hidden",
+                                       "got": exc.reason, "detail": exc.detail})
+            step("click_target", page="welcome", target=dismiss.id, refused=exc.reason,
+                 detail=exc.detail)
+
+        refusal_ok = (len(report["refusals"]) == 3
                       and report["refusals"][0]["got"] == "refused_target_moved"
-                      and report["refusals"][1]["got"] == "refused_target_stale")
+                      and report["refusals"][1]["got"] == "refused_target_stale"
+                      and report["refusals"][2]["got"] == "refused_target_hidden")
         report["ok"] = bool(report.get("phase1_url_ok")
                              and report.get("phase4_query_ok") and refusal_ok)
     except BrowserError as exc:
