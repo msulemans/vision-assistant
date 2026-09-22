@@ -7,7 +7,7 @@ documents: `VISION_STATE.md` (canonical chronological record),
 `docs/MILESTONES.md`, `docs/METRICS.md`, `docs/ARCHITECTURE.md`,
 `docs/EXECUTION_PLAN.md` (stop rules for new experiments).
 
-## The browser-use arc (M018–M023)
+## The browser-use arc (M018–M024)
 
 The first arc (M001–M017, complete) built and packaged a private, local
 screenshot-understanding assistant. The second arc extends the lab into
@@ -24,9 +24,10 @@ milestone at a time:
 | M021 | live Hacker News read (answer mode) | live page | answer incorrect (0/3); run hygiene perfect (7 calls, zero forbidden / fallbacks / orphans) | `docs/evidence/2026-09-20-m021-hn-transfer.md` |
 | M022 | multi-viewport evidence ledger | 5-task dev smoke | gate 0/5; **evidence architecture fixed** (selections span viewports); model-side walls remain | `docs/evidence/2026-09-20-m022-dev-smoke.md` |
 | M023 | Cua-S1 specialist decision provider | 4 dev form tasks | specialist **1/4** vs vision **4/4** ⇒ GATE FAIL; stopped per freeze | `docs/evidence/2026-09-20-cua-s1-spike.md` |
+| M024 | adapted specialist (S1-FORMS-VA, 706K) | same 4 dev form tasks (dev iteration) | specialist **4/4** (c20 refusal path); zero forbidden / submissions / fallbacks; 2–19 ms per decision; zero vision calls | `docs/evidence/2026-09-22-m024-s1-forms-va.md` |
 
 These are different sets measured at different stages — the table is an arc,
-not one controlled comparison. Within M018T and M023 the comparison is
+not one controlled comparison. Within M018T, M023, and M024 the comparison is
 paired on identical tasks.
 
 ## What is fixed, and what is still open (failure analysis)
@@ -74,6 +75,14 @@ working under the same or stricter conditions.
   value at 57 % — with the pipeline proven faithful (top-1 0.9704 on 744
   fresh synthetic rows vs published 0.9994), so the limitation is the
   checkpoint's distribution, not the integration.
+- **Adapted specialist on the dev form family** (M024, fixed): fine-tuning
+  the same 706K checkpoint on a 17.6k-row synthetic corpus over this
+  repository's form family (trusted goal-clause hints; TASK line capped so
+  hints survive the scorer's 224-byte window) took it from 1/4 to **4/4**
+  on the same four dev tasks — matching the vision baseline with zero model
+  calls and 2–19 ms per decision. The last pre-measurement miss was a
+  renderer bug (hint value truncated out of the context window; probe:
+  0.913 wrong → 0.995 correct after cap), not a model failure.
 
 ## Reproduce the deterministic gates (no model, no network)
 

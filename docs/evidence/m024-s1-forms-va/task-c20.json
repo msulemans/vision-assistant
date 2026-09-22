@@ -1,0 +1,78 @@
+{
+  "actions": 2,
+  "calls": 2,
+  "elapsed_ms": 4300.2,
+  "goal": "Finish the receipt: e-mail it to \"desk@example.com\" and send it.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c20"
+  },
+  "outcome": "stopped",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 849.2,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:60857/checkout/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2348.7,
+      "count": 6,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 2741.1,
+      "executed": "fill_field ui:5 (16 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:60857/checkout/"
+    },
+    {
+      "at_ms": 4300.0,
+      "count": 6,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 6,
+      "truncated": false
+    },
+    {
+      "at_ms": 4300.2,
+      "executed": "stop",
+      "kind": "action",
+      "step": 2
+    },
+    {
+      "at_ms": 4300.2,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "stopped"
+    }
+  ],
+  "task": "c20",
+  "task_mode": "form",
+  "visited": [
+    "/checkout/"
+  ]
+}

@@ -1,0 +1,351 @@
+{
+  "cases_sha256": "27db93218a44dbe807f32136c379da70391730d1ec50d228db3b1343e99a86a3",
+  "generator": {
+    "config": {
+      "context_tokens": 224,
+      "encoder": "tinyx",
+      "heads": 4,
+      "hf_model": "Qwen/Qwen2.5-0.5B",
+      "layers": 2,
+      "option_tokens": 96,
+      "rank": 128,
+      "width": 128
+    },
+    "config_sha256": "03e522b455f95609e1af7141d3a9d5e5e56c4594cc2386f1ff5be117004f7301",
+    "device": "cpu",
+    "model": "models/s1-forms-va-v7",
+    "state_signature": "eaa90826fa81baffbf0f2f06b3d61c305165f72ff7251eaece36489af339f20c",
+    "torch": "2.14.0",
+    "weights_sha256": "e55364ec78488f1def76476f7d0e741ee9e175b60ba67420ca4fe3c6da8d3ee8"
+  },
+  "latency_ms": {
+    "max": 18.926,
+    "mean": 3.781,
+    "per_element": [
+      18.926,
+      2.432,
+      1.668,
+      2.417,
+      2.174,
+      2.004,
+      1.966,
+      2.139,
+      2.088,
+      3.341,
+      2.436
+    ]
+  },
+  "tasks": {
+    "c16": {
+      "elements": [
+        {
+          "argmax": 0,
+          "key": "dark",
+          "options": [
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 0.999708,
+          "probs": [
+            0.999708,
+            0.000235,
+            1e-06,
+            5.6e-05
+          ]
+        },
+        {
+          "argmax": 1,
+          "key": "show_timestamps",
+          "options": [
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 0.999986,
+          "probs": [
+            1e-06,
+            0.999986,
+            0.0,
+            1.3e-05
+          ]
+        },
+        {
+          "argmax": 2,
+          "key": "save",
+          "options": [
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "entities": [],
+      "form_title": "Display settings"
+    },
+    "c17": {
+      "elements": [
+        {
+          "argmax": 0,
+          "key": "default_query",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 0.963099,
+          "probs": [
+            0.963099,
+            0.032212,
+            0.003381,
+            0.001164,
+            0.0,
+            9e-06,
+            0.0,
+            0.000135
+          ]
+        },
+        {
+          "argmax": 2,
+          "key": "default_category",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 0.65796,
+          "probs": [
+            0.000975,
+            0.327429,
+            0.65796,
+            0.013462,
+            0.0,
+            0.000159,
+            0.0,
+            1.5e-05
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "save",
+          "options": [
+            "fill Search query: parser",
+            "fill Search query: robotcis",
+            "fill Category: stories",
+            "fill Category: authors",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Search query",
+          "value": "parser"
+        },
+        {
+          "label": "Search query",
+          "value": "robotcis"
+        },
+        {
+          "label": "Category",
+          "value": "stories"
+        },
+        {
+          "label": "Category",
+          "value": "authors"
+        }
+      ],
+      "form_title": "Search preferences"
+    },
+    "c18": {
+      "elements": [
+        {
+          "argmax": 0,
+          "key": "title",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "argmax": 2,
+          "key": "body",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "argmax": 6,
+          "key": "save",
+          "options": [
+            "fill Draft title: Bench log",
+            "fill Draft title: Cable check.",
+            "fill Draft body: Cable check.",
+            "fill Draft body: Bench log",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Draft title",
+          "value": "Bench log"
+        },
+        {
+          "label": "Draft title",
+          "value": "Cable check."
+        },
+        {
+          "label": "Draft body",
+          "value": "Cable check."
+        },
+        {
+          "label": "Draft body",
+          "value": "Bench log"
+        }
+      ],
+      "form_title": "Draft editor"
+    },
+    "c20": {
+      "elements": [
+        {
+          "argmax": 0,
+          "key": "email",
+          "options": [
+            "fill Contact e-mail: desk@example.com",
+            "fill Contact e-mail: desk@example.org",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 0.950679,
+          "probs": [
+            0.950679,
+            0.049321,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "argmax": 4,
+          "key": "send",
+          "options": [
+            "fill Contact e-mail: desk@example.com",
+            "fill Contact e-mail: desk@example.org",
+            "check",
+            "uncheck",
+            "click",
+            "skip"
+          ],
+          "probability": 1.0,
+          "probs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "label": "Contact e-mail",
+          "value": "desk@example.com"
+        },
+        {
+          "label": "Contact e-mail",
+          "value": "desk@example.org"
+        }
+      ],
+      "form_title": "Send receipt"
+    }
+  },
+  "version": "s1-forms-va-decisions-v3"
+}

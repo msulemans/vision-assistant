@@ -1,0 +1,161 @@
+{
+  "batch_size": 128,
+  "best_validation": {
+    "examples": 1986,
+    "macro": 0.9653687634120864,
+    "nll": 0.1008072893425057,
+    "per_action": {
+      "check": {
+        "acc": 0.9509433962264151,
+        "n": 265
+      },
+      "click": {
+        "acc": 1.0,
+        "n": 518
+      },
+      "fill": {
+        "acc": 0.9551401869158879,
+        "n": 535
+      },
+      "skip": {
+        "acc": 0.9763157894736842,
+        "n": 380
+      },
+      "uncheck": {
+        "acc": 0.9444444444444444,
+        "n": 288
+      }
+    },
+    "top1": 0.9687814702920443
+  },
+  "checkpoint": "models/s1-forms-va-v7",
+  "corpus": {
+    "train": "runs/s1-forms-va-corpus8/train.jsonl",
+    "train_rows": 17557,
+    "val": "runs/s1-forms-va-corpus8/val.jsonl",
+    "val_rows": 1986
+  },
+  "epochs": 14,
+  "history": [
+    {
+      "epoch": 1,
+      "train_nll": 2.2425873868963935,
+      "val_macro": 0.7869200488846844,
+      "val_nll": 0.44059223278771714,
+      "val_rows_per_second": 835.2664845723691,
+      "val_top1": 0.8096676737160121
+    },
+    {
+      "epoch": 2,
+      "train_nll": 0.3668266291287546,
+      "val_macro": 0.8496166914671031,
+      "val_nll": 0.3034587871632187,
+      "val_rows_per_second": 844.2672205205515,
+      "val_top1": 0.8680765357502518
+    },
+    {
+      "epoch": 3,
+      "train_nll": 0.2784876010383921,
+      "val_macro": 0.897267921280012,
+      "val_nll": 0.23842325239383202,
+      "val_rows_per_second": 848.8297356039168,
+      "val_top1": 0.9098690835850957
+    },
+    {
+      "epoch": 4,
+      "train_nll": 0.21273311136109332,
+      "val_macro": 0.9106700990264411,
+      "val_nll": 0.19873805780785322,
+      "val_rows_per_second": 869.421957102257,
+      "val_top1": 0.9204431017119838
+    },
+    {
+      "epoch": 5,
+      "train_nll": 0.1649124506934599,
+      "val_macro": 0.9367301436672266,
+      "val_nll": 0.15239443783793685,
+      "val_rows_per_second": 863.0700066167602,
+      "val_top1": 0.9451158106747231
+    },
+    {
+      "epoch": 6,
+      "train_nll": 0.12152087543652623,
+      "val_macro": 0.9510207648227723,
+      "val_nll": 0.13235667921145036,
+      "val_rows_per_second": 873.41761087638,
+      "val_top1": 0.9556898288016112
+    },
+    {
+      "epoch": 7,
+      "train_nll": 0.09941848940929204,
+      "val_macro": 0.9573945427181073,
+      "val_nll": 0.10791654096989473,
+      "val_rows_per_second": 843.8590275513782,
+      "val_top1": 0.9627391742195368
+    },
+    {
+      "epoch": 8,
+      "train_nll": 0.07547177529701843,
+      "val_macro": 0.9534318120771242,
+      "val_nll": 0.11681845973265495,
+      "val_rows_per_second": 864.7181757501603,
+      "val_top1": 0.959214501510574
+    },
+    {
+      "epoch": 9,
+      "train_nll": 0.060453310014328125,
+      "val_macro": 0.9601709025915166,
+      "val_nll": 0.10524590329941426,
+      "val_rows_per_second": 821.5658979820457,
+      "val_top1": 0.9657603222557906
+    },
+    {
+      "epoch": 10,
+      "train_nll": 0.04905985387461968,
+      "val_macro": 0.9653687634120864,
+      "val_nll": 0.1008072893425057,
+      "val_rows_per_second": 830.3162569931026,
+      "val_top1": 0.9687814702920443
+    },
+    {
+      "epoch": 11,
+      "train_nll": 0.03674345914430249,
+      "val_macro": 0.9624704405609332,
+      "val_nll": 0.09850498364651192,
+      "val_rows_per_second": 876.4806609356467,
+      "val_top1": 0.9667673716012085
+    },
+    {
+      "epoch": 12,
+      "train_nll": 0.030649522391511856,
+      "val_macro": 0.9628848024884995,
+      "val_nll": 0.09896071175674177,
+      "val_rows_per_second": 787.576346856806,
+      "val_top1": 0.9677744209466264
+    },
+    {
+      "epoch": 13,
+      "train_nll": 0.02793364083419764,
+      "val_macro": 0.964980824776925,
+      "val_nll": 0.0960870326945909,
+      "val_rows_per_second": 855.4920259586924,
+      "val_top1": 0.9692849949647533
+    },
+    {
+      "epoch": 14,
+      "train_nll": 0.026066413303640276,
+      "val_macro": 0.964980824776925,
+      "val_nll": 0.0961434627467652,
+      "val_rows_per_second": 860.6530579420315,
+      "val_top1": 0.9692849949647533
+    }
+  ],
+  "init_sha256": "05954c1caf51c2fb6c13ea4acbfc88a2e7653dea192252bb51dc89e76a356ddc",
+  "initialized_from": "/Users/suleman/non-icloud/Personal/learning-labs/vision-assistant/models/cua-s1-forms/cua-s1-forms.safetensors",
+  "learning_rate": 0.001,
+  "model_sha256": "e55364ec78488f1def76476f7d0e741ee9e175b60ba67420ca4fe3c6da8d3ee8",
+  "parameters": 706048,
+  "seed": 7,
+  "task": "s1-forms-va-domain-adaptation",
+  "train_seconds": 1851.964
+}

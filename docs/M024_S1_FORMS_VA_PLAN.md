@@ -125,3 +125,17 @@ eval remains the separate next step if the adaptation passes.
 
 Delete `scripts/s1_forms_va_*.py`, `models/s1-forms-va-v1/`, revert the v2
 provider revision, and drop the M024 evidence — nothing else changed.
+
+## Outcome (2026-09-22) — GATE PASS
+
+Final checkpoint **v7** (corpus8; TASK-line cap 96): val top-1 0.969, macro
+per-action 0.965 (check 0.951 / uncheck 0.944 / fill 0.955 / skip 0.976 /
+click 1.0); 11/11 real-case elements correct. Arm B (one run per task, no
+retries, zero vision calls): **4/4** — c16 toggles + save, c17 query +
+select + save, c18 fills + save, c20 correct `.com` fill then structural
+refusal (`stop`). Gate line: 4/4 expected, refusal ok, zero forbidden,
+orphans 0, fallbacks 0; ≤100 ms/decision. Evidence:
+`docs/evidence/2026-09-22-m024-s1-forms-va.md` + `docs/evidence/m024-s1-forms-va/`.
+Honest framing: development iteration on the four M023 dev tasks; a fresh
+frozen evaluation is the separately approvable next step. No post-run
+tuning occurred.

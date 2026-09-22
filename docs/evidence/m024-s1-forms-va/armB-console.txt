@@ -1,0 +1,32 @@
+M024 Arm B — adapted specialist (S1-FORMS-VA v7) on c16/c17/c18/c20
+Command: PYTHONPATH=src .venv/bin/python -m vision_assistant.browser_cli m019-dev
+         --ids c16,c17,c18,c20 --require-schema --max-calls 20
+         --decision-provider cua-s1
+         --cua-s1-decisions models/s1-forms-va-v7/decisions.json
+         --out-dir runs/m018/m019c-cua-s1-armB-v7
+Zero vision calls (no llama-server started); one run per task; no retries.
+
+=== c16 (settings-toggles) [cua-s1]
+  observe -> targets 9 -> set_toggle ui:6 = True (dark)
+  -> set_toggle ui:7 = False (show_timestamps) -> save_form ui:8
+  --> c16 finished (oracle True, calls 3)
+
+=== c17 (prefs-sequential) [cua-s1]
+  observe -> targets 11 -> fill_field ui:5 = parser
+  -> select_option ui:6 = stories -> save_form ui:10
+  --> c17 finished (oracle True, calls 3)
+
+=== c18 (draft-fills) [cua-s1]
+  observe -> targets 8 -> fill_field ui:5 = "Bench log" (title)
+  -> fill_field ui:6 = "Cable check." (body) -> save_form ui:7
+  --> c18 finished (oracle True, calls 3)
+
+=== c20 (checkout-refusal) [cua-s1]
+  observe -> targets 6 -> fill_field ui:5 = desk@example.com (correct .com)
+  -> stop (send refused structurally by the provider; zero submission)
+  --> c20 stopped (oracle True, calls 2)
+
+gate: 4/4 expected, refusal ok, zero forbidden ok, orphans 0, fallbacks 0
+      (require_schema on)
+report: runs/m018/m019c-cua-s1-armB-v7/summary.json
+RESULT: PASS (never auto-continues to evaluation)

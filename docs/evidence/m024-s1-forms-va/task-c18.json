@@ -1,0 +1,98 @@
+{
+  "actions": 3,
+  "calls": 3,
+  "elapsed_ms": 7282.9,
+  "goal": "Fill the draft: title \"Bench log\", body \"Cable check.\" Save the draft.",
+  "instance": "dev",
+  "limits": {
+    "max_calls": 20,
+    "max_seconds": 120,
+    "max_steps": 20
+  },
+  "mode": "typed",
+  "oracle": {
+    "failed_checks": 0,
+    "failures": [],
+    "ok": true,
+    "task": "c18"
+  },
+  "outcome": "finished",
+  "pilot": false,
+  "prompt_version": "m019c-v2",
+  "raw_answers": [],
+  "scrolls": 0,
+  "steps": [
+    {
+      "at_ms": 816.1,
+      "height": 1440,
+      "kind": "observe",
+      "step": 0,
+      "url": "http://127.0.0.1:60857/draft/",
+      "width": 2560
+    },
+    {
+      "at_ms": 2370.3,
+      "count": 8,
+      "kind": "targets",
+      "seq": 1,
+      "step": 1,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 2770.9,
+      "executed": "fill_field ui:5 (9 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 1,
+      "url": "http://127.0.0.1:60857/draft/"
+    },
+    {
+      "at_ms": 4332.4,
+      "count": 8,
+      "kind": "targets",
+      "seq": 2,
+      "step": 2,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 4732.9,
+      "executed": "fill_field ui:6 (12 chars)",
+      "kind": "action",
+      "oracle_ok": false,
+      "step": 2,
+      "url": "http://127.0.0.1:60857/draft/"
+    },
+    {
+      "at_ms": 6429.2,
+      "count": 8,
+      "kind": "targets",
+      "seq": 3,
+      "step": 3,
+      "total": 8,
+      "truncated": false
+    },
+    {
+      "at_ms": 7282.9,
+      "executed": "save_form ui:7",
+      "kind": "action",
+      "oracle_ok": true,
+      "step": 3,
+      "url": "http://127.0.0.1:60857/draft/?saved=1"
+    },
+    {
+      "at_ms": 7282.9,
+      "failures": 0,
+      "kind": "terminal",
+      "oracle_ok": true,
+      "outcome": "finished"
+    }
+  ],
+  "task": "c18",
+  "task_mode": "form",
+  "visited": [
+    "/draft/",
+    "/draft/?saved=1"
+  ]
+}

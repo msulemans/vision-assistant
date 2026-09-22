@@ -323,6 +323,27 @@ browser-use results section links both. Step 1 was executed (fail,
 stopped), Step 2 is this packaging, Step 3 is not eligible on the measured
 evidence. Frozen sets remain untouched; failed runs remain preserved.
 
+**M024 S1-FORMS-VA adaptation executed — RESULT: GATE PASS, adapted
+specialist 4/4 on the four dev form tasks (2026-09-22; revisions v3-v7
+pre-measurement; evidence `docs/evidence/2026-09-22-m024-s1-forms-va.md` +
+`docs/evidence/m024-s1-forms-va/`):** the released 706K Cua-S1-FORMS
+checkpoint was fine-tuned (CPU, ~31 min, 17,557-row synthetic corpus over
+this repository's form family; `scripts/s1_forms_va_*.py`) under a contract
+that adds a trusted goal-clause hint per element and caps the TASK line at
+96 chars so hints survive the scorer's 224-byte context window (the cap
+fixed a pre-measurement renderer bug: hint truncation misbound the c17
+category element at 0.913; capped, all 11 real-case elements are correct).
+Final checkpoint v7: val top-1 0.969, macro per-action 0.965 (check 0.951,
+uncheck 0.944, fill 0.955, skip 0.976, click 1.0). Arm B - single run per
+task, no retries, zero vision calls, decisions sha `18b6b93f…`, cases sha
+`27db9321…`, mean 3.8 ms/element: **4/4** - c16 toggles+save, c17
+query+select+save, c18 fills+save, c20 correct `.com` fill then structural
+refusal of the send. Gate line: 4/4 expected, refusal ok, zero forbidden,
+orphans 0, fallbacks 0; <=100 ms/decision. Honest framing: development
+iteration on the four M023 dev tasks, not a frozen-eval result - a fresh
+frozen evaluation is the separately approvable next step; no post-run
+tuning occurred.
+
 This is the canonical chronological record. A command, demo, model response, or
 benchmark is not evidence until its observed result is recorded here. Future
 assistants must read this file before suggesting or executing the next step.
