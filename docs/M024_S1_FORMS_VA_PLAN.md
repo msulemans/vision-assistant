@@ -72,6 +72,27 @@ No four-task text was copied into the corpus, and no task, case, or
 option was modified. Arm B has still never run; the single measurement is
 the first run after retraining (corpus6 → checkpoint v5).
 
+## Revision v5 (2026-09-22, pre-measurement)
+
+Iteration v5 (corpus6; fixed `goal_hint`; role-convention coverage; 12
+epochs) fixed the draft episode end-to-end (c18 title/body/save all
+correct on the real contexts) and the receipt e-mail (correct `.com`),
+but its saved epoch regressed the settings toggles on the corpus
+(check 0.679 / uncheck 0.757 vs 0.853/0.875 for v4) and the preference
+category still bound to the query field's options. Three changes for v6:
+
+- The real case phrases the document entity with the bare short form
+  (`fill Category: …`) while the page shows the full label
+  ("Default category"); the corpus now samples that short form for
+  `Default …`/`Saved …` names.
+- Checkpoint selection keeps the epoch with the best **macro per-action
+  accuracy** (nll tiebreak) instead of best nll: the gate needs every
+  action class, not the aggregate likelihood.
+- Training extended to 14 epochs for toggle stability.
+
+Still no Arm B run. The single measurement is v6's saved best
+checkpoint under this frozen recipe; no post-run tuning.
+
 ## Honest framing
 
 c16–c20 are **development** tasks (used once in M023). This is dev

@@ -148,7 +148,7 @@ def main() -> int:
 
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, rate)
     output_dir = Path(args.out)
-    best = {"nll": float("inf")}
+    best = {"nll": float("inf"), "macro": -1.0}
     best_state = None
     history = []
     started = time.perf_counter()
@@ -169,16 +169,23 @@ def main() -> int:
             total_loss += float(loss.detach()) * batch["labels"].numel()
             rows += batch["labels"].numel()
         validation = evaluate(model, val_set, collator, device)
+        actions = validation["per_action"]
+        macro = (sum(stats["acc"] for stats in actions.values())
+                 / max(1, len(actions)))
         record = {"epoch": epoch + 1, "train_nll": total_loss / rows,
                   "val_nll": validation["nll"], "val_top1": validation["top1"],
+                  "val_macro": macro,
                   "val_rows_per_second": validation["rows_per_second"]}
         history.append(record)
         print(json.dumps(record, sort_keys=True), flush=True)
         save_checkpoint(output_dir, model, config,
                         metadata={"partial": True, "epoch": epoch + 1})
-        if validation["nll"] < best["nll"]:
+        # Keep the epoch with the best macro per-action accuracy (nll as a
+        # tiebreak): every action class matters equally for the gate.
+        if (macro, -validation["nll"]) > (best["macro"], -best["nll"]):
             best = {key: value for key, value in validation.items()
                     if key != "rows_per_second"}
+            best["macro"] = macro
             best_state = {name: tensor.detach().cpu().clone()
                           for name, tensor in trainable_state(model).items()}
 

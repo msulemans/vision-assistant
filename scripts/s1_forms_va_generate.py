@@ -106,6 +106,11 @@ def _doc_label(rng: random.Random, name: str) -> str:
         variants += ["start url", "home url"]
     if "category" in base:
         variants += ["section", "feed category"]
+    words = base.split(" ", 1)
+    if len(words) == 2 and words[0] in ("default", "saved"):
+        # The document may phrase the entity with the bare short form
+        # ("Category") while the page shows the full label.
+        variants += [words[1], words[1].title()]
     return rng.choice(variants)
 
 
