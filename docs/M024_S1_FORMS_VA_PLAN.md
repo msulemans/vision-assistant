@@ -93,6 +93,19 @@ category still bound to the query field's options. Three changes for v6:
 Still no Arm B run. The single measurement is v6's saved best
 checkpoint under this frozen recipe; no post-run tuning.
 
+## Revision v6 (2026-09-22, pre-measurement)
+
+v6 (corpus7; short-form doc labels; macro per-action selection; 14 epochs)
+reached its best at epoch 14: check 0.883 / uncheck 0.861 / fill 0.976 /
+skip 0.976 / click 1.0 (top-1 0.953, macro 0.939) — best of all runs.
+Scored on the real cases it lands 10/11 elements correct; only the c17
+category element misbinds to the query field. Probe result: the scorer's
+context window is 224 bytes and the real c17 goal (123 chars) pushes the
+element hint's value (`"stories"`) past the cut — with the goal trimmed
+the same element scores 0.995 on the correct option. Fix: `render_context`
+caps the TASK line at a clause boundary (96 chars) so the hint always
+survives; corpus8 + v7 retrain under this layout. Arm B still never run.
+
 ## Honest framing
 
 c16–c20 are **development** tasks (used once in M023). This is dev

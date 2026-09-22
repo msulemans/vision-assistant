@@ -192,9 +192,28 @@ def goal_hint(goal: str, label: str, cap: int = 72) -> str:
     return ""
 
 
+def _cap_goal(goal: str, cap: int = 96) -> str:
+    """Bound the TASK line at a clause boundary.
+
+    The scorer's context window is 224 bytes; the element hint carries the
+    label-matching clause and must survive the cut, so the goal text is
+    capped (long goals otherwise push the hint's value out of the window).
+    """
+
+    text = " ".join(str(goal).split())
+    if len(text) <= cap:
+        return text
+    window = text[:cap]
+    cut = max(window.rfind(". "), window.rfind(", "),
+              window.rfind("; "), window.rfind('" '))
+    if cut >= 48:
+        return window[:cut + 1]
+    return window
+
+
 def render_context(goal: str, form_title: str, element: dict,
                    hint: str = "") -> str:
-    """The v2/v3 byte-level layout: goal in TASK, trusted hint when found."""
+    """The v4 byte-level layout: capped goal in TASK, trusted hint when found."""
 
     if element["role"] == "CheckBox":
         state = "checked" if element["checked"] else "unchecked"
@@ -202,7 +221,7 @@ def render_context(goal: str, form_title: str, element: dict,
         state = 'value="{}"'.format(element["value"][:48])
     shown = ' hint="{}"'.format(hint[:72]) if hint else ""
     return (
-        "TASK {}\n".format(goal[:128])
+        "TASK {}\n".format(_cap_goal(goal))
         + "FORM {}\n".format(form_title[:64])
         + 'ELEMENT {} "{}" {}{}'.format(
             element["role"], element["label"][:72], state, shown)

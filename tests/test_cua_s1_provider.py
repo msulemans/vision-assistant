@@ -217,6 +217,21 @@ class CasesContractTest(unittest.TestCase):
                                     hint='turn on "dark"')
         self.assertIn('hint="turn on "dark""', hinted)
 
+    def test_render_context_caps_the_goal_so_hints_survive(self) -> None:
+        goal = ('Update your search preferences step by step. First set the '
+                'default query to "parser". Then set the default category to '
+                '"stories"')
+        element = {"role": "Edit", "label": "Default category",
+                   "value": "all", "checked": None}
+        hint = 'Then set the default category to "stories".'
+        context = cua.render_context(goal, "Search preferences", element,
+                                     hint=hint)
+        self.assertLessEqual(len(context), 224)
+        self.assertIn('hint="Then set the default category to "stories"."',
+                      context)
+        task_line = context.split("\n", 1)[0]
+        self.assertLessEqual(len(task_line), 97)
+
     def test_render_options_entity_pointers_then_fixed(self) -> None:
         options = cua.render_options((("Search query", "parser"),
                                       ("Category", "stories")))
