@@ -190,8 +190,12 @@ def _prefs_episode(rng: random.Random):
                  {"role": "Edit", "label": fname, "value": "",
                   "checked": None},
                  entities, options, ("fill", (fdl, fvalue)))]
+    # The frozen case build renders select fields with the nearest trained
+    # role (Edit); cover both roles so the specialist binds the element
+    # whichever role the harness reports.
     rows.append(_row(goal, title,
-                     {"role": "Select", "label": sname, "value": sopts[0],
+                     {"role": rng.choice(("Select", "Edit")),
+                      "label": sname, "value": sopts[0],
                       "checked": None},
                      entities, options, ("fill", (sdl, svalue))))
     if rng.random() < 0.25:

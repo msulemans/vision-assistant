@@ -42,7 +42,7 @@ from pathlib import Path
 
 from . import browser_targets
 
-DECISION_VERSION = "s1-forms-va-decisions-v2"
+DECISION_VERSION = "s1-forms-va-decisions-v3"
 CONFIDENCE_MIN = 0.5
 FIXED_ACTIONS = ("check", "uncheck", "click", "skip")
 
@@ -155,16 +155,18 @@ TASK_SLOTS = {
 }
 
 
-_HINT_SPLIT = re.compile(r"(?<=[.;!?])\s+|,\s+|\s+and\s+", re.IGNORECASE)
+_HINT_SPLIT = re.compile(r'(?<=[.;!?"])\s+|(?<=[.;!?])\s+|,\s+|\s+and\s+',
+                         re.IGNORECASE)
 
 
 def goal_hint(goal: str, label: str, cap: int = 72) -> str:
     """Trusted goal-clause retrieval for one element label.
 
     Returns the goal clause that mentions the label (exact substring first,
-    then distinctive tokens), or "" when the goal never mentions it. This
-    only localizes relevant goal text; the specialist still chooses the
-    option (polarity, value, confuser rejection, skip).
+    then clauses containing every distinctive label token, then any token),
+    or "" when the goal never mentions it. This only localizes relevant
+    goal text; the specialist still chooses the option (polarity, value,
+    confuser rejection, skip).
     """
 
     text = " ".join(str(goal).split())
@@ -178,10 +180,15 @@ def goal_hint(goal: str, label: str, cap: int = 72) -> str:
             return clause[:cap]
     tokens = [token for token in re.split(r"[^a-z0-9]+", wanted)
               if len(token) >= 3]
-    for clause in clauses:
-        lowered = clause.lower()
-        if tokens and any(token in lowered for token in tokens):
-            return clause[:cap]
+    if tokens:
+        for clause in clauses:
+            lowered = clause.lower()
+            if all(token in lowered for token in tokens):
+                return clause[:cap]
+        for clause in clauses:
+            lowered = clause.lower()
+            if any(token in lowered for token in tokens):
+                return clause[:cap]
     return ""
 
 

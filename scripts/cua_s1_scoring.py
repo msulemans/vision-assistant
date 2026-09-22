@@ -47,10 +47,12 @@ def main() -> int:
     pin_dir = Path(args.pin_dir)
     weights = (Path(args.weights) if args.weights
                else pin_dir / "cua-s1-forms.safetensors")
+    weights_file = (weights / "model.safetensors" if weights.is_dir()
+                    else weights)
     config_path = (weights / "config.json" if weights.is_dir()
                    else weights.with_suffix(".json"))
-    if not weights.is_file() or not config_path.is_file():
-        print("missing checkpoint files in", pin_dir)
+    if not weights_file.is_file() or not config_path.is_file():
+        print("missing checkpoint files in", weights)
         return 1
 
     from vision_assistant import cua_s1_provider as csp
@@ -66,7 +68,7 @@ def main() -> int:
         "cases_sha256": csp.cases_sha256(),
         "generator": {
             "model": str(weights),
-            "weights_sha256": _sha256(weights),
+            "weights_sha256": _sha256(weights_file),
             "config_sha256": _sha256(config_path),
             "state_signature": sidecar.get("state_signature"),
             "config": config,

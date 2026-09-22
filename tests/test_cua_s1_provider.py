@@ -180,6 +180,18 @@ class CasesContractTest(unittest.TestCase):
         self.assertNotIn('"stories"', cua.goal_hint(prefs, "Default query"))
         self.assertIn('"stories"', cua.goal_hint(prefs, "Default category"))
 
+    def test_goal_hint_quote_split_and_every_token(self) -> None:
+        goal = ('Fill the draft: title "Bench log", body "Cable check." '
+                'Save the draft.')
+        # The quoted sentence end splits; the body hint is not polluted by
+        # the save clause, and the save label matches every-token first.
+        self.assertEqual(cua.goal_hint(goal, "Body"),
+                         'body "Cable check."')
+        self.assertEqual(cua.goal_hint(goal, "Save draft"),
+                         "Save the draft.")
+        self.assertEqual(cua.goal_hint(goal, "Title"),
+                         'Fill the draft: title "Bench log"')
+
     def test_render_context_carries_the_goal(self) -> None:
         edit = {"role": "Edit", "label": "Default query", "value": "",
                 "checked": None}

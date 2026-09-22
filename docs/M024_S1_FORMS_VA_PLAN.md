@@ -50,6 +50,28 @@ chooses the option (polarity read, value match including confusers, skip
 discipline). No measurement run against the four tasks has happened yet —
 this revision predates the gate.
 
+## Revision v4 (2026-09-22, pre-measurement)
+
+Iteration v4 (corpus5 with hints, 12 epochs from the released weights)
+reached val check 0.853 / uncheck 0.875 / fill 0.968 / skip 0.963 / click
+1.0 (top-1 0.946) — the trusted-hint contract works. Scoring v4 on the
+four tasks' real case contexts (a visible pre-measurement pass; **no Arm B
+run happened for M024**) then exposed two stack-consistency defects, both
+fixed in this revision:
+
+1. `goal_hint()` did not split after a quoted sentence end, so the draft
+   body's hint stayed glued to the save clause (`body "Cable check." Save
+   the draft.`), and the token pass accepted any token, so the save
+   element could receive the title clause. Fixed: quote-aware splitting
+   plus every-token clause preference (any-token fallback).
+2. The corpus rendered preference select fields with role `Select`, while
+   the frozen c17 case build renders them with the nearest trained role
+   `Edit`. The corpus now samples both roles.
+
+No four-task text was copied into the corpus, and no task, case, or
+option was modified. Arm B has still never run; the single measurement is
+the first run after retraining (corpus6 → checkpoint v5).
+
 ## Honest framing
 
 c16–c20 are **development** tasks (used once in M023). This is dev
