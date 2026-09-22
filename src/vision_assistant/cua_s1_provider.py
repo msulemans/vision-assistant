@@ -155,7 +155,7 @@ TASK_SLOTS = {
 }
 
 
-_HINT_SPLIT = re.compile(r'(?<=[.;!?"])\s+|(?<=[.;!?])\s+|,\s+|\s+and\s+',
+_HINT_SPLIT = re.compile(r'(?<=[.;!?]")\s+|(?<=[.;!?])\s+|,\s+|\s+and\s+',
                          re.IGNORECASE)
 
 
